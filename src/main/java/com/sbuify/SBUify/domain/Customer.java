@@ -1,12 +1,15 @@
 package com.sbuify.SBUify.domain;
 
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-public class Customer extends User {
+@DiscriminatorValue(value = "customer")
+public class Customer extends User implements Serializable {
 
     private String firstName;
     private String lastName;

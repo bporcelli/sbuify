@@ -1,9 +1,11 @@
 package com.sbuify.SBUify.domain;
 
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /*
     Record Label entity: Subclass of User
@@ -12,7 +14,8 @@ import javax.validation.constraints.NotNull;
  */
 
 @Entity
-public class RecordLabel extends User{
+@DiscriminatorValue(value = "recordlabel")
+public class RecordLabel extends User implements Serializable{
     @NotNull
     private String name;
 

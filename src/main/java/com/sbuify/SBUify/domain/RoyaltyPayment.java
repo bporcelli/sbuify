@@ -1,13 +1,12 @@
 package com.sbuify.SBUify.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-public class RoyaltyPayment {
+public class RoyaltyPayment implements Serializable {
+    @Id
     private Integer id;
     private Double amount;
     private LocalDateTime startPeriod;

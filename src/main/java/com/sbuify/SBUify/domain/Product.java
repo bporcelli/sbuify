@@ -1,9 +1,12 @@
 package com.sbuify.SBUify.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.io.Serializable;
 
 @Entity
-public class Product {
+public class Product implements Serializable {
+    @Id
     private Integer id;
     private String name;
     private String description;

@@ -1,6 +1,12 @@
 package com.sbuify.SBUify.domain;
 
-public class Admin extends User{
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.io.Serializable;
+
+@Entity
+@DiscriminatorValue(value = "admin")
+public class Admin extends User implements Serializable{
     private String firstName;
     private String lastName;
     private Boolean isSuperAdmin;

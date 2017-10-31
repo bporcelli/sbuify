@@ -2,9 +2,12 @@ package com.sbuify.SBUify.domain;
 
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.io.Serializable;
 
 @Entity
-public class Address {
+public class Address implements Serializable{
+    @Id
     private Integer id;
     private String addressLine1;
     private String addressline2;

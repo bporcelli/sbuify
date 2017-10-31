@@ -1,14 +1,15 @@
 package com.sbuify.SBUify.domain;
 
-import com.sun.tools.internal.xjc.Language;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-public class Preference {
+public class Preference implements Serializable{
+    @Id
+    private Integer id;
+    @Enumerated(EnumType.STRING)
     private Language langauge;
     private Boolean hdStreaming;
     private Boolean privateSession;
