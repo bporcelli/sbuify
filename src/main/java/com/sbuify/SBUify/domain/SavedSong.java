@@ -5,5 +5,6 @@ import java.time.LocalDateTime;
 
 @Entity
 public class SavedSong {
+    private PlayList playlist;
     private LocalDateTime added;
 }

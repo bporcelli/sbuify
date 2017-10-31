@@ -7,7 +7,6 @@ import java.util.List;
 
 @Entity
 public class Artist extends CatalogItem {
-    private Integer id;
     private Integer musicBrainzId;
     private HashSet<Artist> relatedArtists;
     private HashSet<Song> popularSongs;
@@ -15,6 +14,8 @@ public class Artist extends CatalogItem {
     private List<Product> merchandise;
     private Biography bio;
     private Image coverImage;
+    private RecordLabel recordLabel;
+    private List<Album> albums;
     // TODO: 1-1 or 1-many mappings
 
 }

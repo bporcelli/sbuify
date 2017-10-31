@@ -16,5 +16,6 @@ public class Preference {
     private Boolean shuffle;
     @Enumerated(EnumType.STRING)
     private RepeatMode repeat;
+    private Customer customer;
 
 }

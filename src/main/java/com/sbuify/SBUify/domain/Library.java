@@ -6,4 +6,7 @@ import javax.persistence.Table;
 @Entity
 public class Library extends PlayList {
     //TODO: fill attributes
+    private Customer customer;
+
+
 }

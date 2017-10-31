@@ -18,6 +18,7 @@ public class User {
     @NotNull
     private String hashPassword;
     private String token;
+    private Image profileImage;
 
     // TODO: add CustomerSubscription relationship
 

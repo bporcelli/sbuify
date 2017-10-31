@@ -10,4 +10,5 @@ public class CatalogItem {
     private LocalDateTime dateCreation;
     private Boolean isActive;
     private User Owner;
+    private Image image;
 }

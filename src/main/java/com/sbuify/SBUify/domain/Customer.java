@@ -12,6 +12,10 @@ public class Customer extends User {
     private String lastName;
     private Date birthday;
     private String customerStripeId;
+    private CustomerSubscription customerSubscription;
+    private PlayQueue playQueue;
+    private Library library;
+    private Preference preference;
 
 
 

@@ -1,12 +1,12 @@
 package com.sbuify.SBUify.domain;
 
-
 import javax.persistence.Entity;
-import java.util.List;
 
 @Entity
-public class Venue {
+public class TimeRange {
     private Integer id;
-    private String name;
-    private Address address;
+    private Double start;
+    private Double end;
+    public Stream stream;
 }
+
