@@ -1,9 +1,9 @@
 package com.sbuify.SBUify.domain;
 
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.hibernate.engine.internal.Cascade;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -15,9 +15,26 @@ public class Customer extends User implements Serializable {
     private String lastName;
     private Date birthday;
     private String customerStripeId;
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private CustomerSubscription customerSubscription;
+    @OneToOne(
+            cascade =  CascadeType.ALL,
+            orphanRemoval = true
+    )
+
     private PlayQueue playQueue;
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private Library library;
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private Preference preference;
 
 

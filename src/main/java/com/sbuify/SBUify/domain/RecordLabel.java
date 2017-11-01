@@ -1,11 +1,13 @@
 package com.sbuify.SBUify.domain;
 
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.hibernate.annotations.ManyToAny;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
     Record Label entity: Subclass of User
@@ -19,6 +21,12 @@ public class RecordLabel extends User implements Serializable{
     @NotNull
     private String name;
 
+    @ElementCollection(targetClass= Artist.class)
+    @OneToMany(
+            cascade = CascadeType.ALL
+    )
+    private Set<Artist> artists = new HashSet<>();
+
     public String getName() {
         return name;
     }
@@ -28,6 +36,11 @@ public class RecordLabel extends User implements Serializable{
     }
 
 
+    public Set<Artist> getArtists() {
+        return artists;
+    }
 
-
+    public void setArtists(Set<Artist> artists) {
+        this.artists = artists;
+    }
 }

@@ -14,4 +14,27 @@ public class Image implements Serializable{
     @Enumerated(EnumType.STRING)
     private ImageSize size;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public ImageSize getSize() {
+        return size;
+    }
+
+    public void setSize(ImageSize size) {
+        this.size = size;
+    }
 }

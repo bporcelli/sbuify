@@ -10,6 +10,8 @@ import java.util.List;
 public class Venue implements Serializable {
     @Id
     private Integer id;
+
     private String name;
+
     private Address address;
 }

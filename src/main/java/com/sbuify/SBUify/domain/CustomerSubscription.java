@@ -9,7 +9,9 @@ import java.io.Serializable;
 public class CustomerSubscription implements Serializable {
     @Id
     private Integer id;
+
     private String stripeId;
+
 
     public Integer getId() {
         return id;
