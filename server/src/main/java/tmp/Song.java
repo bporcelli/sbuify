@@ -1,8 +1,9 @@
-package com.cse308.sbuify.domain;
+package tmp;
 
 
 import javax.persistence.*;
 
+import com.cse308.sbuify.domain.CatalogItem;
 import com.cse308.sbuify.enums.Genre;
 
 import java.io.Serializable;

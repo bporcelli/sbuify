@@ -3,11 +3,15 @@ package com.cse308.sbuify.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class CatalogItem implements Serializable {
     @Id
     private Integer id;

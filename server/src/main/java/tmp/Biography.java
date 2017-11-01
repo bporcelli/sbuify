@@ -1,9 +1,12 @@
-package com.cse308.sbuify.domain;
+package tmp;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.cse308.sbuify.domain.Image;
+
 import java.io.Serializable;
 import java.util.List;
 

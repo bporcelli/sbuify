@@ -1,4 +1,4 @@
-package com.cse308.sbuify.domain;
+package tmp;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -1,7 +1,9 @@
-package com.cse308.sbuify.domain;
+package tmp;
 
 
 import org.hibernate.annotations.ManyToAny;
+
+import com.cse308.sbuify.domain.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

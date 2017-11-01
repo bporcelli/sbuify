@@ -1,4 +1,4 @@
-package com.cse308.sbuify.web;
+package tmp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cse308.sbuify.domain.Preference;
-import com.cse308.sbuify.repository.PreferenceRepository;
 
 @Controller
 @RequestMapping(path = "/customers/{id}/preferences")

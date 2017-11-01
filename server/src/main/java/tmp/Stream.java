@@ -1,8 +1,12 @@
-package com.cse308.sbuify.domain;
+package tmp;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import com.cse308.sbuify.domain.Customer;
+import com.cse308.sbuify.domain.PlayList;
+
 import java.io.Serializable;
 import java.sql.Time;
 import java.time.LocalDateTime;

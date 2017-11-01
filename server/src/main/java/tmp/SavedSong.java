@@ -1,7 +1,10 @@
-package com.cse308.sbuify.domain;
+package tmp;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import com.cse308.sbuify.domain.PlayList;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 

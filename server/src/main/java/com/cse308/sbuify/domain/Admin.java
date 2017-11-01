@@ -12,7 +12,7 @@ public class Admin extends User implements Serializable{
 
     private String lastName;
 
-    private Boolean isSuperAdmin;
+    private boolean isSuperAdmin;
 
     public String getFirstName() {
 
@@ -34,12 +34,12 @@ public class Admin extends User implements Serializable{
         this.lastName = lastName;
     }
 
-    public Boolean getSuperAdmin() {
+    public boolean getSuperAdmin() {
 
         return isSuperAdmin;
     }
 
-    public void setSuperAdmin(Boolean superAdmin) {
+    public void setSuperAdmin(boolean superAdmin) {
 
         isSuperAdmin = superAdmin;
     }

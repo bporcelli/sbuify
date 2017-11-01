@@ -1,7 +1,10 @@
-package com.cse308.sbuify.domain;
+package tmp;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+
+import com.cse308.sbuify.domain.CatalogItem;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
