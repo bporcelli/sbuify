@@ -1,4 +1,4 @@
-package com.cse308.sbuify.repository;
+package tmp;
 
 import org.springframework.data.repository.CrudRepository;
 

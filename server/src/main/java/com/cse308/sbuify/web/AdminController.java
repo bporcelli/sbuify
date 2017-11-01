@@ -1,5 +1,7 @@
 package com.cse308.sbuify.web;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,10 +26,12 @@ public class AdminController {
 	// TODO: This is for proof of concept, need to be removed before deployment
 	@GetMapping(path = "/{id}")
 	public @ResponseBody Admin findById(@PathVariable int id) {
-		Admin tmp = new Admin();
-		return tmp;
+		Optional<Admin> admin = adminRepo.findById(id);
+		
+		if(!admin.isPresent())
+			return null;
+		return admin.get();
 	}
-	
 	
 	@GetMapping
 	public @ResponseBody Iterable<Admin> getAllAdmins() {

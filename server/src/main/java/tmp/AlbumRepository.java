@@ -1,8 +1,6 @@
-package com.cse308.sbuify.repository;
+package tmp;
 
 import org.springframework.data.repository.CrudRepository;
-
-import com.cse308.sbuify.domain.Album;
 
 public interface AlbumRepository extends CrudRepository<Album, Integer> {
 

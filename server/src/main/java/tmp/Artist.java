@@ -1,6 +1,10 @@
-package com.cse308.sbuify.domain;
+package tmp;
 
 import javax.persistence.*;
+
+import com.cse308.sbuify.domain.CatalogItem;
+import com.cse308.sbuify.domain.Image;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;

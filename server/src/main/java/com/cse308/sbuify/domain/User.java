@@ -1,85 +1,80 @@
 package com.cse308.sbuify.domain;
 
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 
 @Entity // This tells Hibernate to make a table out of this class
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "user_type")
-public abstract  class User implements Serializable{
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
+public abstract class User implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 
-    @NotNull
-    private String email;
+	@NotNull
+	private String email;
 
-    @NotNull
-    private String hashPassword;
+	@NotNull
+	private String hashPassword;
 
-    private String token;
-    /*
-        One Profile Image per Customer
-        When Image is updated/deleted reflect
+	private String token;
+	/*
+	 * One Profile Image per Customer When Image is updated/deleted reflect
+	 * 
+	 * 
+	 */
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	private Image profileImage;
 
+	public Integer getId() {
 
-     */
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private Image profileImage;
+		return id;
+	}
 
+	public void setId(Integer id) {
 
-    public Integer getId() {
+		this.id = id;
+	}
 
-        return id;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setId(Integer id) {
+	public void setEmail(String email) {
 
-        this.id = id;
-    }
+		this.email = email;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getHashPassword() {
 
-    public void setEmail(String email) {
+		return hashPassword;
+	}
 
-        this.email = email;
-    }
+	public void setHashPassword(String hashPassword) {
 
-    public String getHashPassword() {
+		this.hashPassword = hashPassword;
+	}
 
-        return hashPassword;
-    }
+	public String getToken() {
 
-    public void setHashPassword(String hashPassword) {
+		return token;
+	}
 
-        this.hashPassword = hashPassword;
-    }
+	public void setToken(String token) {
 
-    public String getToken() {
+		this.token = token;
+	}
 
-        return token;
-    }
+	public Image getProfileImage() {
 
-    public void setToken(String token) {
+		return profileImage;
+	}
 
-        this.token = token;
-    }
+	public void setProfileImage(Image profileImage) {
 
-    public Image getProfileImage() {
-
-        return profileImage;
-    }
-
-    public void setProfileImage(Image profileImage) {
-
-        this.profileImage = profileImage;
-    }
+		this.profileImage = profileImage;
+	}
 
 }
