@@ -1,0 +1,48 @@
+<!-- BEGIN CREATE PLAYLIST MODAL -->
+<ng-template #content let-c="close">
+    <div class="modal-header">
+        <h5 class="modal-title" id="createPlaylistModalLabel">Create Playlist</h5>
+        <button type="button" class="close" aria-label="Close" (click)="c()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" name="name" maxlength="100" placeholder="New Playlist" required>
+            </div>
+            <div class="form-row">
+                <div class="col-5">
+                    <label for="image">Image</label>
+                    <div class="text-center">
+                        <img #preview class="img-fluid" src="assets/img/playlist-placeholder.jpg" alt="Playlist Image" title="Playlist Image">
+                        <label class="custom-file mt-2">
+                            <input type="file" class="custom-file-input" name="image" id="image" (change)="onFileChange($event, preview)">
+                            <button class="my-custom-file-control btn btn-outline-secondary">Choose Image</button>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-7">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" name="description" id="description" rows="5" maxlength="300" placeholder="Give your playlist a description." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" name="public" id="public" value="1">
+                            <span class="custom-control-indicator"></span>
+                            <span class="custom-control-description">Make this playlist public</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="c()">Cancel</button>
+        <button type="button" class="btn btn-primary">Create</button>
+    </div>
+</ng-template>
+<!-- END CREATE PLAYLIST MODAL -->

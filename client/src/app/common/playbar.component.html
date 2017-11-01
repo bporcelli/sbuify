@@ -1,0 +1,73 @@
+<!-- BEGIN PLAYBAR -->
+<div class="navbar fixed-bottom navbar-dark bg-dark" id="play-bar">
+    <a class="navbar-brand">
+        <img class="img-fluid" src="assets/img/album-placeholder.jpg" alt="Album Title" title="Album Title">
+    </a>
+
+    <ul class="song-details">
+        <li class="song-title">
+            <a href="#">Song Title</a>
+        </li>
+        <li>
+            <a href="#">Artist</a>
+        </li>
+    </ul>
+
+    <div class="mx-auto form-inline flex-column" id="playback-controls-wrap">
+        <ul class="flex-row" id="playback-controls">
+            <li>
+                <button class="btn btn-link" title="Shuffle" id="toggle-shuffle">
+                    <i class="fa fa-fw fa-random"></i>
+                </button>
+            </li>
+            <li>
+                <button class="btn btn-link" title="Previous" id="prev-track">
+                    <i class="fa fa-fw fa-step-backward"></i>
+                </button>
+            </li>
+            <li>
+                <button class="btn btn-link" title="Play" id="play">
+                    <i class="fa fa-fw fa-2x fa-play-circle-o"></i>
+                </button>
+            </li>
+            <li>
+                <button class="btn btn-link" title="Next" id="next-track">
+                    <i class="fa fa-fw fa-step-forward"></i>
+                </button>
+            </li>
+            <li>
+                <button class="btn btn-link" title="Repeat" id="toggle-repeat">
+                    <i class="fa fa-fw fa-repeat"></i>
+                </button>
+            </li>
+        </ul>
+
+        <div class="flex-row" id="playback-progress">
+            <span id="current-time">0:30</span>
+            
+            <div id="playback-track">
+                <div id="playback-slider" class="w-50"></div>
+            </div>
+            
+            <span id="total-time">1:00</span>
+        </div>
+    </div>
+
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link px-0" title="Play Queue" routerLink="/play-queue" routerLinkActive="active">
+                <i class="fa fa-lg fa-fw fa-list-ul"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link pr-0 pl-2" href="#" id="mute-toggle" title="Mute">
+                <i class="fa fa-lg fa-fw fa-volume-up"></i>
+            </a>
+        </li>
+    </ul>
+
+    <div class="form-inline">
+        <input type="range" class="nav-link px-0 ml-2" id="volume-control" min="0" max="100" step="0.01">
+    </div>
+</div>
+<!-- END PLAYBAR -->

@@ -1,0 +1,64 @@
+<form class="settings-form">
+    <fieldset class="form-group">
+        <legend>Language</legend>
+        <div class="form-row">
+            <div class="col-9">
+                <label for="lang" class="text-muted">Choose your preferred language</label>
+            </div>
+            <div class="col-3">
+                <select class="form-control custom-select" name="lang" id="lang">
+                    <option value="zh">Chinese</option>
+                    <option value="es">Spanish</option>
+                    <option value="en" selected>English</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ar">Arabic</option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="form-group">
+        <legend>Privacy</legend>
+        <div class="form-row">
+            <div class="col-9">
+                <label for="privateSession" class="text-muted">Hide my activity from friends</label>
+            </div>
+            <div class="col-3">
+                <label class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" name="privateSession" id="privateSession">
+                    <span class="custom-control-indicator"></span>
+                </label>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="form-group">
+        <legend>Display</legend>
+        <div class="form-row">
+            <div class="col-9">
+                <label for="showFriendFeed" class="text-muted">Show friend feed</label>
+            </div>
+            <div class="col-3">
+                <label class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" name="showFriendFeed" id="showFriendFeed">
+                    <span class="custom-control-indicator"></span>
+                </label>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="form-group">
+        <legend>Playback</legend>
+        <div class="form-row">
+            <div class="col-9">
+                <label for="hq" class="text-muted">Enable high quality streaming (Premium only)</label>
+            </div>
+            <div class="col-3">
+                <label class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" name="hq" id="hq" disabled>
+                    <span class="custom-control-indicator"></span>
+                </label>
+            </div>
+        </div>
+    </fieldset>
+    <div class="form-group text-center">
+        <button type="submit" class="btn btn-wide btn-primary" title="Save Preferences">Save</button>
+    </div>
+</form>

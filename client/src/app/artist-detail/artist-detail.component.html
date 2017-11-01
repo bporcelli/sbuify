@@ -1,0 +1,38 @@
+<section id="artist_header">
+    <div id="artist_details">
+        <h1 class="display-4 verified-artist">Seratones</h1>
+        
+        <ul class="nav button-list">
+            <li class="nav-item">
+                <button type="button" class="btn btn-primary play-artist" title="Play Artist">Play</button>
+            </li>
+            <li class="nav-item">
+                <button type="button" class="btn btn-light follow-artist" title="Follow">Follow</button>
+            </li>
+            <li ngbDropdown class="nav-item more-dropdown">
+                <button type="button" class="btn btn-light" id="more_menu_button" title="More" ngbDropdownToggle>
+                    <i class="fa fa-lg fa-ellipsis-h"></i>
+                    <span class="sr-only">More</span>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="more_menu_button">
+                    <a class="dropdown-item" href="#">Go to Artist Radio</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Follow</a>
+                    <a class="dropdown-item" href="#">Report</a>
+                    <a class="dropdown-item" href="#">Share</a>
+                </div>
+            </li>
+        </ul>    
+    </div>
+
+    <img class="img-fluid" src="assets/img/seratones-image.jpg" alt="Seratones" title="Seratones">
+</section>
+
+<nav class="nav tab-nav">
+    <a class="nav-link" id="overview-tab" routerLink="overview" routerLinkActive="active">Overview</a>
+    <a class="nav-link" id="related-tab" routerLink="related" routerLinkActive="active">Related Artists</a>
+    <a class="nav-link" id="about-tab" routerLink="about" routerLinkActive="active">About</a>
+    <a class="nav-link" id="concerts-tab" routerLink="concerts" routerLinkActive="active">Concerts</a>
+</nav>
+
+<router-outlet></router-outlet>

@@ -1,0 +1,63 @@
+// Font Awesome
+$fa-font-path: '../node_modules/font-awesome/fonts';
+
+// Default Colors
+// Needed until https://github.com/twbs/bootstrap/pull/23260 is shipped
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-600: #868e96 !default;
+
+$blue:    #007bff !default;
+$red:     #dc3545 !default;
+$yellow:  #ffc107 !default;
+$green:   #28a745 !default;
+$cyan:    #17a2b8 !default;
+
+$sbu-red:        #990000;
+$sbu-dark-gray:  #2b2b2b;
+$sbu-light-gray: #4d4d4d;
+
+// Colors
+$theme-colors: (
+  primary: $sbu-red,
+  secondary: $gray-600,
+  success: $green,
+  info: $cyan,
+  warning: $yellow,
+  danger: $red,
+  gray: $gray-300,
+  dark: $sbu-dark-gray,
+  light: $sbu-light-gray
+);
+
+// Settings for '<body>' element
+$body-color: #282828;
+
+// Components
+$border-radius-lg: 1.25rem;
+$btn-border-radius: $border-radius-lg;
+$input-border-radius: $border-radius-lg;
+
+// Tables
+$table-inverse-bg: $sbu-dark-gray;
+
+// Font settings
+$font-family-sans-serif: 'Alegreya Sans', sans-serif;
+$font-weight-base: 300;
+$font-size-base: 1rem;
+$line-height-base: 1;
+
+// Buttons
+$btn-font-weight: $font-weight-base;
+
+// Navbar
+$navbar-padding-y:           0.25rem;
+$navbar-dark-color:          $gray-300;
+$navbar-dark-hover-color:    $gray-100;
+$navbar-dark-active-color:   $white;
+$navbar-dark-disabled-color: $gray-600;
+
+// Dropdowns
+$dropdown-spacer: 0.4rem;

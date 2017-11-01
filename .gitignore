@@ -1,4 +1,4 @@
-/# Maven 
+# Maven
 target/
 
 # IntelliJ project files 
@@ -21,9 +21,32 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 
+# other IDEs and editors
+.c9/
+*.launch
+*.sublime-workspace
+*.sublime-project
+*.editorconfig
+
+# angular dependencies
+node_modules/
+
+# misc
+.sass-cache/
+connect.lock/
+coverage/
+libpeerconnection.log
+npm-debug.log
+testem.log
+typings/
+
+# e2e
+e2e/*.js
+e2e/*.map
 
 # OS
 .DS_Store
+Thumbs.db
 
 # Misc
 *.swp

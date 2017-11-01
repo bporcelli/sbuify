@@ -1,0 +1,29 @@
+<navbar></navbar>
+
+<div class="container-fluid bg-light" [ngClass]="getWrapperClasses()">
+    <div class="row">
+        <!-- BEGIN LEFT SIDEBAR -->
+        <nav class="d-none d-md-block col-md-3 col-xl-2 sidebar content-wrapper" id="left-sidebar" *ngIf="authService.isAuthed()">
+            <left-sidebar></left-sidebar>
+        </nav>
+        <!-- END LEFT SIDEBAR -->
+
+        <!-- BEGIN CENTER PANE -->
+        <main [ngClass]="getMainClasses()">
+            <div class="container-fluid">
+                <router-outlet></router-outlet>
+            </div>
+        </main>
+        <!-- END CENTER PANE -->
+        
+        <!-- BEGIN RIGHT SIDEBAR -->
+        <div class="d-none d-xl-block col-xl-2 sidebar content-wrapper" id="right-sidebar" *ngIf="authService.isAuthed()">
+            <right-sidebar></right-sidebar>
+        </div>
+        <!-- END RIGHT SIDEBAR -->
+    </div>
+</div>
+
+<playbar *ngIf="authService.isAuthed()"></playbar>
+
+<router-outlet name="modal"></router-outlet>
