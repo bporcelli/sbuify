@@ -18,7 +18,7 @@ import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
 import com.cse308.sbuify.security.SecurityUtils;
 
-@WebServlet(name = "LoginServlet", description = "Log in/out Servlet", urlPatterns = { "/log" })
+//@WebServlet(name = "LoginServlet", description = "Log in/out Servlet", urlPatterns = { "/log" })
 public class LoginServlet extends HttpServlet {
 	/**
 	 * 

@@ -42,4 +42,5 @@ public class UserController {
         // TODO: return JWT on success
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
 }
