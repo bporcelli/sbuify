@@ -1,7 +1,8 @@
 package com.cse308.sbuify.domain;
 
+import com.cse308.sbuify.user.Customer;
+
 import javax.persistence.Entity;
-import javax.persistence.Table;
 
 import java.io.Serializable;
 

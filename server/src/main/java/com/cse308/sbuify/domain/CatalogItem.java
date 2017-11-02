@@ -1,5 +1,7 @@
 package com.cse308.sbuify.domain;
 
+import com.cse308.sbuify.user.User;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;

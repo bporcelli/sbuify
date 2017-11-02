@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cse308.sbuify.domain.Preference;
+import com.cse308.sbuify.user.Preferences;
 
 @Controller
 @RequestMapping(path = "/customers/{id}/preferences")
@@ -19,13 +19,15 @@ public class PreferenceController {
 	private PreferenceRepository preferenceRepo;
 	
 	@GetMapping
-	public @ResponseBody Preference findById(@PathVariable int id) {
-		Preference pref = new Preference();
+	public @ResponseBody
+	Preferences findById(@PathVariable int id) {
+		Preferences pref = new Preferences();
 		return pref;
 	}
 	
 	@PatchMapping
-	public @ResponseBody Preference updateById(@PathVariable int id) {
+	public @ResponseBody
+	Preferences updateById(@PathVariable int id) {
 		//TODO
 		return null;
 	}

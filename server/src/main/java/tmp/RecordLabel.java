@@ -1,9 +1,7 @@
 package tmp;
 
 
-import org.hibernate.annotations.ManyToAny;
-
-import com.cse308.sbuify.domain.User;
+import com.cse308.sbuify.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,23 +9,23 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-/*
-    Record Label entity: Subclass of User
-    Responsible for artist operations
-
+/**
+ * Entity representing a Record Label.
  */
-
 @Entity
 @DiscriminatorValue(value = "recordlabel")
 public class RecordLabel extends User implements Serializable{
     @NotNull
     private String name;
 
-    @ElementCollection(targetClass= Artist.class)
-    @OneToMany(
-            cascade = CascadeType.ALL
-    )
+    @ElementCollection(targetClass = Artist.class)
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Artist> artists = new HashSet<>();
+
+    public RecordLabel(@NotNull String email, @NotNull String password, @NotNull String name) {
+        super(email, password);
+        this.name = name;
+    }
 
     public String getName() {
         return name;
@@ -37,7 +35,6 @@ public class RecordLabel extends User implements Serializable{
         this.name = name;
     }
 
-
     public Set<Artist> getArtists() {
         return artists;
     }
@@ -45,4 +42,5 @@ public class RecordLabel extends User implements Serializable{
     public void setArtists(Set<Artist> artists) {
         this.artists = artists;
     }
+
 }

@@ -3,12 +3,24 @@ package com.cse308.sbuify;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @SpringBootApplication
 public class SBUifyApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SBUifyApplication.class, args);
+	/**
+	 * Bean to create instances of BCryptPasswordEncoder.
+	 * @return BCryptPasswordEncoder
+	 */
+	@Bean
+	public BCryptPasswordEncoder bCryptPasswordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
+
+	public static void main(String[] args) {
+	    SpringApplication.run(SBUifyApplication.class, args);
+	}
+
 }

@@ -1,4 +1,4 @@
-package com.cse308.sbuify.domain;
+package com.cse308.sbuify.user;
 
 
 
@@ -6,11 +6,12 @@ import javax.persistence.*;
 
 import com.cse308.sbuify.enums.Language;
 import com.cse308.sbuify.enums.RepeatMode;
+import com.cse308.sbuify.user.Customer;
 
 import java.io.Serializable;
 
 @Entity
-public class Preference implements Serializable{
+public class Preferences implements Serializable{
     @Id
     private Integer id;
     @Enumerated(EnumType.STRING)

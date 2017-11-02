@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cse308.sbuify.domain.Admin;
+import com.cse308.sbuify.user.Admin;
 import com.cse308.sbuify.repository.AdminRepository;
 
 @Controller
@@ -53,13 +53,13 @@ public class AdminController {
 	
 	@DeleteMapping(path = "/{id}")
 	public @ResponseBody Admin deleteById(@PathVariable int id) {
-		Admin tmp = new Admin();
+		Admin tmp = new Admin("test.admin@email.com", "123", "Test", "Admin", false);
 		return tmp;
 	}
 
 	@PatchMapping(path = "/{id}")
 	public @ResponseBody Admin patchById(@PathVariable int id) {
-		Admin tmp = new Admin();
-		return tmp;
+//		Admin tmp = new Admin();
+		return null;
 	}
 }

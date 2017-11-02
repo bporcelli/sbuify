@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.cse308.sbuify.domain.User;
-import com.cse308.sbuify.repository.UserRepository;
-import com.cse308.sbuify.utils.SecurityUtils;
+import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.UserRepository;
+import com.cse308.sbuify.security.SecurityUtils;
 
 @WebServlet(name = "LoginServlet", description = "Log in/out Servlet", urlPatterns = { "/log" })
 public class LoginServlet extends HttpServlet {
@@ -46,9 +46,9 @@ public class LoginServlet extends HttpServlet {
 
 		User user = userOptional.get();
 
-		String trueHashPw = user.getHashPassword();
+		String trueHashPw = user.getPassword();
 
-		String hashed = SecurityUtils.hash(attemptingUser.getHashPassword());
+		String hashed = SecurityUtils.hash(attemptingUser.getPassword());
 
 		if (trueHashPw != hashed) {
 			return "invalid credentials";
