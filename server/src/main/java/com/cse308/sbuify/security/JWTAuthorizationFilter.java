@@ -6,6 +6,8 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -14,6 +16,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.cse308.sbuify.security.SecurityConstants.HEADER_NAME;
 import static com.cse308.sbuify.security.SecurityConstants.HEADER_PREFIX;
@@ -57,15 +61,22 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
      * If parsing fails, an exception will be thrown and handled by the default AccessDeniedHandler.
      */
     private UsernamePasswordAuthenticationToken getAuthenticationToken(String header) {
-        String email = Jwts.parser()
+        Claims body = Jwts.parser()
                                 .setSigningKey(SECRET.getBytes())
                                 .parseClaimsJws(header.replace(HEADER_PREFIX, ""))
-                                .getBody()
-                                .getSubject();
+                                .getBody();
+
+        String email = body.getSubject();
 
         if (email != null) {
-            // TODO: set GrantedAuthorities based on user role
-            return new UsernamePasswordAuthenticationToken(email, null, emptyList());
+            // TODO: NEED TO SUPPLY AUTHORITIES HERE?
+            List<GrantedAuthority> scopes = new ArrayList<>();
+
+            for (String str: (ArrayList<String>) body.get("scopes")) {
+                scopes.add(new SimpleGrantedAuthority(str));
+            }
+
+            return new UsernamePasswordAuthenticationToken(email, null, scopes);
         }
 
         return null;

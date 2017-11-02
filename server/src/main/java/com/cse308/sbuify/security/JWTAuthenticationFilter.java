@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -15,6 +16,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
 
 import static com.cse308.sbuify.security.SecurityConstants.*;
 import static java.util.Collections.emptyList;
@@ -71,10 +75,17 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
 
-        // Build JWT with JJWT
-        // TODO: what other claims should be included?
+        // Get scopes/roles for principal
+        ArrayList<String> scopes = new ArrayList<>();
+
+        for (GrantedAuthority auth: principal.getAuthorities()) {
+            scopes.add(auth.toString());
+        }
+
+        // Build JWT with JJWT. Additional claims can be added to the token here.
         String token = Jwts.builder()
                                 .setSubject(principal.getUsername())
+                                .claim("scopes", scopes)
                                 .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
                                 .compact();
 

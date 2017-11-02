@@ -4,6 +4,7 @@ import com.cse308.sbuify.user.Admin;
 import com.cse308.sbuify.user.Customer;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Before;
@@ -16,20 +17,22 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import static com.cse308.sbuify.security.SecurityConstants.HEADER_NAME;
 import static com.cse308.sbuify.security.SecurityConstants.HEADER_PREFIX;
 import static com.cse308.sbuify.security.SecurityConstants.SECRET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
@@ -63,18 +66,16 @@ public class SBUifyApplicationTests {
         try {
             Date birthday = format.parse("06/04/1996");
 
-            Customer customer = new Customer("test.email@test.com", "123", "John",
-                                             "Doe", birthday);
+            User customer = new Customer("test.email@test.com", "123", "John", "Doe",
+                                         birthday);
 
-            ResponseEntity<Void> response = restTemplate.postForEntity("http://localhost:" + port + "/api/users",
-                                                                        customer, Void.class);
+            ResponseEntity<Void> response = sendRegisterRequest(customer);
 
             // Expect success
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
             // If we try again with the same email, we should get a CONFLICT response
-            response = restTemplate.postForEntity("http://localhost:" + port + "/api/users",
-                                                    customer, Void.class);
+            response = sendRegisterRequest(customer);
 
             assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         } catch (ParseException ex) {
@@ -90,48 +91,98 @@ public class SBUifyApplicationTests {
         Admin admin = new Admin("test.admin@test.com", "123", "Test",
                                 "Admin", false);
 
-        ResponseEntity<Void> response = restTemplate.postForEntity("http://localhost:" + port + "/api/users",
-                                                                    admin, Void.class);
+        ResponseEntity<Void> response = sendRegisterRequest(admin);
 
         // Expect success
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
 
     /**
-     * Test user authentication.
+     * Test Customer authentication.
      */
     @Test
-    public void authenticationSucceeds() {
+    public void customerAuthenticationSucceeds() {
         // Create user
         Customer dummyCust = new Customer("test.customer@test.com", "12345", "Jane",
                                          "Doe", null);
 
-        dummyCust.setPassword(passwordEncoder.encode(dummyCust.getPassword()));
+        registerUser(dummyCust);
 
-        userRepository.save(dummyCust);
+        // Authentication should succeed with a valid password
+        ResponseEntity<Void> response = sendLoginRequest(dummyCust);
 
-        // Reset password to plaintext (expected during auth)
-        dummyCust.setPassword("12345");
+        assert(tokenValid(response.getHeaders().getFirst(HEADER_NAME), dummyCust));
 
-        // Attempt authentication with correct password
-        ResponseEntity<Void> response = restTemplate.postForEntity("http://localhost:" + port + "/api/login",
-                                                                   dummyCust, Void.class);
-
-        String token = Jwts.builder()
-                                .setSubject(dummyCust.getEmail())
-                                .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
-                                .compact();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(HEADER_PREFIX + token, response.getHeaders().getFirst(HEADER_NAME));
-
-        // Attempt again with invalid password
+        // Authentication should fail with an invalid password
         dummyCust.setPassword("invalid");
 
-        response = restTemplate.postForEntity("http://localhost:" + port + "/api/login",
-                                               dummyCust, Void.class);
+        response = sendLoginRequest(dummyCust);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
+
+    /**
+     * Test Admin authentication.
+     */
+    @Test
+    public void adminAuthenticationSucceeds() {
+        // Create admin
+        Admin admin = new Admin("test.admin@gmail.com", "123", "Test", "Admin",
+                                false);
+        registerUser(admin);
+
+        // Attempt authentication
+        ResponseEntity<Void> response = sendLoginRequest(admin);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assert(tokenValid(response.getHeaders().getFirst(HEADER_NAME), admin));
+    }
+
+    /**
+     * Helper: save a user and return the saved user instance.
+     *
+     * @return User
+     */
+    private User registerUser(User user) {
+        String originalPassword = user.getPassword();
+        user.setPassword(passwordEncoder.encode(originalPassword));
+        userRepository.save(user);
+        user.setPassword(originalPassword);
+        return user;
+    }
+
+    /**
+     * Helper: send a registration request and return the response.
+     */
+    private ResponseEntity<Void> sendRegisterRequest(User user) {
+        return restTemplate.postForEntity("http://localhost:" + port + "/api/users",
+                                          user, Void.class);
+    }
+
+    /**
+     * Helper: send a login request and return the response.
+     */
+    private ResponseEntity<Void> sendLoginRequest(User user) {
+        return restTemplate.postForEntity("http://localhost:" + port + "/api/login",
+                                          user, Void.class);
+    }
+
+    /**
+     * Helper: check whether token is valid for user.
+     */
+    private boolean tokenValid(String token, User user) {
+        Claims claims = Jwts.parser()
+                                .setSigningKey(SECRET.getBytes())
+                                .parseClaimsJws(token.replace(HEADER_PREFIX, ""))
+                                .getBody();
+
+        String email = claims.getSubject();
+        ArrayList<String> scopes = (ArrayList<String>) claims.get("scopes");
+
+        boolean emailMatches = user.getEmail().equals(email);
+        boolean roleMatches = scopes.equals(Arrays.asList(user.getRole()));
+
+        return emailMatches && roleMatches;
     }
 
 }

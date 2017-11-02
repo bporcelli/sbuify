@@ -1,13 +1,21 @@
 package com.cse308.sbuify.security;
 
+import com.cse308.sbuify.user.Admin;
+import com.cse308.sbuify.user.Customer;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import tmp.RecordLabel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
@@ -33,8 +41,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         User user = result.get();
 
-        // TODO: set GrantedAuthorities based on user role
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), emptyList());
+        return new org.springframework.security.core.userdetails.User(user.getEmail(),
+                                                                      user.getPassword(),
+                                                                      getAuthorities(user));
+    }
+
+    /**
+     * Get a list of GrantedAuthorities for a given user instance.
+     */
+    private Collection<GrantedAuthority> getAuthorities(User user) {
+        return Arrays.asList(new SimpleGrantedAuthority(user.getRole()));
     }
 
 }

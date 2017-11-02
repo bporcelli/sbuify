@@ -2,6 +2,7 @@ package tmp;
 
 
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ import java.util.Set;
  */
 @Entity
 @DiscriminatorValue(value = "recordlabel")
-public class RecordLabel extends User implements Serializable{
+public class RecordLabel extends User implements Serializable {
     @NotNull
     private String name;
 
@@ -43,4 +44,9 @@ public class RecordLabel extends User implements Serializable{
         this.artists = artists;
     }
 
+    @JsonIgnore
+    @Override
+    public String getRole() {
+        return "ROLE_LABEL";
+    }
 }

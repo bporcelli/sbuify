@@ -1,6 +1,7 @@
 package com.cse308.sbuify.user;
 
 import com.cse308.sbuify.domain.Image;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -16,7 +17,6 @@ import java.io.Serializable;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "user_type")
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Customer.class, name = "customer"),
@@ -81,5 +81,11 @@ public abstract class User implements Serializable {
     public void setProfileImage(Image profileImage) {
         this.profileImage = profileImage;
     }
+
+    /**
+     * Return the role name that corresponds to this User instance, e.g. "ROLE_CUSTOMER."
+     */
+    @JsonIgnore
+    public abstract String getRole();
 
 }

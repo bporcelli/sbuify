@@ -1,6 +1,6 @@
 package com.cse308.sbuify.user;
 
-import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -50,4 +50,11 @@ public class Admin extends User implements Serializable{
     public void setSuperAdmin(boolean superAdmin) {
         isSuperAdmin = superAdmin;
     }
+
+    @JsonIgnore
+    @Override
+    public String getRole() {
+        return "ROLE_ADMIN";
+    }
+
 }
