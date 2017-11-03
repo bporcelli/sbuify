@@ -1,7 +1,7 @@
 import { Component, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { config } from '../config';
+import { Config } from '../config';
 
 import { Customer } from "../user/customer";
 import { UserService } from "../user/user.service";
@@ -15,29 +15,53 @@ export class RegisterComponent {
   errorMessage: String = "";
 
   // Max birthday year
-  maxYear: number = new Date().getFullYear() - config['MIN_AGE'];
+  maxYear: number = this.getMaxBirthYear();
 
   // Form model
-  model = new Customer("", "", "", "", new Date(this.maxYear, 0));
+  model = this.getDefaultCustomer();
 
   @Output('verifyPassword') verifyPassword: string = "";
 
   constructor(private userService: UserService,
               private router: Router) {}
 
-  // Handle form submissions
+  /**
+   * Handle form submissions.
+   */
   onSubmit() {
+    let _this = this;
+
     this.errorMessage = "";
 
     this.userService.register(this.model, function() {
       // TODO: pass special route param so we can display a success message on the login page
-      this.router.navigate(['/login']);
+      console.log('this:', _this);
+      _this.router.navigate(['/login']);
     }, function() {
-      this.errorMessage = "Your email address is already in use. Please try again.";
+      _this.errorMessage = "Your email address is already in use. Please try again.";
     });
   }
 
-  // Getters and setters
+  /**
+   * Compute maximum birth year based on minimum age.
+   * @returns {number}
+   */
+  getMaxBirthYear(): number {
+    return new Date().getFullYear() - Config.MIN_AGE;
+  }
+
+  /**
+   * Get the default Customer model.
+   * @returns Customer
+   */
+  getDefaultCustomer(): Customer {
+    return new Customer("", "", "", "", new Date(this.maxYear, 0));
+  }
+
+
+  /**
+   * Getters and setters.
+   */
   @Output('birthYear')
   get birthYear() {
     return this.model.birthday.getFullYear();
