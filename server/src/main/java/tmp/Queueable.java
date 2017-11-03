@@ -1,8 +1,9 @@
 package tmp;
 
+import com.cse308.sbuify.music.Song;
+
 import java.util.Collection;
-import java.util.Collections;
 
 public interface Queueable {
-    public Collection<Song> getItems();
+    Collection<Song> getItems();
 }

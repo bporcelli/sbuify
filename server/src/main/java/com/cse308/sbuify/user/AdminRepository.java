@@ -1,4 +1,4 @@
-package com.cse308.sbuify.repository;
+package com.cse308.sbuify.user;
 
 import org.springframework.data.repository.CrudRepository;
 

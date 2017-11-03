@@ -2,16 +2,13 @@ package com.cse308.sbuify.user;
 
 
 import com.cse308.sbuify.domain.CustomerSubscription;
-import com.cse308.sbuify.domain.Library;
+import com.cse308.sbuify.playlist.Library;
 import com.cse308.sbuify.domain.PlayQueue;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
 @Entity

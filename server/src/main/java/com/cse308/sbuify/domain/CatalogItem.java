@@ -2,12 +2,9 @@ package com.cse308.sbuify.domain;
 
 import com.cse308.sbuify.user.User;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -16,19 +13,25 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class CatalogItem implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
+    @NotEmpty
     private String name;
+
+    @NotNull
     private LocalDateTime dateCreation;
+
+    @NotNull
     private Boolean isActive;
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @NotNull
     private User Owner;
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+//    @OneToOne(
+//            cascade = CascadeType.ALL,
+//            orphanRemoval = true
+//    )
     private Image image;
 
     public Integer getId() {

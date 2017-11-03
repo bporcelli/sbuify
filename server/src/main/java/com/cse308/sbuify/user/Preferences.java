@@ -3,6 +3,7 @@ package com.cse308.sbuify.user;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.enums.Language;
 import com.cse308.sbuify.enums.RepeatMode;
@@ -16,17 +17,21 @@ public class Preferences implements Serializable{
     private Integer id;
     @Enumerated(EnumType.STRING)
     private Language selectedLanguage;
+
+    @NotNull
     private Boolean isHdStreaming;
+
+    @NotNull
     private Boolean isPrivateSession;
+
+    @NotNull
     private Boolean showActivityFeed;
+
+    @NotNull
     private Boolean isShuffling;
+
     @Enumerated(EnumType.STRING)
     private RepeatMode repeatMode;
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private Customer customer;
 
     public Integer getId() {
         return id;
@@ -84,11 +89,5 @@ public class Preferences implements Serializable{
         this.repeatMode = repeatMode;
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
 }

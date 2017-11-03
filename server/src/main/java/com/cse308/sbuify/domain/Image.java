@@ -1,9 +1,7 @@
 package com.cse308.sbuify.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 import com.cse308.sbuify.enums.ImageSize;
 
@@ -13,8 +11,12 @@ import java.io.Serializable;
 public class Image implements Serializable{
     @Id
     private Integer id;
+
+    @NotEmpty
     private String path;
+
     @Enumerated(EnumType.STRING)
+//    @OneToOne(fetch = FetchType.LAZY)
     private ImageSize size;
 
     public Integer getId() {

@@ -1,9 +1,10 @@
-package tmp;
+package com.cse308.sbuify.domain;
+
+import com.cse308.sbuify.music.Album;
+import com.cse308.sbuify.music.Song;
 
 import javax.persistence.*;
-
-import com.cse308.sbuify.domain.CatalogItem;
-import com.cse308.sbuify.domain.Image;
+import javax.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -12,13 +13,15 @@ import java.util.Set;
 
 @Entity
 public class Artist extends CatalogItem implements Serializable {
+
+    @NotNull
     private Integer musicBrainzId;
     @ElementCollection(targetClass=Artist.class)
-    private Set<Artist> relatedArtists = new  HashSet<Artist>();
+    private Set<Artist> relatedArtists = new  HashSet<>();
     @ElementCollection(targetClass=Song.class)
-    private Set<Song> popularSongs = new HashSet<Song>();
+    private Set<Song> popularSongs = new HashSet<>();
     private Integer monthlyListeners;
-    @ElementCollection(targetClass=Product.class)
+    @ElementCollection(targetClass= Product.class)
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true
@@ -28,6 +31,7 @@ public class Artist extends CatalogItem implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @MapsId
     private Biography bio;
 
     @OneToOne(
@@ -36,17 +40,12 @@ public class Artist extends CatalogItem implements Serializable {
     )
     private Image coverImage;
 
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToOne()
+    @MapsId
     private RecordLabel recordLabel;
 
-    @ElementCollection(targetClass=Album.class)
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @ElementCollection(targetClass= Album.class)
+    @OneToMany()
     private List<Album> albums;
 
     public Integer getMusicBrainzId() {

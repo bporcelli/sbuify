@@ -1,7 +1,5 @@
 package com.cse308.sbuify.security;
 
-import com.cse308.sbuify.user.Admin;
-import com.cse308.sbuify.user.Customer;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +9,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import tmp.RecordLabel;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
-
-import static java.util.Collections.emptyList;
 
 /**
  * User Details Service.
