@@ -1,7 +1,7 @@
 import { Component, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { config } from '../common/config';
+import { config } from '../config';
 
 import { Customer } from "../user/customer";
 import { UserService } from "../user/user.service";
