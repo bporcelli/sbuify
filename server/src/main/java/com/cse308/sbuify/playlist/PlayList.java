@@ -1,10 +1,10 @@
-package com.cse308.sbuify.domain;
+package com.cse308.sbuify.playlist;
+
+import com.cse308.sbuify.domain.CatalogItem;
+import com.cse308.sbuify.music.Song;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import tmp.Song;
 
 import java.io.Serializable;
 import java.util.List;

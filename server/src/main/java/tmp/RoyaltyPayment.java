@@ -2,6 +2,7 @@ package tmp;
 
 import javax.persistence.*;
 
+import com.cse308.sbuify.domain.RecordLabel;
 import com.cse308.sbuify.enums.PaymentStatus;
 
 import java.io.Serializable;

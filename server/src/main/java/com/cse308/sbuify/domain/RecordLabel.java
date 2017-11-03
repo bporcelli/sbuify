@@ -1,6 +1,7 @@
-package tmp;
+package com.cse308.sbuify.domain;
 
 
+import com.cse308.sbuify.domain.Artist;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,11 +17,12 @@ import java.util.Set;
 @Entity
 @DiscriminatorValue(value = "recordlabel")
 public class RecordLabel extends User implements Serializable {
+
     @NotNull
     private String name;
 
     @ElementCollection(targetClass = Artist.class)
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany
     private Set<Artist> artists = new HashSet<>();
 
     public RecordLabel(@NotNull String email, @NotNull String password, @NotNull String name) {

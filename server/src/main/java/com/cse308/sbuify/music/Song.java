@@ -1,10 +1,12 @@
-package tmp;
+package com.cse308.sbuify.music;
 
 
 import javax.persistence.*;
 
+import com.cse308.sbuify.domain.Artist;
 import com.cse308.sbuify.domain.CatalogItem;
 import com.cse308.sbuify.enums.Genre;
+import tmp.Queueable;
 
 import java.io.Serializable;
 import java.util.Collection;

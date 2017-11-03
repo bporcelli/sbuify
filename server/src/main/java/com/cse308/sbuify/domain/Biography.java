@@ -1,9 +1,7 @@
-package tmp;
+package com.cse308.sbuify.domain;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 import com.cse308.sbuify.domain.Image;
 
@@ -14,8 +12,16 @@ import java.util.List;
 
 public class Biography implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
+    @NotEmpty
     private String bio;
+
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @ElementCollection(targetClass=Image.class)
     private List<Image> images;
 

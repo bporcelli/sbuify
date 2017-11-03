@@ -4,8 +4,9 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import com.cse308.sbuify.music.Song;
 import com.cse308.sbuify.user.Customer;
-import com.cse308.sbuify.domain.PlayList;
+import com.cse308.sbuify.playlist.PlayList;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
