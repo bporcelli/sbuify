@@ -429,6 +429,11 @@ ul.artist-list a.artist-name {
 }
 
 // Login page
+.login {
+  height: calc(100vh - 60px);
+  overflow-y: scroll;
+}
+
 .form-heading {
     @extend .display-4, .text-center, .mb-5;
 }
@@ -451,10 +456,6 @@ ul#loginActions {
 
 legend {
     font-weight: 300;
-}
-
-.ng-recaptcha > div {
-    @extend .mt-2, .mx-auto;
 }
 
 // Search Results
@@ -536,6 +537,25 @@ textarea#description {
     content: "12s";
     margin-right: -25px;
     padding-left: 5px;
+}
+
+// Forms
+.ng-touched {
+  &.ng-valid {
+    &[required], &.required {
+      @extend .is-valid;
+    }
+  }
+
+  &.ng-invalid:not(form) {
+    @extend .is-invalid;
+  }
+}
+
+.form-error {
+  border-bottom: 2px solid #dc3545;
+  padding: map-get($spacers, 2) 0;
+  text-transform: uppercase;
 }
 
 // Responsive

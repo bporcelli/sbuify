@@ -19,7 +19,7 @@ export class AppComponent {
         if ( this.authService.isAuthed() ) {
             return 'col-md-9 col-xl-10 content-wrapper main-content';
         } else {
-            return 'col-xs-12 col-md-6 col-lg-4 col-xl-3 mx-auto';
+            return 'col-xs-12 col-md-6 col-lg-5 col-xl-4 mx-auto';
         }
     }
 }

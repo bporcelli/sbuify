@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { RecaptchaModule } from 'ng-recaptcha';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -31,7 +30,6 @@ import { AuthGuard } from './auth-guard.service';
     ],
     imports: [
         NgbModule.forRoot(),
-        RecaptchaModule.forRoot(),
         BrowserModule,
         CommonModule,
         HttpClientModule,

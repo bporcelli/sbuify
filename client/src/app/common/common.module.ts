@@ -18,7 +18,7 @@ import { CreatePlaylistComponent } from './create-playlist.component';
         PlaybarComponent,
         LeftSidebarComponent,
         UpgradeAccountComponent,
-        CreatePlaylistComponent,
+        CreatePlaylistComponent
     ],
     imports: [
         CommonRoutingModule,
@@ -29,7 +29,7 @@ import { CreatePlaylistComponent } from './create-playlist.component';
     exports: [
         NavbarComponent,
         PlaybarComponent,
-        LeftSidebarComponent,
+        LeftSidebarComponent
     ]
 })
 export class CommonModule {}
