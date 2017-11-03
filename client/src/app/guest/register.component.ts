@@ -1,8 +1,10 @@
 import { Component, Output } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { config } from '../common/config';
 
 import { Customer } from "../user/customer";
+import { UserService } from "../user/user.service";
 
 @Component({
     templateUrl: './register.component.html',
@@ -20,6 +22,22 @@ export class RegisterComponent {
 
   @Output('verifyPassword') verifyPassword: string = "";
 
+  constructor(private userService: UserService,
+              private router: Router) {}
+
+  // Handle form submissions
+  onSubmit() {
+    this.errorMessage = "";
+
+    this.userService.register(this.model, function() {
+      // TODO: pass special route param so we can display a success message on the login page
+      this.router.navigate(['/login']);
+    }, function() {
+      this.errorMessage = "Your email address is already in use. Please try again.";
+    });
+  }
+
+  // Getters and setters
   @Output('birthYear')
   get birthYear() {
     return this.model.birthday.getFullYear();
@@ -50,9 +68,4 @@ export class RegisterComponent {
     this.model.birthday.setDate(date);
   }
 
-  // Process form submissions
-  onSubmit() {
-    // todo: inject user service; call register method to register user; navigate to login on success
-    this.errorMessage = "Test";
-  }
 }

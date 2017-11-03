@@ -19,6 +19,7 @@ import { SearchModule } from './search/search.module';
 import { GuestModule } from './guest/guest.module';
 import { ConcertsModule } from './concerts/concerts.module';
 import { SettingsModule } from './settings/settings.module';
+import { UserModule } from './user/user.module';
 
 import { AuthService } from './auth.service';
 import { PlaylistService } from './playlist.service';
@@ -42,6 +43,7 @@ import { AuthGuard } from './auth-guard.service';
         GuestModule,
         ConcertsModule,
         SettingsModule,
+        UserModule,
         AppRoutingModule
     ],
     providers: [
