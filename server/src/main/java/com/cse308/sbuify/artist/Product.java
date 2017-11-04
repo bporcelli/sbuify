@@ -5,11 +5,14 @@ import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
 public class Product implements Serializable {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @NotEmpty
@@ -23,7 +26,7 @@ public class Product implements Serializable {
 
 
     @OneToOne(fetch = FetchType.LAZY)
-    @NotNull
+    @PrimaryKeyJoinColumn
     private Artist artist;
 
 

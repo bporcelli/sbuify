@@ -21,18 +21,15 @@ public class Artist extends CatalogItem implements Serializable {
     @Column(unique = true)
     private Integer musicBrainzId;
 
-    @ElementCollection(targetClass=Artist.class)
     @OneToMany
     private Set<Artist> relatedArtists = new  HashSet<>();
 
-    @ElementCollection(targetClass=Song.class)
     @OneToMany
     private Set<Song> popularSongs = new HashSet<>();
 
     @NotNull
     private Integer monthlyListeners;
 
-    @ElementCollection(targetClass= Product.class)
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true
@@ -43,7 +40,7 @@ public class Artist extends CatalogItem implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @MapsId
+    @PrimaryKeyJoinColumn
     private Biography bio;
 
     @OneToOne(
@@ -53,7 +50,7 @@ public class Artist extends CatalogItem implements Serializable {
     private Image coverImage;
 
     @OneToOne()
-    @MapsId
+    @PrimaryKeyJoinColumn
     private RecordLabel recordLabel;
 
     @OneToMany()

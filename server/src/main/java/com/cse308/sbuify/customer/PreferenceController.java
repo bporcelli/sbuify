@@ -18,14 +18,14 @@ public class PreferenceController {
 	
 	@GetMapping
 	public @ResponseBody
-	ObsoletePreferences findById(@PathVariable int id) {
-		ObsoletePreferences pref = new ObsoletePreferences();
+	Preferences findById(@PathVariable int id) {
+		Preferences pref = new Preferences();
 		return pref;
 	}
 	
 	@PatchMapping
 	public @ResponseBody
-	ObsoletePreferences updateById(@PathVariable int id) {
+	Preferences updateById(@PathVariable int id) {
 		//TODO
 		return null;
 	}

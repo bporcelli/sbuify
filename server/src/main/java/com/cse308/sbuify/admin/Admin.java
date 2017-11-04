@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -12,20 +13,23 @@ import java.io.Serializable;
 @DiscriminatorValue(value = "admin")
 public class Admin extends User implements Serializable{
 
+    @NotEmpty
     private String firstName;
 
+    @NotEmpty
     private String lastName;
 
-    private boolean isSuperAdmin;
+
+    private Boolean superAdmin;
 
     // Must include no-arg constructor to satisfy Jackson
     public Admin() {}
 
-    public Admin(@NotNull String email, @NotNull String password, String firstName, String lastName, boolean isSuperAdmin) {
+    public Admin(@NotNull String email, @NotNull String password, String firstName, String lastName, boolean superAdmin) {
         super(email, password);
         this.firstName = firstName;
         this.lastName = lastName;
-        this.isSuperAdmin = isSuperAdmin;
+        this.superAdmin = superAdmin;
     }
 
     public String getFirstName() {
@@ -45,11 +49,11 @@ public class Admin extends User implements Serializable{
     }
 
     public boolean getSuperAdmin() {
-        return isSuperAdmin;
+        return superAdmin;
     }
 
     public void setSuperAdmin(boolean superAdmin) {
-        isSuperAdmin = superAdmin;
+        this.superAdmin = superAdmin;
     }
 
     @JsonIgnore
