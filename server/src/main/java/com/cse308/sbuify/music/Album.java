@@ -10,7 +10,7 @@ import tmp.Queueable;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 
 @Entity
 public class Album extends CatalogItem implements Queueable, Serializable {
@@ -27,13 +27,20 @@ public class Album extends CatalogItem implements Queueable, Serializable {
     @OneToOne
     @MapsId
     private Artist artist;
+
     @OneToMany
-    @ElementCollection(targetClass=Song.class)
-    private List<Song> songs;
+    private HashSet<Song> songs;
 
     @Override
-    @ElementCollection(targetClass=Song.class)
     public Collection<Song> getItems() {
-        return null;
+        return this.songs;
+    }
+
+    public void addSong(Song song) {
+        // todo
+    }
+
+    public void removeSong(Song song) {
+        // todo
     }
 }

@@ -83,6 +83,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
 
         // Build JWT with JJWT. Additional claims can be added to the token here.
+        // todo: add user id to claims
         String token = Jwts.builder()
                                 .setSubject(principal.getUsername())
                                 .claim("scopes", scopes)

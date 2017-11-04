@@ -70,7 +70,7 @@ public abstract class CatalogItem implements Serializable {
         this.dateCreation = dateCreation;
     }
 
-    public Boolean getActive() {
+    public Boolean isActive() {
         return active;
     }
 
