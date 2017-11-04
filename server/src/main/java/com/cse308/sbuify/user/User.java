@@ -87,6 +87,14 @@ public abstract class User implements Serializable {
         this.profileImage = profileImage;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     /**
      * Return the role name that corresponds to this User instance, e.g. "ROLE_CUSTOMER."
      */

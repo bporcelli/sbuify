@@ -18,7 +18,6 @@ import java.util.List;
 @Entity
 public class Playlist extends CatalogItem {
 
-    @NotNull
     private String description;
 
     @NotNull
@@ -39,7 +38,7 @@ public class Playlist extends CatalogItem {
         super(name, dateCreation, active, owner, image);
     }
 
-    public Playlist(@NotEmpty String name, @NotNull LocalDateTime dateCreation, @NotNull Boolean active, @NotNull User owner, Image image, @NotNull String description, @NotNull Boolean isPrivate, @NotNull Integer numSongs, List<Song> songs) {
+    public Playlist(@NotEmpty String name, @NotNull LocalDateTime dateCreation, @NotNull Boolean active, @NotNull User owner, Image image, String description, @NotNull Boolean isPrivate, @NotNull Integer numSongs, List<Song> songs) {
         super(name, dateCreation, active, owner, image);
         this.description = description;
         this.isPrivate = isPrivate;

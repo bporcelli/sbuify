@@ -1,6 +1,8 @@
 package com.cse308.sbuify.user;
 
-import com.cse308.sbuify.security.SecurityUtils;
+import com.cse308.sbuify.customer.*;
+import com.cse308.sbuify.playlist.Library;
+import com.cse308.sbuify.playlist.LibraryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -18,6 +22,15 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LibraryRepository libraryRepository;
+
+    @Autowired
+    private PlayQueueRepository playQueueRepository;
+
+    @Autowired
+    private PreferenceRepository preferenceRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -43,7 +56,53 @@ public class UserController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
+        if (user instanceof Customer){
+            initCustomer((Customer)user);
+
+        }
+
         return new ResponseEntity<>("{}", HttpStatus.CREATED);
     }
 
+    /*
+        Create init Customer
+
+     */
+    private boolean initCustomer(Customer customer){
+        try{
+            // init customer library
+            Library library = new Library(customer);
+            customer.setLibrary(library);
+
+            libraryRepository.save(library);
+
+            //init playqueue
+
+            PlayQueue playQueue = new PlayQueue(customer);
+            customer.setPlayQueue(playQueue);
+            playQueueRepository.save(playQueue);
+            //
+
+            List<Preference> preferences = new ArrayList<>();
+
+            Preference preference =  new Preference("Language", "EN-US");
+            Preference preference2 =  new Preference("HQ-Streaming", "OFF");
+            preferences.add(preference);
+            preferences.add(preference2);
+            customer.setPreferences(preferences);
+            preferenceRepository.saveAll(preferences);
+
+            //
+
+            userRepository.save(customer);
+            return true;
+        } catch (Exception E){
+            return false;
+        }
+
+
+
+
+
+    }
 }

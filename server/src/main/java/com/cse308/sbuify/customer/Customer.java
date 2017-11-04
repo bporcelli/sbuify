@@ -105,6 +105,7 @@ public class Customer extends User {
         this.preferences = preferences;
     }
 
+
     @JsonIgnore
     @Override
     public String getRole() {
