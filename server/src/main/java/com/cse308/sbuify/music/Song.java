@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 import com.cse308.sbuify.domain.Artist;
 import com.cse308.sbuify.domain.CatalogItem;
-import com.cse308.sbuify.enums.Genre;
+import com.cse308.sbuify.domain.Genre;
 import tmp.Queueable;
 
 import java.io.Serializable;
@@ -17,7 +17,7 @@ public class Song extends CatalogItem implements Queueable, Serializable {
     private Integer trackNumber;
     private Boolean active;
     @ElementCollection(targetClass = Genre.class)
-    @Enumerated(EnumType.STRING)
+    @OneToMany
     private List<Genre> genres;
     @ElementCollection(targetClass=Artist.class)
     private List<Artist> artists;

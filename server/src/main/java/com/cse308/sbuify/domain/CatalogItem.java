@@ -28,10 +28,10 @@ public abstract class CatalogItem implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @NotNull
     private User Owner;
-//    @OneToOne(
-//            cascade = CascadeType.ALL,
-//            orphanRemoval = true
-//    )
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private Image image;
 
     public Integer getId() {

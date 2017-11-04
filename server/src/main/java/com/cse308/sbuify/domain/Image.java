@@ -16,7 +16,6 @@ public class Image implements Serializable{
     private String path;
 
     @Enumerated(EnumType.STRING)
-//    @OneToOne(fetch = FetchType.LAZY)
     private ImageSize size;
 
     public Integer getId() {

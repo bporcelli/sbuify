@@ -48,6 +48,17 @@ public class Artist extends CatalogItem implements Serializable {
     @OneToMany()
     private List<Album> albums;
 
+    public Artist() {
+    }
+
+    public Artist(@NotNull Integer musicBrainzId, Integer monthlyListeners, Biography bio, Image coverImage, RecordLabel recordLabel) {
+        this.musicBrainzId = musicBrainzId;
+        this.monthlyListeners = monthlyListeners;
+        this.bio = bio;
+        this.coverImage = coverImage;
+        this.recordLabel = recordLabel;
+    }
+
     public Integer getMusicBrainzId() {
         return musicBrainzId;
     }
