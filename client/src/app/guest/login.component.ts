@@ -1,26 +1,36 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthService } from '../auth.service';
+import { UserService } from "../user/user.service";
+import { User } from "../user/user";
+import { AuthService } from "../auth/auth.service";
 
 @Component({
     templateUrl: './login.component.html',
 })
 export class LoginComponent {
-    defaultRedirectURL: string = '/browse/overview';
 
-    constructor(private authService: AuthService,
-                private router: Router) {}
+  errorMessage = "";
 
-    login(e) {
-        e.preventDefault();
+  model = new User("", "", "customer");
 
-        this.authService.login().subscribe(() => {
-            if ( this.authService.isAuthed() ) {
-                let redirect = this.authService.redirectURL ? this.authService.redirectURL : this.defaultRedirectURL;
+  remember: boolean = false;
 
-                this.router.navigate([redirect]);
-            }
-        });
-    }
+  constructor(private userService: UserService,
+              private authService: AuthService,
+              private router: Router) {}
+
+  /**
+   * Form submission handler.
+   */
+  onSubmit() {
+    var _this = this;
+
+    this.userService.authenticate(this.model, function (token: string) {
+      _this.authService.login(token, _this.remember);
+    }, function () {
+      _this.errorMessage = "Username or password invalid. Please try again.";
+    });
+  }
+
 }

@@ -8,15 +8,15 @@ import { MomentModule } from 'angular2-moment';
 import { PlaylistDetailComponent } from './playlist-detail.component';
 import { PlaylistDetailResolver } from './playlist-resolver.service';
 
-import { AuthGuard } from '../auth-guard.service';
+import { AuthGuard } from '../auth/auth-guard.service';
 
 const playlistRoutes: Routes = [
-    { 
-        path: 'playlist/:id', 
-        component: PlaylistDetailComponent, 
+    {
+        path: 'playlist/:id',
+        component: PlaylistDetailComponent,
         canActivate: [ AuthGuard ],
         resolve: {
-            playlist: PlaylistDetailResolver 
+            playlist: PlaylistDetailResolver
         }
     },
 ];

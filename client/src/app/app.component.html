@@ -15,15 +15,9 @@
             </div>
         </main>
         <!-- END CENTER PANE -->
-        
-        <!-- BEGIN RIGHT SIDEBAR -->
-        <div class="d-none d-xl-block col-xl-2 sidebar content-wrapper" id="right-sidebar" *ngIf="authService.isAuthed()">
-            <right-sidebar></right-sidebar>
-        </div>
-        <!-- END RIGHT SIDEBAR -->
     </div>
 </div>
 
 <playbar *ngIf="authService.isAuthed()"></playbar>
 
-<router-outlet name="modal"></router-outlet>
+<router-outlet name="modal" *ngIf="authService.isAuthed()"></router-outlet>

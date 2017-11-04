@@ -9,7 +9,7 @@ import { ArtistResultsComponent } from './artist-results.component';
 import { PlaylistResultsComponent } from './playlist-results.component';
 import { ProfileResultsComponent } from './profile-results.component';
 
-import { AuthGuard } from '../auth-guard.service';
+import { AuthGuard } from '../auth/auth-guard.service';
 
 const searchRoutes: Routes = [
     {

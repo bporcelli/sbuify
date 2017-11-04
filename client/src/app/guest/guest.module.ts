@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
-
-import { RecaptchaModule } from 'ng-recaptcha';
+import { FormsModule } from '@angular/forms';
 
 import { GuestRoutingModule } from './guest-routing.module';
 
@@ -16,7 +15,7 @@ import { ResetPasswordComponent } from './reset-password.component';
     ],
     imports: [
         GuestRoutingModule,
-        RecaptchaModule
+        FormsModule
     ],
 })
 export class GuestModule {}

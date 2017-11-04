@@ -8,7 +8,7 @@ import { GenresComponent } from './genres.component';
 import { NewReleasesComponent } from './new-releases.component';
 import { ConcertsComponent } from '../concerts/concerts.component';
 
-import { AuthGuard } from '../auth-guard.service';
+import { AuthGuard } from '../auth/auth-guard.service';
 
 const browseRoutes: Routes = [
     {

@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { RecaptchaModule } from 'ng-recaptcha';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -20,10 +19,10 @@ import { SearchModule } from './search/search.module';
 import { GuestModule } from './guest/guest.module';
 import { ConcertsModule } from './concerts/concerts.module';
 import { SettingsModule } from './settings/settings.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from "./auth/auth.module";
 
-import { AuthService } from './auth.service';
 import { PlaylistService } from './playlist.service';
-import { AuthGuard } from './auth-guard.service';
 
 @NgModule({
     declarations: [
@@ -31,10 +30,10 @@ import { AuthGuard } from './auth-guard.service';
     ],
     imports: [
         NgbModule.forRoot(),
-        RecaptchaModule.forRoot(),
         BrowserModule,
         CommonModule,
         HttpClientModule,
+        AuthModule,
         BrowseModule,
         ArtistDetailModule,
         PlaylistDetailModule,
@@ -44,12 +43,11 @@ import { AuthGuard } from './auth-guard.service';
         GuestModule,
         ConcertsModule,
         SettingsModule,
+        UserModule,
         AppRoutingModule
     ],
     providers: [
-        AuthService,
-        PlaylistService,
-        AuthGuard
+        PlaylistService
     ],
     bootstrap: [ AppComponent ]
 })

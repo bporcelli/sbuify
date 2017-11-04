@@ -24,6 +24,10 @@ public class UserController {
 
     /**
      * Register a user.
+     *
+     * NOTE: The response body MUST include an empty JSON object or Angular will treat successful responses as errors.
+     * See https://github.com/angular/angular/issues/18680.
+     *
      * @return ResponseEntity<>
      */
     @PostMapping
@@ -39,8 +43,7 @@ public class UserController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
-        // TODO: return JWT on success
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>("{}", HttpStatus.CREATED);
     }
 
 }

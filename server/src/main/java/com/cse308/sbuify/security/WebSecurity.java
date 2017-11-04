@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +28,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
      *
      * Permit all POST requests to LOGIN_URL and SIGN_UP_URL and require authentication for all other requests.
      *
+     * Disable session creation.
+     *
      * @param http
      * @throws Exception
      */
@@ -42,7 +45,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                     .anyRequest().authenticated()
                     .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()));
+                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
     /**

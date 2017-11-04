@@ -1,72 +1,72 @@
 <h1 class="form-heading">Sign Up</h1>
-                
-<form class="login-form" action="login.html">
+
+<form class="login-form" (ngSubmit)="onSubmit()" #registerForm="ngForm">
     <fieldset>
         <legend>Basic Details</legend>
         <div class="form-row form-group">
             <div class="col">
                 <label class="sr-only" for="firstName">First name</label>
-                <input type="text" class="form-control" name="firstName" id="firstName" placeholder="First name">
+                <input type="text" class="form-control" name="firstName" id="firstName" placeholder="First name" required [(ngModel)]="model.firstName">
             </div>
             <div class="col">
                 <label class="sr-only" for="lastName">Last name</label>
-                <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last name">
+                <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last name" required [(ngModel)]="model.lastName">
             </div>
         </div>
         <div class="form-row form-group">
             <div class="col">
                 <label class="sr-only" for="email">Email address</label>
-                <input type="email" class="form-control" name="email" id="email" placeholder="Email address">
+                <input type="email" class="form-control" name="email" id="email" placeholder="Email address" required email [(ngModel)]="model.email">
             </div>
         </div>
     </fieldset>
-    
+
     <fieldset class="form-group">
         <legend>Date of Birth</legend>
         <div class="form-row">
             <div class="col-5">
                 <label class="sr-only" for="birthMonth">Month</label>
-                <select class="form-control" name="birthMonth" id="birthMonth">
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
+                <select class="form-control" name="birthMonth" id="birthMonth" required [(ngModel)]="birthMonth">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
                 </select>
             </div>
             <div class="col-3">
                 <label class="sr-only" for="birthDate">Date</label>
-                <input type="number" class="form-control" name="birthDate" id="birthDate" placeholder="DD" min="1" max="31">
+                <input type="number" class="form-control" name="birthDate" id="birthDate" placeholder="DD" min="1" max="31" required [(ngModel)]="birthDate">
             </div>
             <div class="col-4">
                 <label class="sr-only" for="birthMonth">Year</label>
-                <input type="number" class="form-control" name="birthYear" id="birthYear" placeholder="YYYY" min="1900" max="2004">
+                <input type="number" class="form-control" name="birthYear" id="birthYear" placeholder="YYYY" min="1900" [max]="maxYear" required [(ngModel)]="birthYear">
             </div>
         </div>
     </fieldset>
-    
+
     <fieldset>
         <legend>Password</legend>
         <div class="form-group">
             <label class="sr-only" for="password">Password</label>
-            <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+            <input type="password" class="form-control" name="password" id="password" placeholder="Password" required [(ngModel)]="model.password">
         </div>
         <div class="form-group">
-            <label class="sr-only" for="passwordConfirmation">Confirm password</label>
-            <input type="password" class="form-control" name="passwordConfirmation" id="passwordConfirmation" placeholder="Re-type password">
+            <label class="sr-only" for="verifyPassword">Confirm password</label>
+            <input type="password" class="form-control" name="verifyPassword" id="verifyPassword" placeholder="Re-type password" required pattern="{{ model.password }}"[(ngModel)]="verifyPassword">
         </div>
     </fieldset>
-    
-    <re-captcha siteKey="6LfyrjQUAAAAAB5CIeS9r2b_lsO-vgxYKUEuPaAc" class="ng-recaptcha"></re-captcha>
-    
-    <button type="submit">Sign Up</button>
+
+    <p class="form-error" [hidden]="!errorMessage">{{ errorMessage }}</p>
+
+    <button type="submit" [disabled]="!registerForm.form.valid">Sign Up</button>
 </form>
 
 <ul class="text-center" id="loginActions">

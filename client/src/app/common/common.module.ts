@@ -9,7 +9,6 @@ import { CommonRoutingModule } from './common-routing.module';
 import { NavbarComponent } from './navbar.component';
 import { PlaybarComponent } from './playbar.component';
 import { LeftSidebarComponent } from './left-sidebar.component';
-import { RightSidebarComponent } from './right-sidebar.component';
 import { UpgradeAccountComponent } from './upgrade-account.component';
 import { CreatePlaylistComponent } from './create-playlist.component';
 
@@ -18,9 +17,8 @@ import { CreatePlaylistComponent } from './create-playlist.component';
         NavbarComponent,
         PlaybarComponent,
         LeftSidebarComponent,
-        RightSidebarComponent,
         UpgradeAccountComponent,
-        CreatePlaylistComponent,
+        CreatePlaylistComponent
     ],
     imports: [
         CommonRoutingModule,
@@ -31,8 +29,7 @@ import { CreatePlaylistComponent } from './create-playlist.component';
     exports: [
         NavbarComponent,
         PlaybarComponent,
-        LeftSidebarComponent,
-        RightSidebarComponent,
+        LeftSidebarComponent
     ]
 })
 export class CommonModule {}
