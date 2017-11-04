@@ -23,7 +23,7 @@ public class Artist extends CatalogItem implements Serializable {
 
     @ElementCollection(targetClass=Artist.class)
     @OneToMany
-    private Set<Artist> relatedArtists = new  HashSet<>();
+    private Set<Artist> relatedArtists = new HashSet<>();
 
     @ElementCollection(targetClass=Song.class)
     @OneToMany
