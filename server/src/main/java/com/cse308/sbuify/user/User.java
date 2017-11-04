@@ -1,10 +1,11 @@
 package com.cse308.sbuify.user;
 
-import com.cse308.sbuify.domain.Image;
+import com.cse308.sbuify.admin.Admin;
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.image.Image;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

@@ -1,6 +1,6 @@
 package com.cse308.sbuify.playlist;
 
-import com.cse308.sbuify.user.Customer;
+import com.cse308.sbuify.customer.Customer;
 
 import javax.persistence.*;
 
