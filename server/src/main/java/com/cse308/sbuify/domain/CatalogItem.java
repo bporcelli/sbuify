@@ -23,7 +23,7 @@ public abstract class CatalogItem implements Serializable {
     private LocalDateTime dateCreation;
 
     @NotNull
-    private Boolean isActive;
+    private Boolean active;
 
     @OneToOne(fetch = FetchType.LAZY)
     @NotNull
@@ -58,12 +58,12 @@ public abstract class CatalogItem implements Serializable {
         this.dateCreation = dateCreation;
     }
 
-    public Boolean getActive() {
-        return isActive;
+    public Boolean isActive() {
+        return active;
     }
 
     public void setActive(Boolean active) {
-        isActive = active;
+        this.active = active;
     }
 
     public User getOwner() {
