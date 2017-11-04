@@ -27,6 +27,9 @@ public class Artist extends CatalogItem implements Serializable {
     @OneToMany
     private Set<Song> popularSongs = new HashSet<>();
 
+    @ElementCollection
+    private Set<String> aliases = new HashSet<>();
+
     @NotNull
     private Integer monthlyListeners;
 
@@ -59,13 +62,18 @@ public class Artist extends CatalogItem implements Serializable {
     public Artist() {
     }
 
-    public Artist(@NotNull Integer musicBrainzId, Integer monthlyListeners, Biography bio, Image coverImage, RecordLabel recordLabel) {
+    public Artist(@NotNull Integer musicBrainzId, Integer monthlyListeners, Biography bio, Image coverImage, RecordLabel recordLabel, Set<String> aliases) {
         this.musicBrainzId = musicBrainzId;
         this.monthlyListeners = monthlyListeners;
         this.bio = bio;
         this.coverImage = coverImage;
         this.recordLabel = recordLabel;
+        this.aliases = aliases;
     }
+
+
+
+
 
     public Integer getMusicBrainzId() {
         return musicBrainzId;
@@ -137,5 +145,13 @@ public class Artist extends CatalogItem implements Serializable {
 
     public void setAlbums(List<Album> albums) {
         this.albums = albums;
+    }
+
+    public Set<String> getAliases() {
+        return aliases;
+    }
+
+    public void setAliases(Set<String> aliases) {
+        this.aliases = aliases;
     }
 }
