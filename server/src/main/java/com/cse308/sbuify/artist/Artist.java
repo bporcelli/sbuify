@@ -18,6 +18,7 @@ import java.util.Set;
 public class Artist extends CatalogItem implements Serializable {
 
     @NotNull
+    @Column(unique = true)
     private Integer musicBrainzId;
 
     @ElementCollection(targetClass=Artist.class)
