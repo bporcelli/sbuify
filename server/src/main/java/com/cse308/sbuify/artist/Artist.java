@@ -21,18 +21,18 @@ public class Artist extends CatalogItem implements Serializable {
     @Column(unique = true)
     private String musicBrainzId;
 
-    @ElementCollection(targetClass=Artist.class)
     @OneToMany
     private Set<Artist> relatedArtists = new HashSet<>();
 
-    @ElementCollection(targetClass=Song.class)
     @OneToMany
     private Set<Song> popularSongs = new HashSet<>();
+
+    @ElementCollection
+    private Set<String> aliases = new HashSet<>();
 
     @NotNull
     private Integer monthlyListeners;
 
-    @ElementCollection(targetClass= Product.class)
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true
@@ -43,7 +43,7 @@ public class Artist extends CatalogItem implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @MapsId
+    @PrimaryKeyJoinColumn
     private Biography bio;
 
     @OneToOne(
@@ -53,7 +53,7 @@ public class Artist extends CatalogItem implements Serializable {
     private Image coverImage;
 
     @OneToOne()
-    @MapsId
+    @PrimaryKeyJoinColumn
     private RecordLabel recordLabel;
 
     @OneToMany()
@@ -62,12 +62,13 @@ public class Artist extends CatalogItem implements Serializable {
     public Artist() {
     }
 
-    public Artist(@NotNull String musicBrainzId, Integer monthlyListeners, Biography bio, Image coverImage, RecordLabel recordLabel) {
+    public Artist(@NotNull String musicBrainzId, Integer monthlyListeners, Biography bio, Image coverImage, RecordLabel recordLabel, Set<String> aliases) {
         this.musicBrainzId = musicBrainzId;
         this.monthlyListeners = monthlyListeners;
         this.bio = bio;
         this.coverImage = coverImage;
         this.recordLabel = recordLabel;
+        this.aliases = aliases;
     }
 
     public String getMusicBrainzId() {
@@ -140,5 +141,13 @@ public class Artist extends CatalogItem implements Serializable {
 
     public void setAlbums(List<Album> albums) {
         this.albums = albums;
+    }
+
+    public Set<String> getAliases() {
+        return aliases;
+    }
+
+    public void setAliases(Set<String> aliases) {
+        this.aliases = aliases;
     }
 }

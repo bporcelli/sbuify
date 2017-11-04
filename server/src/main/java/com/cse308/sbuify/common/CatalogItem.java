@@ -28,7 +28,7 @@ public abstract class CatalogItem implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @NotNull
-
+    @PrimaryKeyJoinColumn
     private User owner;
     @OneToOne(
             cascade = CascadeType.ALL,

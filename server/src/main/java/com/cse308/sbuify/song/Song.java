@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Song extends CatalogItem implements Queueable, Serializable {
@@ -27,14 +28,14 @@ public class Song extends CatalogItem implements Queueable, Serializable {
     private Integer playCount;
 
     @OneToMany
-    private HashSet<Genre> genres;
+    private Set<Genre> genres = new HashSet<>();
 
     @ManyToOne
     @MapsId
     private Album album;
 
     @OneToMany
-    private HashSet<Artist> featuredArtists;
+    private Set<Artist> featuredArtists = new HashSet<>();
 
     @Override
     public Collection<Song> getItems() {
@@ -67,11 +68,11 @@ public class Song extends CatalogItem implements Queueable, Serializable {
         this.playCount = playCount;
     }
 
-    public HashSet<Genre> getGenres() {
+    public Set<Genre> getGenres() {
         return genres;
     }
 
-    public void setGenres(HashSet<Genre> genres) {
+    public void setGenres(Set<Genre> genres) {
         this.genres = genres;
     }
 
@@ -83,11 +84,11 @@ public class Song extends CatalogItem implements Queueable, Serializable {
         this.album = album;
     }
 
-    public HashSet<Artist> getFeaturedArtists() {
+    public Set<Artist> getFeaturedArtists() {
         return featuredArtists;
     }
 
-    public void setFeaturedArtists(HashSet<Artist> featuredArtists) {
+    public void setFeaturedArtists(Set<Artist> featuredArtists) {
         this.featuredArtists = featuredArtists;
     }
 

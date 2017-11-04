@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Album extends CatalogItem implements Queueable, Serializable {
@@ -26,11 +27,11 @@ public class Album extends CatalogItem implements Queueable, Serializable {
     public Integer numSongs;
 
     @OneToOne
-    @MapsId
+    @PrimaryKeyJoinColumn
     private Artist artist;
 
     @OneToMany
-    private HashSet<Song> songs;
+    private Set<Song> songs = new HashSet<>();
 
     @Override
     public Collection<Song> getItems() {
