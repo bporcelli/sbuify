@@ -3,11 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { PlayQueueComponent } from './play-queue.component';
 
-import { AuthGuard } from '../auth-guard.service';
+import { AuthGuard } from '../auth/auth-guard.service';
 
 const playQueueRoutes: Routes = [
-    { 
-        path: 'play-queue', 
+    {
+        path: 'play-queue',
         component: PlayQueueComponent,
         canActivate: [ AuthGuard ]
     }

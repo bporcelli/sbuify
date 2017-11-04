@@ -35,7 +35,6 @@ export class RegisterComponent {
 
     this.userService.register(this.model, function() {
       // TODO: pass special route param so we can display a success message on the login page
-      console.log('this:', _this);
       _this.router.navigate(['/login']);
     }, function() {
       _this.errorMessage = "Your email address is already in use. Please try again.";

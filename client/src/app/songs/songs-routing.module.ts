@@ -3,10 +3,10 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { SongsComponent } from './songs.component';
 
-import { AuthGuard } from '../auth-guard.service';
+import { AuthGuard } from '../auth/auth-guard.service';
 
 const songsRoutes: Routes = [
-    { 
+    {
         path: 'songs',
         component: SongsComponent,
         canActivate: [ AuthGuard ]

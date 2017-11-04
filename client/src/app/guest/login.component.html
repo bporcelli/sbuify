@@ -1,22 +1,23 @@
 <h1 class="form-heading">Log in</h1>
-                
-<form class="login-form" action="index.html">
+
+<form class="login-form" (ngSubmit)="onSubmit()" #loginForm="ngForm">
     <div class="form-group">
         <label class="sr-only" for="email">Email address</label>
-        <input type="text" class="form-control" name="email" id="email" placeholder="Email address">
+        <input type="email" class="form-control" name="email" id="email" placeholder="Email address" required email [(ngModel)]="model.email">
     </div>
     <div class="form-group">
         <label class="sr-only" for="password">Password</label>
-        <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+        <input type="password" class="form-control" name="password" id="password" placeholder="Password" required [(ngModel)]="model.password">
     </div>
     <div class="form-group">
         <label class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input">
+            <input type="checkbox" class="custom-control-input" name="remember" id="remember" [(ngModel)]="remember">
             <span class="custom-control-indicator"></span>
             <span class="custom-control-description">Remember Me</span>
         </label>
     </div>
-    <button type="submit" (click)="login($event)">Log in</button>
+    <p class="form-error" [hidden]="!errorMessage">{{ errorMessage }}</p>
+    <button type="submit" [disabled]="!loginForm.form.valid">Log in</button>
 </form>
 
 <ul class="text-center" id="loginActions">

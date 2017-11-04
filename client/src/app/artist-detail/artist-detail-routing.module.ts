@@ -8,10 +8,10 @@ import { RelatedArtistsComponent } from './related-artists.component';
 import { AboutComponent } from './about.component';
 import { ConcertsComponent } from '../concerts/concerts.component';
 
-import { AuthGuard } from '../auth-guard.service';
+import { AuthGuard } from '../auth/auth-guard.service';
 
 const artistRoutes: Routes = [
-    { 
+    {
         path: 'artist/:id',
         component: ArtistDetailComponent,
         canActivate: [ AuthGuard ],

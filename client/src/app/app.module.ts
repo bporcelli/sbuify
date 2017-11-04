@@ -20,10 +20,9 @@ import { GuestModule } from './guest/guest.module';
 import { ConcertsModule } from './concerts/concerts.module';
 import { SettingsModule } from './settings/settings.module';
 import { UserModule } from './user/user.module';
+import { AuthModule } from "./auth/auth.module";
 
-import { AuthService } from './auth.service';
 import { PlaylistService } from './playlist.service';
-import { AuthGuard } from './auth-guard.service';
 
 @NgModule({
     declarations: [
@@ -34,6 +33,7 @@ import { AuthGuard } from './auth-guard.service';
         BrowserModule,
         CommonModule,
         HttpClientModule,
+        AuthModule,
         BrowseModule,
         ArtistDetailModule,
         PlaylistDetailModule,
@@ -47,9 +47,7 @@ import { AuthGuard } from './auth-guard.service';
         AppRoutingModule
     ],
     providers: [
-        AuthService,
-        PlaylistService,
-        AuthGuard
+        PlaylistService
     ],
     bootstrap: [ AppComponent ]
 })

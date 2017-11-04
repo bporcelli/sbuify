@@ -2,21 +2,19 @@ import { Component } from '@angular/core';
 
 import { Router } from '@angular/router';
 
-import { AuthService } from '../auth.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
     selector: 'navbar',
     templateUrl: './navbar.component.html'
 })
 export class NavbarComponent {
-    constructor(private authService: AuthService,
+    constructor(private auth: AuthService,
                 private router: Router) {}
 
     logout(e) {
         e.preventDefault();
-
-        this.authService.logout();
-        this.router.navigate(['login']);
+        this.auth.logout();
     }
 
     search() {

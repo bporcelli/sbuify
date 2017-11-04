@@ -7,7 +7,7 @@
         <img src="assets/img/logo.png" alt="SBUify Logo">
     </a>
 
-    <div class="collapse navbar-collapse" id="navbarContent" *ngIf="authService.isAuthed()">
+    <div class="collapse navbar-collapse" id="navbarContent" *ngIf="auth.isAuthed()">
         <form class="form-inline ml-3 mr-auto">
             <input class="form-control mr-sm-2" type="text" name="query" id="query" placeholder="Search" (focus)="search()">
         </form>
@@ -27,7 +27,7 @@
             </li>
         </ul>
     </div>
-    <div class="collapse navbar-collapse" id="navbarContent" *ngIf="!authService.isAuthed()">
+    <div class="collapse navbar-collapse" id="navbarContent" *ngIf="!auth.isAuthed()">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <a class="btn btn-primary mr-2" routerLink="/register" title="Sign Up">Sign Up</a>

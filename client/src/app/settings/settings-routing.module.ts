@@ -6,7 +6,7 @@ import { PreferencesComponent } from './preferences.component';
 import { EditAccountComponent } from './edit-account.component';
 import { ChangePasswordComponent } from './change-password.component';
 
-import { AuthGuard } from '../auth-guard.service';
+import { AuthGuard } from '../auth/auth-guard.service';
 
 const settingsRoutes: Routes = [
     {
