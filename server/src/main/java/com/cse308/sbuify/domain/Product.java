@@ -22,11 +22,13 @@ public class Product implements Serializable {
     @NotEmpty
     private String purchaseURL;
 
-//
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @MapsId
-//    @NonNull
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @NonNull
     private Artist artist;
+
+
 
     public Integer getId() {
         return id;

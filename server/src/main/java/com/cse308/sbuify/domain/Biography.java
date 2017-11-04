@@ -25,6 +25,9 @@ public class Biography implements Serializable {
     @ElementCollection(targetClass=Image.class)
     private List<Image> images;
 
+    public Biography() {
+    }
+
     public Integer getId() {
         return id;
     }
