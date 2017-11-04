@@ -19,7 +19,7 @@ public class Artist extends CatalogItem implements Serializable {
 
     @NotNull
     @Column(unique = true)
-    private Integer musicBrainzId;
+    private String musicBrainzId;
 
     @ElementCollection(targetClass=Artist.class)
     @OneToMany
@@ -62,7 +62,7 @@ public class Artist extends CatalogItem implements Serializable {
     public Artist() {
     }
 
-    public Artist(@NotNull Integer musicBrainzId, Integer monthlyListeners, Biography bio, Image coverImage, RecordLabel recordLabel) {
+    public Artist(@NotNull String musicBrainzId, Integer monthlyListeners, Biography bio, Image coverImage, RecordLabel recordLabel) {
         this.musicBrainzId = musicBrainzId;
         this.monthlyListeners = monthlyListeners;
         this.bio = bio;
@@ -70,11 +70,11 @@ public class Artist extends CatalogItem implements Serializable {
         this.recordLabel = recordLabel;
     }
 
-    public Integer getMusicBrainzId() {
+    public String getMusicBrainzId() {
         return musicBrainzId;
     }
 
-    public void setMusicBrainzId(Integer musicBrainzId) {
+    public void setMusicBrainzId(String musicBrainzId) {
         this.musicBrainzId = musicBrainzId;
     }
 
