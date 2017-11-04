@@ -7,11 +7,11 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+
 
 @Entity
 @DiscriminatorValue(value = "admin")
-public class Admin extends User implements Serializable{
+public class Admin extends User{
 
     @NotEmpty
     private String firstName;
@@ -19,7 +19,7 @@ public class Admin extends User implements Serializable{
     @NotEmpty
     private String lastName;
 
-
+    @NotNull
     private Boolean superAdmin;
 
     // Must include no-arg constructor to satisfy Jackson

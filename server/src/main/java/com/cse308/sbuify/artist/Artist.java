@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Artist extends CatalogItem implements Serializable {
+public class Artist extends CatalogItem {
 
     @NotNull
     @Column(unique = true)
-    private Integer musicBrainzId;
+    private String musicBrainzId;
 
     @OneToMany
     private Set<Artist> relatedArtists = new  HashSet<>();
@@ -62,7 +62,7 @@ public class Artist extends CatalogItem implements Serializable {
     public Artist() {
     }
 
-    public Artist(@NotNull Integer musicBrainzId, Integer monthlyListeners, Biography bio, Image coverImage, RecordLabel recordLabel, Set<String> aliases) {
+    public Artist(@NotNull String musicBrainzId, Integer monthlyListeners, Biography bio, Image coverImage, RecordLabel recordLabel, Set<String> aliases) {
         this.musicBrainzId = musicBrainzId;
         this.monthlyListeners = monthlyListeners;
         this.bio = bio;
@@ -75,11 +75,11 @@ public class Artist extends CatalogItem implements Serializable {
 
 
 
-    public Integer getMusicBrainzId() {
+    public String getMusicBrainzId() {
         return musicBrainzId;
     }
 
-    public void setMusicBrainzId(Integer musicBrainzId) {
+    public void setMusicBrainzId(String musicBrainzId) {
         this.musicBrainzId = musicBrainzId;
     }
 

@@ -27,11 +27,12 @@ public class Song extends CatalogItem implements Queueable, Serializable {
     // Total number of plays (updated periodically)
     private Integer playCount;
 
+
+
     @OneToMany
     private Set<Genre> genres = new HashSet<>();
 
     @ManyToOne
-    @MapsId
     private Album album;
 
     @OneToMany

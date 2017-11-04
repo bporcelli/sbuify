@@ -11,6 +11,7 @@ public class CustomerSubscription implements Serializable {
     private Integer id;
 
     @NotEmpty
+    @Column(unique = true)
     private String stripeId;
 
 

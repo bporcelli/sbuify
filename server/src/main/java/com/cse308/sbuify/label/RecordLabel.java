@@ -16,10 +16,15 @@ import java.util.Set;
  */
 @Entity
 @DiscriminatorValue(value = "recordlabel")
-public class RecordLabel extends User implements Serializable {
+public class RecordLabel extends User {
 
     @NotNull
     private String name;
+
+    @NotNull
+    @Column(unique = true)
+    private String musicBrainzId;
+
 
     @OneToMany
     private Set<Artist> artists = new HashSet<>();

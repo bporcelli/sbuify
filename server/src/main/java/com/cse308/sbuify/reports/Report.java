@@ -1,28 +1,27 @@
-package com.cse308.sbuify.common;
+package com.cse308.sbuify.reports;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 @Entity
-public class Genre implements Serializable {
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "report")
+public class Report implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(unique = true)
-    private String tagId;
-
     @NotEmpty
-    @Column(unique = true)
     private String name;
 
-    public Genre() {
+    public Report() {
     }
 
-    public Genre(@NotEmpty String name) {
+    public Report(@NotEmpty String name) {
         this.name = name;
     }
 

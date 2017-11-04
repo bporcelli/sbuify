@@ -15,16 +15,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Album extends CatalogItem implements Queueable, Serializable {
+public class Album extends CatalogItem implements Queueable {
 
     @NotNull
-    public Date releaseDate;
+    private Date releaseDate;
 
     @NotNull
-    public Double duration;
+    private Double duration;
 
     @NotNull
-    public Integer numSongs;
+    private Integer numSongs;
+
+    @Column(unique = true)
+    private String musicBrainzId;
 
     @OneToOne
     @PrimaryKeyJoinColumn
@@ -38,11 +41,62 @@ public class Album extends CatalogItem implements Queueable, Serializable {
         return this.songs;
     }
 
+    public Album() {
+    }
+
     public void addSong(Song song) {
         // todo
     }
 
     public void removeSong(Song song) {
         // todo
+    }
+
+    public Date getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public Double getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Double duration) {
+        this.duration = duration;
+    }
+
+    public Integer getNumSongs() {
+        return numSongs;
+    }
+
+    public void setNumSongs(Integer numSongs) {
+        this.numSongs = numSongs;
+    }
+
+    public String getMusicBrainzId() {
+        return musicBrainzId;
+    }
+
+    public void setMusicBrainzId(String musicBrainzId) {
+        this.musicBrainzId = musicBrainzId;
+    }
+
+    public Artist getArtist() {
+        return artist;
+    }
+
+    public void setArtist(Artist artist) {
+        this.artist = artist;
+    }
+
+    public Set<Song> getSongs() {
+        return songs;
+    }
+
+    public void setSongs(Set<Song> songs) {
+        this.songs = songs;
     }
 }

@@ -11,21 +11,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(path = "/customers/{id}/preferences")
 
-//TODO
 public class PreferenceController {
 	@Autowired
 	private PreferenceRepository preferenceRepo;
 	
 	@GetMapping
 	public @ResponseBody
-	Preferences findById(@PathVariable int id) {
-		Preferences pref = new Preferences();
+	Preference findById(@PathVariable int id) {
+		Preference pref = new Preference();
 		return pref;
 	}
 	
 	@PatchMapping
 	public @ResponseBody
-	Preferences updateById(@PathVariable int id) {
+	Preference updateById(@PathVariable int id) {
 		//TODO
 		return null;
 	}

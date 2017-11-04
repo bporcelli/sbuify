@@ -2,6 +2,8 @@ package com.cse308.sbuify.common;
 
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
@@ -10,6 +12,7 @@ import java.io.Serializable;
 public class Address implements Serializable{
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @NotEmpty

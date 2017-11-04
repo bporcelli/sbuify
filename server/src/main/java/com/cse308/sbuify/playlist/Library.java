@@ -4,18 +4,19 @@ import com.cse308.sbuify.customer.Customer;
 
 import javax.persistence.*;
 
-import java.io.Serializable;
-
 @Entity
-public class Library extends PlayList implements Serializable {
+public class Library extends Playlist {
     //TODO: fill attributes
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
+    @OneToOne
+    @PrimaryKeyJoinColumn
     private Customer customer;
 
     public Library() {
+
     }
+
+
 
     public Library(Customer customer) {
         this.customer = customer;

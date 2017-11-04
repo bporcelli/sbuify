@@ -26,14 +26,15 @@ public abstract class CatalogItem implements Serializable {
     @NotNull
     private Boolean active;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @NotNull
+    @OneToOne
     @PrimaryKeyJoinColumn
     private User owner;
+
     @OneToOne(
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @PrimaryKeyJoinColumn
     private Image image;
 
     public CatalogItem() {

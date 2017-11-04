@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import java.io.Serializable;
@@ -30,10 +31,11 @@ public abstract class User implements Serializable {
 	private Integer id;
 
 	@NotNull
+    @Column(unique = true)
 	private String email;
 
     // Hashed password
-	@NotNull
+	@NotEmpty
 	private String password;
 
     // Token used for password reset requests
@@ -41,7 +43,9 @@ public abstract class User implements Serializable {
 
 	// Profile image for customer. When customer is updated/deleted, cascade.
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @PrimaryKeyJoinColumn
 	private Image profileImage;
+
 
 	// Must include no-arg constructor to satisfy Jackson
 	public User() {}

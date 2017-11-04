@@ -2,10 +2,7 @@ package com.cse308.sbuify.customer;
 
 import com.cse308.sbuify.song.Song;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -13,12 +10,21 @@ import java.util.Collection;
 @Entity
 public class PlayQueue implements Serializable{
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
+    @OneToOne
+    @PrimaryKeyJoinColumn
+    private Customer customer;
 
     @OneToMany
     private Collection<Song> songs = new ArrayDeque<>();
 
     public PlayQueue() {
+    }
+
+    public PlayQueue(Customer customer) {
+        this.customer = customer;
     }
 
     public PlayQueue(Collection<Song> songs) {
@@ -39,5 +45,13 @@ public class PlayQueue implements Serializable{
 
     public void setSongs(Collection<Song> songs) {
         this.songs = songs;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }

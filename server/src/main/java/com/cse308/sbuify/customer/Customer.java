@@ -2,30 +2,29 @@ package com.cse308.sbuify.customer;
 
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.playlist.Library;
-import java.io.Serializable;
+
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @DiscriminatorValue(value = "customer")
-public class Customer extends User implements Serializable {
+public class Customer extends User {
 
+    @NotEmpty
     private String firstName;
 
+    @NotEmpty
     private String lastName;
 
+    @NotNull
     private Date birthday;
 
-    private String customerStripeId;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private CustomerSubscription customerSubscription;
@@ -37,7 +36,7 @@ public class Customer extends User implements Serializable {
     private Library library;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Preferences> preferences;
+    private List<Preference> preferences;
 
     // Must include no-arg constructor to satisfy Jackson
     public Customer() {}
@@ -73,13 +72,6 @@ public class Customer extends User implements Serializable {
         this.birthday = birthday;
     }
 
-    public String getCustomerStripeId() {
-        return customerStripeId;
-    }
-
-    public void setCustomerStripeId(String customerStripeId) {
-        this.customerStripeId = customerStripeId;
-    }
 
     public CustomerSubscription getCustomerSubscription() {
         return customerSubscription;
@@ -105,11 +97,11 @@ public class Customer extends User implements Serializable {
         this.library = library;
     }
 
-    public List<Preferences> getPreferences() {
+    public List<Preference> getPreferences() {
         return preferences;
     }
 
-    public void setPreferences(List<Preferences> preferences) {
+    public void setPreferences(List<Preference> preferences) {
         this.preferences = preferences;
     }
 

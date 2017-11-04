@@ -25,7 +25,7 @@ public class Product implements Serializable {
     private String purchaseURL;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @PrimaryKeyJoinColumn
     private Artist artist;
 
