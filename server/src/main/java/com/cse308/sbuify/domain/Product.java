@@ -24,11 +24,19 @@ public class Product implements Serializable {
 
 
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @NonNull
+    @NotNull
     private Artist artist;
 
 
+    public Product() {
+    }
+
+    public Product(@NotEmpty String name, @NotEmpty String description, @NotEmpty String purchaseURL, @NotNull Artist artist) {
+        this.name = name;
+        this.description = description;
+        this.purchaseURL = purchaseURL;
+        this.artist = artist;
+    }
 
     public Integer getId() {
         return id;

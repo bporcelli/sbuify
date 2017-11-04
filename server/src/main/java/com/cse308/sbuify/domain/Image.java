@@ -18,6 +18,15 @@ public class Image implements Serializable{
     @Enumerated(EnumType.STRING)
     private ImageSize size;
 
+    public Image() {
+    }
+
+    public Image(Integer id, @NotEmpty String path, ImageSize size) {
+        this.id = id;
+        this.path = path;
+        this.size = size;
+    }
+
     public Integer getId() {
         return id;
     }

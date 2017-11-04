@@ -5,6 +5,7 @@ import com.cse308.sbuify.music.Song;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -14,8 +15,15 @@ public class PlayQueue implements Serializable{
     @Id
     private Integer id;
 
-    @ElementCollection(targetClass = Song.class)
+    @OneToMany
     private Collection<Song> songs = new ArrayDeque<>();
+
+    public PlayQueue() {
+    }
+
+    public PlayQueue(Collection<Song> songs) {
+        this.songs = songs;
+    }
 
     public Integer getId() {
         return id;

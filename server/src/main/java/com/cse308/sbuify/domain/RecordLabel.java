@@ -21,7 +21,6 @@ public class RecordLabel extends User implements Serializable {
     @NotNull
     private String name;
 
-    @ElementCollection(targetClass = Artist.class)
     @OneToMany
     private Set<Artist> artists = new HashSet<>();
 
