@@ -10,8 +10,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
-import com.cse308.sbuify.enums.Language;
-import com.cse308.sbuify.enums.RepeatMode;
+import com.cse308.sbuify.customer.Language;
+import com.cse308.sbuify.customer.RepeatMode;
 
 @Entity
 public class ObsoletePreferences implements Serializable{
