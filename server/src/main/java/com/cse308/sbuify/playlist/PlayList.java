@@ -1,7 +1,7 @@
 package com.cse308.sbuify.playlist;
 
-import com.cse308.sbuify.domain.CatalogItem;
-import com.cse308.sbuify.music.Song;
+import com.cse308.sbuify.common.CatalogItem;
+import com.cse308.sbuify.song.Song;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
