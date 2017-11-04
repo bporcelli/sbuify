@@ -1,14 +1,19 @@
 package com.cse308.sbuify.customer;
 
-
-import com.cse308.sbuify.playlist.Library;
 import com.cse308.sbuify.user.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import com.cse308.sbuify.playlist.Library;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @DiscriminatorValue(value = "customer")
@@ -31,8 +36,8 @@ public class Customer extends User implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Library library;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Preferences preferences;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Preferences> preferences;
 
     // Must include no-arg constructor to satisfy Jackson
     public Customer() {}
@@ -100,11 +105,11 @@ public class Customer extends User implements Serializable {
         this.library = library;
     }
 
-    public Preferences getPreferences() {
+    public List<Preferences> getPreferences() {
         return preferences;
     }
 
-    public void setPreferences(Preferences preferences) {
+    public void setPreferences(List<Preferences> preferences) {
         this.preferences = preferences;
     }
 

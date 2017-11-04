@@ -22,7 +22,6 @@ public class Biography implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @ElementCollection(targetClass=Image.class)
     private List<Image> images;
 
     public Biography() {

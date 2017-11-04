@@ -28,13 +28,24 @@ public abstract class CatalogItem implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @NotNull
-    private User Owner;
 
+    private User owner;
     @OneToOne(
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private Image image;
+
+    public CatalogItem() {
+    }
+
+    public CatalogItem(@NotEmpty String name, @NotNull LocalDateTime dateCreation, @NotNull Boolean active, @NotNull User owner, Image image) {
+        this.name = name;
+        this.dateCreation = dateCreation;
+        this.active = active;
+        this.owner = owner;
+        this.image = image;
+    }
 
     public Integer getId() {
         return id;
@@ -69,11 +80,11 @@ public abstract class CatalogItem implements Serializable {
     }
 
     public User getOwner() {
-        return Owner;
+        return owner;
     }
 
     public void setOwner(User owner) {
-        Owner = owner;
+        this.owner = owner;
     }
 
     public Image getImage() {

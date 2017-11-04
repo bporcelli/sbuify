@@ -21,6 +21,10 @@ public class Genre implements Serializable {
     public Genre() {
     }
 
+    public Genre(@NotEmpty String name) {
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }
