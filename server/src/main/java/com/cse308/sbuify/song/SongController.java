@@ -5,6 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping(path = "/songs")
+@RequestMapping(path = "/api/songs")
 public class SongController {
 }

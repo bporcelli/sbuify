@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-public class Playlist extends CatalogItem {
+public class Playlist extends CatalogItem implements PlaylistComponent {
 
     private String description;
 
@@ -76,5 +76,10 @@ public class Playlist extends CatalogItem {
 
     public void setSongs(List<Song> songs) {
         this.songs = songs;
+    }
+
+    @Override
+    public void setParent(PlaylistFolder folder) {
+
     }
 }
