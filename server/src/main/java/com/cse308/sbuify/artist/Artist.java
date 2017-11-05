@@ -22,7 +22,7 @@ public class Artist extends CatalogItem {
     private String musicBrainzId;
 
     @OneToMany
-    private Set<Artist> relatedArtists = new  HashSet<>();
+    private Set<Artist> relatedArtists = new HashSet<>();
 
     @OneToMany
     private Set<Song> popularSongs = new HashSet<>();

@@ -83,7 +83,8 @@ public class UserController {
             PlayQueue playQueue = new PlayQueue(customer);
             customer.setPlayQueue(playQueue);
             playQueueRepository.save(playQueue);
-            //
+
+            //init Preference
 
             List<Preference> preferences = new ArrayList<>();
 
@@ -92,9 +93,10 @@ public class UserController {
             preferences.add(preference);
             preferences.add(preference2);
             customer.setPreferences(preferences);
+
             preferenceRepository.saveAll(preferences);
 
-            //
+            //save customer
 
             userRepository.save(customer);
             return true;

@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Song extends CatalogItem implements Queueable, Serializable {
+public class Song extends CatalogItem implements Queueable {
 
     // Length of song in seconds
     private Float length;

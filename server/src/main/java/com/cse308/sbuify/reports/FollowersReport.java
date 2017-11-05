@@ -5,7 +5,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 
-@Entity
-@DiscriminatorValue(value = "followers_report")
+
 public class FollowersReport extends TableReport {
 }

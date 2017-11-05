@@ -5,8 +5,7 @@ import javax.persistence.Entity;
 
 
 
-@Entity
-@DiscriminatorValue(value = "admin_royalty_report")
+
 public class AdminRoyaltyReport extends TableReport {
 
 }

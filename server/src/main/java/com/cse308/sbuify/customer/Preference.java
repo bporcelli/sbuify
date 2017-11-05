@@ -5,9 +5,10 @@ import com.cse308.sbuify.user.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Entity
-public class Preference {
+public class Preference implements Serializable {
 	@Id
 	private Integer id;
 
