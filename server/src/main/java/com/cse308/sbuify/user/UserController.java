@@ -1,5 +1,6 @@
 package com.cse308.sbuify.user;
 
+import com.cse308.sbuify.common.AppConstants;
 import com.cse308.sbuify.customer.*;
 import com.cse308.sbuify.playlist.Library;
 import com.cse308.sbuify.playlist.LibraryRepository;
@@ -88,16 +89,15 @@ public class UserController {
 
             List<Preference> preferences = new ArrayList<>();
 
-            Preference preference =  new Preference("Language", "EN-US");
-            Preference preference2 =  new Preference("HQ-Streaming", "OFF");
-            preferences.add(preference);
-            preferences.add(preference2);
+            Preference language =  new Preference( CustomerConstants.LANGUAGE, Language.ENGLISH.name());
+            Preference hdStream =  new Preference(CustomerConstants.HQ_STREAM, AppConstants.NO);
+            preferences.add(language);
+            preferences.add(hdStream);
             customer.setPreferences(preferences);
 
             preferenceRepository.saveAll(preferences);
 
             //save customer
-
             userRepository.save(customer);
             return true;
         } catch (Exception E){

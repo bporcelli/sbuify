@@ -12,9 +12,6 @@ import javax.persistence.InheritanceType;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "table_report")
 public class TableReport extends Report{
 
     @NotEmpty
