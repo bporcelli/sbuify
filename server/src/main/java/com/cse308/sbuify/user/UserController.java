@@ -57,8 +57,10 @@ public class UserController {
         userRepository.save(user);
 
         if (user instanceof Customer){
-            initCustomer((Customer)user);
-
+            Customer customer = (Customer) user;
+            if (!initCustomer(customer)){
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
         }
 
         return new ResponseEntity<>("{}", HttpStatus.CREATED);

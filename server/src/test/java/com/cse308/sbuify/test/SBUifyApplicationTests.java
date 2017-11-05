@@ -98,8 +98,9 @@ public class SBUifyApplicationTests {
     @Test
     public void customerAuthenticationSucceeds() {
         // Create user
+
         Customer dummyCust = new Customer("test.customer@test.com", "12345", "Jane",
-                                         "Doe", null);
+                                         "Doe", new Date());
 
         registerUser(dummyCust);
 
@@ -179,5 +180,8 @@ public class SBUifyApplicationTests {
 
         return emailMatches && roleMatches;
     }
+
+
+
 
 }
