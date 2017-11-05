@@ -1,9 +1,14 @@
 package com.cse308.sbuify.reports;
 
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
-
 public class ListenersReport extends TableReport {
+
+    public ListenersReport() {
+        super("listeners-report", "Monthly Listeners Report", ReportType.LABEL);
+    }
+
+    @Override
+    public String getQuery() {
+        // todo
+        return null;
+    }
 }

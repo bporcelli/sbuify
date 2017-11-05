@@ -1,33 +1,43 @@
 package com.cse308.sbuify.reports;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
+public abstract class Report implements Serializable {
+    // ID of report, e.g. "royalty-report"
+    private String id;
 
-public class Report implements Serializable {
-
-    @Id
-    private Integer id;
-
-    @NotEmpty
+    // Name of report, e.g. "Royalty Report"
     private String name;
 
-    public Report() {
-    }
+    // Type of report
+    private ReportType type;
 
-    public Report(@NotEmpty String name) {
+    public Report(String id, String name, ReportType type) {
+        this.id = id;
         this.name = name;
+        this.type = type;
     }
 
-    public Integer getId() {
+    /**
+     * Returns the query used to generate this report.
+     * @return String
+     */
+    public abstract String getQuery();
+
+    /**
+     * Returns the path to the report template.
+     * @return String
+     */
+    public abstract String getTemplate();
+
+    /**
+     * Getters and setters.
+     */
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -37,5 +47,13 @@ public class Report implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ReportType getType() {
+        return type;
+    }
+
+    public void setType(ReportType type) {
+        this.type = type;
     }
 }

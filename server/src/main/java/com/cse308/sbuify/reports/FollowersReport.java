@@ -1,10 +1,14 @@
 package com.cse308.sbuify.reports;
 
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
-
-
 public class FollowersReport extends TableReport {
+
+    public FollowersReport() {
+        super("followers-report", "Followers Report", ReportType.LABEL);
+    }
+
+    @Override
+    public String getQuery() {
+        // todo
+        return null;
+    }
 }

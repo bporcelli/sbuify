@@ -1,19 +1,19 @@
 package com.cse308.sbuify.reports;
 
-import com.cse308.sbuify.admin.Admin;
-import com.cse308.sbuify.customer.Customer;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+public abstract class TableReport extends Report {
+    // todo: set
+    private static final String TABLE_TEMPLATE = "";
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
+    public TableReport(String id, String name, ReportType type) {
+        super(id, name, type);
+    }
 
-public class TableReport extends Report{
-
-    @NotEmpty
-    private String TABLE_TEMPLATE;
+    /**
+     * By default, use TABLE_TEMPLATE to render table reports.
+     * @return String
+     */
+    @Override
+    public String getTemplate() {
+        return TABLE_TEMPLATE;
+    }
 }

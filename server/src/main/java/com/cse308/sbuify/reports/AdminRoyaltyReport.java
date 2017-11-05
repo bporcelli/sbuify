@@ -1,11 +1,14 @@
 package com.cse308.sbuify.reports;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
-
-
-
 public class AdminRoyaltyReport extends TableReport {
 
+    public AdminRoyaltyReport() {
+        super("admin-royalty-report", "Admin Royalty Report", ReportType.ADMIN);
+    }
+
+    @Override
+    public String getQuery() {
+        // todo
+        return null;
+    }
 }
