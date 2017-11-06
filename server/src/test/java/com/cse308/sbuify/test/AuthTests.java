@@ -2,6 +2,10 @@ package com.cse308.sbuify.test;
 
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.customer.PlayQueue;
+import com.cse308.sbuify.customer.PlayQueueRepository;
+import com.cse308.sbuify.playlist.Library;
+import com.cse308.sbuify.playlist.LibraryRepository;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -20,19 +24,21 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Optional;
 
-import static com.cse308.sbuify.security.SecurityConstants.HEADER_NAME;
-import static com.cse308.sbuify.security.SecurityConstants.HEADER_PREFIX;
-import static com.cse308.sbuify.security.SecurityConstants.SECRET;
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.cse308.sbuify.security.SecurityConstants.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * Login & registration tests.
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SBUifyApplicationTests {
+public class AuthTests {
 
     @LocalServerPort
     private int port;
@@ -45,11 +51,6 @@ public class SBUifyApplicationTests {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
-	@Test
-	public void contextLoads() {
-	    assertThat(restTemplate).isNotNull();
-	}
 
     /**
      * Test Customer registration.
@@ -66,8 +67,19 @@ public class SBUifyApplicationTests {
 
             ResponseEntity<Void> response = sendRegisterRequest(customer);
 
-            // Expect success
+            // 201 response expected
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+            // Get the new customer
+            Optional<User> savedCust = userRepository.findByEmail(customer.getEmail());
+            Customer saved = (Customer) savedCust.get();
+
+            // Ensure the customer's Play Queue and Library were created
+            PlayQueue playQueue = saved.getPlayQueue();
+            Library library = saved.getLibrary();
+
+            assertNotNull(playQueue);
+            assertNotNull(library);
 
             // If we try again with the same email, we should get a CONFLICT response
             response = sendRegisterRequest(customer);
@@ -98,7 +110,6 @@ public class SBUifyApplicationTests {
     @Test
     public void customerAuthenticationSucceeds() {
         // Create user
-
         Customer dummyCust = new Customer("test.customer@test.com", "12345", "Jane",
                                          "Doe", new Date());
 
@@ -180,8 +191,4 @@ public class SBUifyApplicationTests {
 
         return emailMatches && roleMatches;
     }
-
-
-
-
 }
