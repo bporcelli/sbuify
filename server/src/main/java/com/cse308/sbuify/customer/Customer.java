@@ -1,20 +1,16 @@
 package com.cse308.sbuify.customer;
 
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.playlist.Playlist;
-import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.playlist.Library;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 public class Customer extends User {
@@ -41,14 +37,17 @@ public class Customer extends User {
     private Date birthday;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Subscription subscription;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull
+    @JsonIgnore
     private PlayQueue playQueue;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull
+    @JsonIgnore
     private Library library;
 
     @ElementCollection
