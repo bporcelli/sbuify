@@ -1,4 +1,4 @@
-package com.cse308.sbuify.common;
+package com.cse308.sbuify.song;
 
 
 import javax.persistence.*;
