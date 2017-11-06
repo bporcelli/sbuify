@@ -11,22 +11,14 @@ import java.util.Collection;
 public class PlayQueue implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "id")
-    private Customer customer;
 
     @OneToMany
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
     private Collection<Song> songs = new ArrayDeque<>();
 
     public PlayQueue() {
-    }
-
-    public PlayQueue(Collection<Song> songs) {
-        this.songs = songs;
     }
 
     public Integer getId() {

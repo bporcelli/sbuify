@@ -19,6 +19,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 public class Customer extends User {
 
+    // Default preferences
+    // todo: better way to handle this?
+    private final static Map<String, String> DEFAULT_PREFS;
+
+    static {
+        DEFAULT_PREFS = new HashMap<>();
+        DEFAULT_PREFS.put(Preferences.HQ_STREAMING, "false");
+        DEFAULT_PREFS.put(Preferences.LANGUAGE, Language.ENGLISH.name());
+    }
+
     @NotNull
     @NotEmpty
     private String firstName;
@@ -34,12 +44,10 @@ public class Customer extends User {
     private Subscription subscription;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @PrimaryKeyJoinColumn
     @NotNull
     private PlayQueue playQueue;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @PrimaryKeyJoinColumn
     @NotNull
     private Library library;
 
@@ -47,7 +55,7 @@ public class Customer extends User {
     @MapKeyColumn(name = "PREF_KEY")
     @Column(name = "PREF_VALUE")
     @CollectionTable(name = "customer_preferences")
-    private Map<String, String> preferences = new HashMap<>();
+    private Map<String, String> preferences = DEFAULT_PREFS;
 
     // Profile image for customer. When customer is updated/deleted, cascade.
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -63,6 +71,23 @@ public class Customer extends User {
         this.birthday = birthday;
     }
 
+    /**
+     * Initialize the customer just after they are saved to the database.
+     */
+    @PrePersist
+    private void initialize() {
+        // Create library
+        Library library = new Library(this);
+        this.setLibrary(library);
+
+        // Create Play Queue
+        PlayQueue playQueue = new PlayQueue();
+        this.setPlayQueue(playQueue);
+    }
+
+    /**
+     * Getters and setters.
+     */
     public String getFirstName() {
         return firstName;
     }
