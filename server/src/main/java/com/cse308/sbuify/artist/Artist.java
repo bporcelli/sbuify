@@ -3,7 +3,7 @@ package com.cse308.sbuify.artist;
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.AppUser;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -49,7 +49,7 @@ public class Artist extends CatalogItem {
 
     public Artist() {}
 
-    public Artist(@NotEmpty String name, User owner, Image image, @NotNull String musicBrainzId) {
+    public Artist(@NotEmpty String name, AppUser owner, Image image, @NotNull String musicBrainzId) {
         super(name, owner, image);
         this.musicBrainzId = musicBrainzId;
     }

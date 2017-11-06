@@ -2,12 +2,15 @@ package com.cse308.sbuify.label;
 
 
 import com.cse308.sbuify.artist.Artist;
-import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.AppUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,7 +18,14 @@ import java.util.Set;
  * Entity representing a Record Label.
  */
 @Entity
-public class RecordLabel extends User {
+public class RecordLabel extends AppUser {
+
+    // Authorities granted to customers
+    private final static Collection<GrantedAuthority> AUTHORITIES = new ArrayList<>();
+
+    static {
+        AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_LABEL"));
+    }
 
     /**
      * The MusicBrainz label this RecordLabel is associated with.
@@ -29,6 +39,9 @@ public class RecordLabel extends User {
      */
     @OneToMany(mappedBy = "owner")
     private Set<Artist> artists = new HashSet<>();
+
+    public RecordLabel() {
+    }
 
     public RecordLabel(@NotNull String email, @NotNull String password, @NotNull Label label) {
         super(email, password);
@@ -47,9 +60,8 @@ public class RecordLabel extends User {
         return artists;
     }
 
-    @JsonIgnore
     @Override
-    public String getRole() {
-        return "ROLE_LABEL";
+    public Collection<GrantedAuthority> getAuthorities() {
+        return AUTHORITIES;
     }
 }

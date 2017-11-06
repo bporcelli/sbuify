@@ -1,6 +1,6 @@
 package com.cse308.sbuify.security;
 
-import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.AppUser;
 import com.cse308.sbuify.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,24 +27,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        Optional<User> result = userRepository.findByEmail(s);
+        Optional<AppUser> result = userRepository.findByEmail(s);
 
         if (!result.isPresent()) {
             throw new UsernameNotFoundException("Invalid email address.");
         }
 
-        User user = result.get();
-
-        return new org.springframework.security.core.userdetails.User(user.getEmail(),
-                                                                      user.getPassword(),
-                                                                      getAuthorities(user));
+        return result.get();
     }
-
-    /**
-     * Get a list of GrantedAuthorities for a given user instance.
-     */
-    private Collection<GrantedAuthority> getAuthorities(User user) {
-        return Arrays.asList(new SimpleGrantedAuthority(user.getRole()));
-    }
-
 }

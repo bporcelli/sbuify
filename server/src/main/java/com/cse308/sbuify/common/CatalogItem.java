@@ -1,8 +1,7 @@
 package com.cse308.sbuify.common;
 
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.user.User;
-import org.hibernate.annotations.OnDelete;
+import com.cse308.sbuify.user.AppUser;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -30,14 +29,14 @@ public abstract class CatalogItem implements Serializable {
 
     // todo: set cascade actions
     @OneToOne
-    private User owner;
+    private AppUser owner;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Image image;
 
     public CatalogItem() {}
 
-    public CatalogItem(@NotEmpty String name, User owner, Image image) {
+    public CatalogItem(@NotEmpty String name, AppUser owner, Image image) {
         this.name = name;
         this.owner = owner;
         this.image = image;
@@ -83,11 +82,11 @@ public abstract class CatalogItem implements Serializable {
         this.active = active;
     }
 
-    public User getOwner() {
+    public AppUser getOwner() {
         return owner;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(AppUser owner) {
         this.owner = owner;
     }
 

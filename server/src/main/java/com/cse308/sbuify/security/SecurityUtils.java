@@ -1,15 +1,34 @@
 package com.cse308.sbuify.security;
 
-// TODO: needed?
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SecurityUtils {
 
-	public static String hash(String str) { return null; }
-
-	public String bytesToHash(byte[] bytes) {
-		return null;
+    /**
+     * Generate a secure token to be used during the password reset process.
+     * @return
+     */
+	public static String generateToken() {
+		// todo
+	    return null;
 	}
 
-	public String generateToken() {
-		return null;
-	}
+    /**
+     * Convert the given user's granted authorities to a list of strings.
+     * @param user
+     * @return a list of strings describing the user's granted authorities.
+     */
+	public static List<String> getAuthorityStrings(UserDetails user) {
+        ArrayList<String> scopes = new ArrayList<>();
+
+        for (GrantedAuthority auth: user.getAuthorities()) {
+            scopes.add(auth.toString());
+        }
+
+        return scopes;
+    }
 }

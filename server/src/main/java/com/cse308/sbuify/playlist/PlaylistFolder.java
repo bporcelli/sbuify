@@ -1,6 +1,6 @@
 package com.cse308.sbuify.playlist;
 
-import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.AppUser;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -20,7 +20,7 @@ public class PlaylistFolder implements PlaylistComponent {
     // Folder owner
     @OneToOne
     @NotNull
-    private User owner;
+    private AppUser owner;
 
     // Parent folder, if any
     @OneToOne
@@ -51,11 +51,11 @@ public class PlaylistFolder implements PlaylistComponent {
     }
 
     @Override
-    public User getOwner() {
+    public AppUser getOwner() {
         return owner;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(AppUser owner) {
         this.owner = owner;
     }
 

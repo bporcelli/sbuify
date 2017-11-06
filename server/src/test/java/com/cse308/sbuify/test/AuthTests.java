@@ -3,10 +3,9 @@ package com.cse308.sbuify.test;
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.customer.PlayQueue;
-import com.cse308.sbuify.customer.PlayQueueRepository;
 import com.cse308.sbuify.playlist.Library;
-import com.cse308.sbuify.playlist.LibraryRepository;
-import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.security.SecurityUtils;
+import com.cse308.sbuify.user.AppUser;
 import com.cse308.sbuify.user.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -25,7 +24,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
@@ -62,7 +60,7 @@ public class AuthTests {
         try {
             Date birthday = format.parse("06/04/1996");
 
-            User customer = new Customer("test.email@test.com", "123", "John", "Doe",
+            AppUser customer = new Customer("test.email@test.com", "123", "John", "Doe",
                                          birthday);
 
             ResponseEntity<Void> response = sendRegisterRequest(customer);
@@ -71,7 +69,7 @@ public class AuthTests {
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
             // Get the new customer
-            Optional<User> savedCust = userRepository.findByEmail(customer.getEmail());
+            Optional<AppUser> savedCust = userRepository.findByEmail(customer.getEmail());
             Customer saved = (Customer) savedCust.get();
 
             // Ensure the customer's Play Queue and Library were created
@@ -148,9 +146,9 @@ public class AuthTests {
     /**
      * Helper: save a user and return the saved user instance.
      *
-     * @return User
+     * @return AppUser
      */
-    private User registerUser(User user) {
+    private AppUser registerUser(AppUser user) {
         String originalPassword = user.getPassword();
         user.setPassword(passwordEncoder.encode(originalPassword));
         userRepository.save(user);
@@ -161,7 +159,7 @@ public class AuthTests {
     /**
      * Helper: send a registration request and return the response.
      */
-    private ResponseEntity<Void> sendRegisterRequest(User user) {
+    private ResponseEntity<Void> sendRegisterRequest(AppUser user) {
         return restTemplate.postForEntity("http://localhost:" + port + "/api/users",
                                           user, Void.class);
     }
@@ -169,7 +167,7 @@ public class AuthTests {
     /**
      * Helper: send a login request and return the response.
      */
-    private ResponseEntity<Void> sendLoginRequest(User user) {
+    private ResponseEntity<Void> sendLoginRequest(AppUser user) {
         return restTemplate.postForEntity("http://localhost:" + port + "/api/login",
                                           user, Void.class);
     }
@@ -177,7 +175,7 @@ public class AuthTests {
     /**
      * Helper: check whether token is valid for user.
      */
-    private boolean tokenValid(String token, User user) {
+    private boolean tokenValid(String token, AppUser user) {
         Claims claims = Jwts.parser()
                                 .setSigningKey(SECRET.getBytes())
                                 .parseClaimsJws(token.replace(HEADER_PREFIX, ""))
@@ -187,7 +185,7 @@ public class AuthTests {
         ArrayList<String> scopes = (ArrayList<String>) claims.get("scopes");
 
         boolean emailMatches = user.getEmail().equals(email);
-        boolean roleMatches = scopes.equals(Arrays.asList(user.getRole()));
+        boolean roleMatches = scopes.equals(SecurityUtils.getAuthorityStrings(user));
 
         return emailMatches && roleMatches;
     }

@@ -1,14 +1,24 @@
 package com.cse308.sbuify.admin;
 
-import com.cse308.sbuify.user.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.cse308.sbuify.user.AppUser;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.Entity;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Entity
-public class Admin extends User {
+public class Admin extends AppUser {
+
+    // Authorities granted to admins
+    private final static Collection<GrantedAuthority> AUTHORITIES = new ArrayList<>();
+
+    static {
+        AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    }
 
     @NotNull
     @NotEmpty
@@ -55,10 +65,8 @@ public class Admin extends User {
         this.superAdmin = superAdmin;
     }
 
-    @JsonIgnore
     @Override
-    public String getRole() {
-        return "ROLE_ADMIN";
+    public Collection<GrantedAuthority> getAuthorities() {
+        return AUTHORITIES;
     }
-
 }

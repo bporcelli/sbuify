@@ -1,11 +1,11 @@
 package com.cse308.sbuify.email;
 
-import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.AppUser;
 
 public class NewAccountEmail extends Email {
-	private User user;
+	private AppUser user;
 
-    public NewAccountEmail(User user) {
+    public NewAccountEmail(AppUser user) {
         this.user = user;
     }
 

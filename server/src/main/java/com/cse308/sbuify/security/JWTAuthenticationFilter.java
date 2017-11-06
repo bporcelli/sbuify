@@ -1,6 +1,6 @@
 package com.cse308.sbuify.security;
 
-import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.AppUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -16,9 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
+import java.util.List;
 
 import static com.cse308.sbuify.security.SecurityConstants.*;
 import static java.util.Collections.emptyList;
@@ -49,8 +46,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                                 HttpServletResponse response) throws AuthenticationException {
 
         try {
-            // Parse request to extract User object
-            User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
+            // Parse request to extract AppUser object
+            AppUser user = new ObjectMapper().readValue(request.getInputStream(), AppUser.class);
 
             // Construct Authentication token using credentials
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(),
@@ -73,14 +70,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
 
-        org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
+        AppUser principal = (AppUser) authResult.getPrincipal();
 
         // Get scopes/roles for principal
-        ArrayList<String> scopes = new ArrayList<>();
-
-        for (GrantedAuthority auth: principal.getAuthorities()) {
-            scopes.add(auth.toString());
-        }
+        List<String> scopes = SecurityUtils.getAuthorityStrings(principal);
 
         // Build JWT with JJWT. Additional claims can be added to the token here.
         // todo: add user id to claims

@@ -6,12 +6,18 @@ import com.cse308.sbuify.image.Image;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import java.io.Serializable;
+import java.util.Collection;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Generic entity representing an application user.
@@ -24,7 +30,7 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = Customer.class, name = "customer"),
         @JsonSubTypes.Type(value = Admin.class, name = "admin")
 })
-public abstract class User implements Serializable {
+public abstract class AppUser implements Serializable, UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,10 +48,9 @@ public abstract class User implements Serializable {
     // Token used for password reset requests
 	private String token;
 
-	// Must include no-arg constructor to satisfy Jackson
-	public User() {}
+	public AppUser() {}
 
-    public User(@NotNull String email, @NotNull String password) {
+    public AppUser(@NotNull String email, @NotNull String password) {
         this.email = email;
         this.password = password;
     }
@@ -83,9 +88,45 @@ public abstract class User implements Serializable {
     }
 
     /**
-     * Return the role name that corresponds to this User instance, e.g. "ROLE_CUSTOMER."
+     * Overrides.
      */
+    @Override
     @JsonIgnore
-    public abstract String getRole();
+    public abstract Collection<GrantedAuthority> getAuthorities();
 
+    @Override
+    @JsonIgnore
+    public String getUsername() {
+        return this.getEmail();
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return null;
+    }
 }

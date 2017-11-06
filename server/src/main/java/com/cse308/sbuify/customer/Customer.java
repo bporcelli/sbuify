@@ -2,27 +2,33 @@ package com.cse308.sbuify.customer;
 
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.playlist.Library;
-import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.AppUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Entity
-public class Customer extends User {
+public class Customer extends AppUser {
 
     // Default preferences
     // todo: better way to handle this?
-    private final static Map<String, String> DEFAULT_PREFS;
+    private final static Map<String, String> DEFAULT_PREFS = new HashMap<>();
 
     static {
-        DEFAULT_PREFS = new HashMap<>();
         DEFAULT_PREFS.put(Preferences.HQ_STREAMING, "false");
         DEFAULT_PREFS.put(Preferences.LANGUAGE, Language.ENGLISH.name());
+    }
+
+    // Authorities granted to customers
+    private final static Collection<GrantedAuthority> AUTHORITIES = new ArrayList<>();
+
+    static {
+        AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
     }
 
     @NotNull
@@ -151,9 +157,8 @@ public class Customer extends User {
         this.preferences = preferences;
     }
 
-    @JsonIgnore
     @Override
-    public String getRole() {
-        return "ROLE_CUSTOMER";
+    public Collection<GrantedAuthority> getAuthorities() {
+        return AUTHORITIES;
     }
 }
