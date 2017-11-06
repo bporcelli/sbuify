@@ -30,8 +30,8 @@ public class UserController {
      * @return ResponseEntity<>
      */
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody AppUser user) {
-        Optional<AppUser> existing = userRepository.findByEmail(user.getEmail());
+    public ResponseEntity<?> create(@RequestBody User user) {
+        Optional<User> existing = userRepository.findByEmail(user.getEmail());
 
         // Return a 409 response if this email is already in use
         if (existing.isPresent()) {
@@ -43,6 +43,7 @@ public class UserController {
         userRepository.save(user);
 
         // todo: send created user in response body (standard semantics for 201 response)
+        // todo: update frontend code accordingly
         return new ResponseEntity<>("{}", HttpStatus.CREATED);
     }
 }

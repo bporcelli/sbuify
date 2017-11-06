@@ -1,6 +1,6 @@
 package com.cse308.sbuify.admin;
 
-import com.cse308.sbuify.user.AppUser;
+import com.cse308.sbuify.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
-public class Admin extends AppUser {
+public class Admin extends User {
 
     // Authorities granted to admins
     private final static Collection<GrantedAuthority> AUTHORITIES = new ArrayList<>();

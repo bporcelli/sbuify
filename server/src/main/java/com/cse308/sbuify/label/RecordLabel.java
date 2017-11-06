@@ -2,8 +2,7 @@ package com.cse308.sbuify.label;
 
 
 import com.cse308.sbuify.artist.Artist;
-import com.cse308.sbuify.user.AppUser;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.cse308.sbuify.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -18,7 +17,7 @@ import java.util.Set;
  * Entity representing a Record Label.
  */
 @Entity
-public class RecordLabel extends AppUser {
+public class RecordLabel extends User {
 
     // Authorities granted to customers
     private final static Collection<GrantedAuthority> AUTHORITIES = new ArrayList<>();

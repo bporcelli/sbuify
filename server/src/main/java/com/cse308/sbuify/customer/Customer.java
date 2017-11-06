@@ -2,7 +2,7 @@ package com.cse308.sbuify.customer;
 
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.playlist.Library;
-import com.cse308.sbuify.user.AppUser;
+import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Entity
-public class Customer extends AppUser {
+public class Customer extends User {
 
     // Default preferences
     // todo: better way to handle this?

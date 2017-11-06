@@ -2,22 +2,17 @@ package com.cse308.sbuify.user;
 
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.image.Image;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
 import java.io.Serializable;
 import java.util.Collection;
-
-import static java.util.Collections.emptyList;
 
 /**
  * Generic entity representing an application user.
@@ -30,7 +25,7 @@ import static java.util.Collections.emptyList;
         @JsonSubTypes.Type(value = Customer.class, name = "customer"),
         @JsonSubTypes.Type(value = Admin.class, name = "admin")
 })
-public abstract class AppUser implements Serializable, UserDetails {
+public abstract class User implements Serializable, UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,9 +43,9 @@ public abstract class AppUser implements Serializable, UserDetails {
     // Token used for password reset requests
 	private String token;
 
-	public AppUser() {}
+	public User() {}
 
-    public AppUser(@NotNull String email, @NotNull String password) {
+    public User(@NotNull String email, @NotNull String password) {
         this.email = email;
         this.password = password;
     }

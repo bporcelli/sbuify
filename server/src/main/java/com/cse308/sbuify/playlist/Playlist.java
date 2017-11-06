@@ -2,7 +2,7 @@ package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.user.AppUser;
+import com.cse308.sbuify.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -36,7 +36,7 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
 
     public Playlist() {}
 
-    public Playlist(@NotEmpty String name, AppUser owner, Image image, @NotNull Boolean hidden) {
+    public Playlist(@NotEmpty String name, User owner, Image image, @NotNull Boolean hidden) {
         super(name, owner, image);
         this.hidden = hidden;
     }

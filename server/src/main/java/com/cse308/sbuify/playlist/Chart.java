@@ -2,7 +2,7 @@ package com.cse308.sbuify.playlist;
 
 
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.user.AppUser;
+import com.cse308.sbuify.user.User;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
@@ -24,7 +24,7 @@ public class Chart extends Playlist {
 
     public Chart() {}
 
-    public Chart(@NotEmpty String name, AppUser owner, Image image, @NotNull Boolean _private, @NotNull Date date) {
+    public Chart(@NotEmpty String name, User owner, Image image, @NotNull Boolean _private, @NotNull Date date) {
         super(name, owner, image, _private);
         this.date = date;
     }

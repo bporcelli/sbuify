@@ -1,11 +1,11 @@
 package com.cse308.sbuify.email;
 
-import com.cse308.sbuify.user.AppUser;
+import com.cse308.sbuify.user.User;
 
 public class PasswordResetEmail extends Email {
-	private AppUser user;
+	private User user;
 
-	public PasswordResetEmail(AppUser user) {
+	public PasswordResetEmail(User user) {
 		this.user = user;
 	}
 

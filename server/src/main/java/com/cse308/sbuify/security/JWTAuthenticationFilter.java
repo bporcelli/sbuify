@@ -1,6 +1,6 @@
 package com.cse308.sbuify.security;
 
-import com.cse308.sbuify.user.AppUser;
+import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -46,8 +46,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                                 HttpServletResponse response) throws AuthenticationException {
 
         try {
-            // Parse request to extract AppUser object
-            AppUser user = new ObjectMapper().readValue(request.getInputStream(), AppUser.class);
+            // Parse request to extract User object
+            User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
 
             // Construct Authentication token using credentials
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(),
@@ -70,7 +70,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
 
-        AppUser principal = (AppUser) authResult.getPrincipal();
+        User principal = (User) authResult.getPrincipal();
 
         // Get scopes/roles for principal
         List<String> scopes = SecurityUtils.getAuthorityStrings(principal);

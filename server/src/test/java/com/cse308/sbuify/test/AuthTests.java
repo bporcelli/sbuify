@@ -5,7 +5,7 @@ import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.customer.PlayQueue;
 import com.cse308.sbuify.playlist.Library;
 import com.cse308.sbuify.security.SecurityUtils;
-import com.cse308.sbuify.user.AppUser;
+import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -60,7 +60,7 @@ public class AuthTests {
         try {
             Date birthday = format.parse("06/04/1996");
 
-            AppUser customer = new Customer("test.email@test.com", "123", "John", "Doe",
+            User customer = new Customer("test.email@test.com", "123", "John", "Doe",
                                          birthday);
 
             ResponseEntity<Void> response = sendRegisterRequest(customer);
@@ -69,7 +69,7 @@ public class AuthTests {
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
             // Get the new customer
-            Optional<AppUser> savedCust = userRepository.findByEmail(customer.getEmail());
+            Optional<User> savedCust = userRepository.findByEmail(customer.getEmail());
             Customer saved = (Customer) savedCust.get();
 
             // Ensure the customer's Play Queue and Library were created
@@ -146,9 +146,9 @@ public class AuthTests {
     /**
      * Helper: save a user and return the saved user instance.
      *
-     * @return AppUser
+     * @return User
      */
-    private AppUser registerUser(AppUser user) {
+    private User registerUser(User user) {
         String originalPassword = user.getPassword();
         user.setPassword(passwordEncoder.encode(originalPassword));
         userRepository.save(user);
@@ -159,7 +159,7 @@ public class AuthTests {
     /**
      * Helper: send a registration request and return the response.
      */
-    private ResponseEntity<Void> sendRegisterRequest(AppUser user) {
+    private ResponseEntity<Void> sendRegisterRequest(User user) {
         return restTemplate.postForEntity("http://localhost:" + port + "/api/users",
                                           user, Void.class);
     }
@@ -167,7 +167,7 @@ public class AuthTests {
     /**
      * Helper: send a login request and return the response.
      */
-    private ResponseEntity<Void> sendLoginRequest(AppUser user) {
+    private ResponseEntity<Void> sendLoginRequest(User user) {
         return restTemplate.postForEntity("http://localhost:" + port + "/api/login",
                                           user, Void.class);
     }
@@ -175,7 +175,7 @@ public class AuthTests {
     /**
      * Helper: check whether token is valid for user.
      */
-    private boolean tokenValid(String token, AppUser user) {
+    private boolean tokenValid(String token, User user) {
         Claims claims = Jwts.parser()
                                 .setSigningKey(SECRET.getBytes())
                                 .parseClaimsJws(token.replace(HEADER_PREFIX, ""))
