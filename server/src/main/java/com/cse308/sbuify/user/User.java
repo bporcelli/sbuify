@@ -18,7 +18,7 @@ import java.io.Serializable;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "user_type")
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Customer.class, name = "customer"),
@@ -35,17 +35,12 @@ public abstract class User implements Serializable {
 	private String email;
 
     // Hashed password
+    @NotNull
 	@NotEmpty
 	private String password;
 
     // Token used for password reset requests
 	private String token;
-
-	// Profile image for customer. When customer is updated/deleted, cascade.
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @PrimaryKeyJoinColumn
-	private Image profileImage;
-
 
 	// Must include no-arg constructor to satisfy Jackson
 	public User() {}
@@ -77,14 +72,6 @@ public abstract class User implements Serializable {
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public Image getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(Image profileImage) {
-        this.profileImage = profileImage;
     }
 
     public Integer getId() {

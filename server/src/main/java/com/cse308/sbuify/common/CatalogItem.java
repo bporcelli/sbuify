@@ -2,6 +2,7 @@ package com.cse308.sbuify.common;
 
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.user.User;
+import org.hibernate.annotations.OnDelete;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -10,42 +11,44 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@MappedSuperclass
 public abstract class CatalogItem implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @NotNull
     @NotEmpty
     private String name;
 
     @NotNull
-    private LocalDateTime dateCreation;
+    private LocalDateTime createdDate;
 
     @NotNull
-    private Boolean active;
+    private Boolean active = true;
 
+    // todo: set cascade actions
     @OneToOne
-    @PrimaryKeyJoinColumn
     private User owner;
 
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @PrimaryKeyJoinColumn
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Image image;
 
-    public CatalogItem() {
-    }
+    public CatalogItem() {}
 
-    public CatalogItem(@NotEmpty String name, @NotNull LocalDateTime dateCreation, @NotNull Boolean active, @NotNull User owner, Image image) {
+    public CatalogItem(@NotEmpty String name, User owner, Image image) {
         this.name = name;
-        this.dateCreation = dateCreation;
-        this.active = active;
         this.owner = owner;
         this.image = image;
+    }
+
+    /**
+     * Set date created when catalog item is first persisted.
+     */
+    @PrePersist
+    private void onPrePersist() {
+        this.createdDate = LocalDateTime.now();
     }
 
     public Integer getId() {
@@ -64,12 +67,12 @@ public abstract class CatalogItem implements Serializable {
         this.name = name;
     }
 
-    public LocalDateTime getDateCreation() {
-        return dateCreation;
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
     }
 
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 
     public Boolean isActive() {

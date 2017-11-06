@@ -1,8 +1,7 @@
 package com.cse308.sbuify.user;
 
-import com.cse308.sbuify.common.AppConstants;
-import com.cse308.sbuify.customer.*;
-import com.cse308.sbuify.playlist.Library;
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.customer.PlayQueueRepository;
 import com.cse308.sbuify.playlist.LibraryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -29,9 +26,6 @@ public class UserController {
 
     @Autowired
     private PlayQueueRepository playQueueRepository;
-
-    @Autowired
-    private PreferenceRepository preferenceRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -74,28 +68,28 @@ public class UserController {
     private boolean initCustomer(Customer customer){
         try{
             // init customer library
-            Library library = new Library(customer);
-            customer.setLibrary(library);
-
-            libraryRepository.save(library);
+//            Library library = new Library(customer);
+//            customer.setLibrary(library);
+//
+//            libraryRepository.save(library);
 
             //init playqueue
 
-            PlayQueue playQueue = new PlayQueue(customer);
-            customer.setPlayQueue(playQueue);
-            playQueueRepository.save(playQueue);
+//            PlayQueue playQueue = new PlayQueue(customer);
+//            customer.setPlayQueue(playQueue);
+//            playQueueRepository.save(playQueue);
 
             //init Preference
 
-            List<Preference> preferences = new ArrayList<>();
-
-            Preference language =  new Preference( CustomerConstants.LANGUAGE, Language.ENGLISH.name());
-            Preference hdStream =  new Preference(CustomerConstants.HQ_STREAM, AppConstants.NO);
-            preferences.add(language);
-            preferences.add(hdStream);
-            customer.setPreferences(preferences);
-
-            preferenceRepository.saveAll(preferences);
+//            List<Preference> preferences = new ArrayList<>();
+//
+//            Preference language =  new Preference( CustomerConstants.LANGUAGE, Language.ENGLISH.name());
+//            Preference hdStream =  new Preference(CustomerConstants.HQ_STREAM, AppConstants.NO);
+//            preferences.add(language);
+//            preferences.add(hdStream);
+//            customer.setPreferences(preferences);
+//
+//            preferenceRepository.saveAll(preferences);
 
             //save customer
             userRepository.save(customer);

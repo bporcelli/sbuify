@@ -2,6 +2,7 @@ package com.cse308.sbuify.artist;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.image.Image;
 
@@ -9,23 +10,26 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-
 public class Biography implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @NotEmpty
-    private String bio;
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id")
+    private Artist artist;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @NotNull
+    @NotEmpty
+    private String text;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "image_id"))
     private List<Image> images;
 
-    public Biography() {
-    }
+    public Biography() {}
 
     public Integer getId() {
         return id;
@@ -35,12 +39,12 @@ public class Biography implements Serializable {
         this.id = id;
     }
 
-    public String getBio() {
-        return bio;
+    public String getText() {
+        return text;
     }
 
-    public void setBio(String bio) {
-        this.bio = bio;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public List<Image> getImages() {

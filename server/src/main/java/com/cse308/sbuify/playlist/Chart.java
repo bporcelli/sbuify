@@ -1,7 +1,12 @@
 package com.cse308.sbuify.playlist;
 
 
+import com.cse308.sbuify.image.Image;
+import com.cse308.sbuify.user.User;
+
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import java.util.Date;
@@ -9,15 +14,18 @@ import java.util.Date;
 @Entity
 public class Chart extends Playlist {
 
+    // The date this chart is for
     @NotNull
     private Date date;
 
+    // The previous chart, if any
+    @OneToOne
     private Chart previousChart;
 
-    public Chart() {
-    }
+    public Chart() {}
 
-    public Chart(@NotNull Date date) {
+    public Chart(@NotEmpty String name, User owner, Image image, @NotNull Boolean _private, @NotNull Date date) {
+        super(name, owner, image, _private);
         this.date = date;
     }
 

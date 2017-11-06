@@ -3,6 +3,7 @@ package com.cse308.sbuify.common;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -15,12 +16,12 @@ public class Genre implements Serializable {
     @Column(unique = true)
     private String tagId;
 
+    @NotNull
     @NotEmpty
     @Column(unique = true)
     private String name;
 
-    public Genre() {
-    }
+    public Genre() {}
 
     public Genre(@NotEmpty String name) {
         this.name = name;

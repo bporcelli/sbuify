@@ -2,6 +2,7 @@ package com.cse308.sbuify.song;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.artist.Artist;
@@ -27,23 +28,27 @@ public class Song extends CatalogItem implements Queueable {
     // Total number of plays (updated periodically)
     private Integer playCount;
 
-
+    // MusicBrainz ID
+    private String MBID;
 
     @OneToMany
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private Set<Genre> genres = new HashSet<>();
 
     @ManyToOne
+    @NotNull
     private Album album;
 
     @OneToMany
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "artist_id"))
     private Set<Artist> featuredArtists = new HashSet<>();
+
+    public Song() {}
 
     @Override
     public Collection<Song> getItems() {
         return Arrays.asList(this);
     }
-
-    public Song() {}
 
     public Float getLength() {
         return length;
@@ -93,4 +98,7 @@ public class Song extends CatalogItem implements Queueable {
         this.featuredArtists = featuredArtists;
     }
 
+    public String getMBID() {
+        return MBID;
+    }
 }

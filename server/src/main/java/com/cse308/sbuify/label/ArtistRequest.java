@@ -3,65 +3,67 @@ package com.cse308.sbuify.label;
 import com.cse308.sbuify.artist.Artist;
 
 import javax.persistence.*;
+import javax.validation.Constraint;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
-public class ArtistRequest implements Serializable{
+public class ArtistRequest implements Serializable {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @NotNull
-    private LocalDateTime creation;
-
-    @OneToMany
-    @Column(unique = true)
-    private Set<RecordLabel> requestTo = new HashSet<>();
-
     @OneToOne
-    private Artist requestFrom;
+    private Artist artist;
 
-    public ArtistRequest() {
+    @ManyToOne
+    @NotNull
+    private RecordLabel label;
+
+    @NotNull
+    private LocalDateTime created;
+
+    public ArtistRequest() {}
+
+    public ArtistRequest(@NotNull RecordLabel label, @NotNull Artist artist) {
+        this.label = label;
+        this.artist = artist;
     }
 
-    public ArtistRequest(@NotNull LocalDateTime creation, Set<RecordLabel> requestTo, Artist requestFrom) {
-        this.creation = creation;
-        this.requestTo = requestTo;
-        this.requestFrom = requestFrom;
+    /**
+     * Set created date when artist request is persisted.
+     */
+    @PrePersist
+    private void onPrePersist() {
+        this.created = LocalDateTime.now();
     }
 
-    public Integer getId() {
-        return id;
+    /**
+     * Getters and setters.
+     */
+    public LocalDateTime getCreated() {
+        return created;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    private void setCreated(LocalDateTime created) {
+        this.created = created;
     }
 
-    public LocalDateTime getCreation() {
-        return creation;
+    public Artist getArtist() {
+        return artist;
     }
 
-    public void setCreation(LocalDateTime creation) {
-        this.creation = creation;
+    public void setArtist(Artist artist) {
+        this.artist = artist;
     }
 
-    public Set<RecordLabel> getRequestTo() {
-        return requestTo;
+    public RecordLabel getLabel() {
+        return label;
     }
 
-    public void setRequestTo(Set<RecordLabel> requestTo) {
-        this.requestTo = requestTo;
-    }
-
-    public Artist getRequestFrom() {
-        return requestFrom;
-    }
-
-    public void setRequestFrom(Artist requestFrom) {
-        this.requestFrom = requestFrom;
+    public void setLabel(RecordLabel label) {
+        this.label = label;
     }
 }

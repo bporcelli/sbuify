@@ -1,6 +1,7 @@
 package com.cse308.sbuify.label;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
 import java.io.Serializable;
@@ -8,33 +9,32 @@ import java.time.LocalDateTime;
 
 @Entity
 public class RoyaltyPayment implements Serializable {
+
     @Id
     private Integer id;
 
     @PositiveOrZero
     private Double amount;
 
+    // Start of period for which this royalty payment was computed
+    private LocalDateTime periodStart;
 
-    private LocalDateTime startPeriod;
-
-    private LocalDateTime endPeriod;
+    // End of period for which this royalty payment was computed
+    private LocalDateTime periodEnd;
 
     @Enumerated(EnumType.STRING)
-    private PaymentStatus status;
+    private PaymentStatus status = PaymentStatus.PENDING_PAYMENT;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
+    @ManyToOne
+    @NotNull
     private RecordLabel payee;
 
-    public RoyaltyPayment() {
-    }
+    public RoyaltyPayment() {}
 
-    public RoyaltyPayment( @PositiveOrZero Double amount, LocalDateTime startPeriod, LocalDateTime endPeriod, PaymentStatus status, RecordLabel payee) {
-        this.id = id;
+    public RoyaltyPayment(@PositiveOrZero Double amount, LocalDateTime periodStart, LocalDateTime periodEnd, @NotNull RecordLabel payee) {
         this.amount = amount;
-        this.startPeriod = startPeriod;
-        this.endPeriod = endPeriod;
-        this.status = status;
+        this.periodStart = periodStart;
+        this.periodEnd = periodEnd;
         this.payee = payee;
     }
 
@@ -54,20 +54,20 @@ public class RoyaltyPayment implements Serializable {
         this.amount = amount;
     }
 
-    public LocalDateTime getStartPeriod() {
-        return startPeriod;
+    public LocalDateTime getPeriodStart() {
+        return periodStart;
     }
 
-    public void setStartPeriod(LocalDateTime startPeriod) {
-        this.startPeriod = startPeriod;
+    public void setPeriodStart(LocalDateTime periodStart) {
+        this.periodStart = periodStart;
     }
 
-    public LocalDateTime getEndPeriod() {
-        return endPeriod;
+    public LocalDateTime getPeriodEnd() {
+        return periodEnd;
     }
 
-    public void setEndPeriod(LocalDateTime endPeriod) {
-        this.endPeriod = endPeriod;
+    public void setPeriodEnd(LocalDateTime periodEnd) {
+        this.periodEnd = periodEnd;
     }
 
     public PaymentStatus getStatus() {

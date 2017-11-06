@@ -1,8 +1,5 @@
 package com.cse308.sbuify.artist;
 
-import com.cse308.sbuify.artist.Artist;
-import org.springframework.lang.NonNull;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -15,28 +12,27 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @NotNull
     @NotEmpty
     private String name;
 
+    @NotNull
     @NotEmpty
     private String description;
 
+    @NotNull
     @NotEmpty
-    private String purchaseURL;
+    private String purchaseUrl;
 
-
-    @OneToOne
-    @PrimaryKeyJoinColumn
+    @ManyToOne
     private Artist artist;
 
+    public Product() {}
 
-    public Product() {
-    }
-
-    public Product(@NotEmpty String name, @NotEmpty String description, @NotEmpty String purchaseURL, @NotNull Artist artist) {
+    public Product(@NotEmpty String name, @NotEmpty String description, @NotEmpty String purchaseUrl, @NotNull Artist artist) {
         this.name = name;
         this.description = description;
-        this.purchaseURL = purchaseURL;
+        this.purchaseUrl = purchaseUrl;
         this.artist = artist;
     }
 
@@ -64,12 +60,12 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public String getPurchaseURL() {
-        return purchaseURL;
+    public String getPurchaseUrl() {
+        return purchaseUrl;
     }
 
-    public void setPurchaseURL(String purchaseURL) {
-        this.purchaseURL = purchaseURL;
+    public void setPurchaseUrl(String purchaseUrl) {
+        this.purchaseUrl = purchaseUrl;
     }
 
     public Artist getArtist() {

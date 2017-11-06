@@ -1,25 +1,27 @@
 package com.cse308.sbuify.image;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
-
-import com.cse308.sbuify.image.ImageSize;
-
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
-public class Image implements Serializable{
+public class Image implements Serializable {
+
     @Id
     private Integer id;
 
+    @NotNull
     @NotEmpty
     private String path;
 
     @Enumerated(EnumType.STRING)
     private ImageSize size;
 
-    public Image() {
-    }
+    public Image() {}
 
     public Image(Integer id, @NotEmpty String path, ImageSize size) {
         this.id = id;

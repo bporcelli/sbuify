@@ -3,19 +3,18 @@ package com.cse308.sbuify.admin;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-
 @Entity
-@DiscriminatorValue(value = "admin")
-public class Admin extends User{
+public class Admin extends User {
 
+    @NotNull
     @NotEmpty
     private String firstName;
 
+    @NotNull
     @NotEmpty
     private String lastName;
 

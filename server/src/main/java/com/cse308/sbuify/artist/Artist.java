@@ -1,21 +1,22 @@
 package com.cse308.sbuify.artist;
 
+import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.album.Album;
-import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.label.RecordLabel;
+import com.cse308.sbuify.user.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 public class Artist extends CatalogItem {
+
+    // todo: popular songs (not appropriate to maintain in a separate table unless we can make it a view)
+    // todo: monthly listeners (does it really make sense to make this a property?)
 
     @NotNull
     @Column(unique = true)
@@ -24,56 +25,34 @@ public class Artist extends CatalogItem {
     @OneToMany
     private Set<Artist> relatedArtists = new HashSet<>();
 
-    @OneToMany
-    private Set<Song> popularSongs = new HashSet<>();
-
     @ElementCollection
+    @Column(name = "alias")
     private Set<String> aliases = new HashSet<>();
 
     @NotNull
     private Integer monthlyListeners;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Product> merchandise;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "product_id"))
+    private Set<Product> merchandise;
 
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @PrimaryKeyJoinColumn
     private Biography bio;
 
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Image coverImage;
 
-    @OneToOne()
-    @PrimaryKeyJoinColumn
-    private RecordLabel recordLabel;
-
-    @OneToMany()
+    @OneToMany
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "album_id"))
     private List<Album> albums;
 
-    public Artist() {
-    }
+    public Artist() {}
 
-    public Artist(@NotNull String musicBrainzId, Integer monthlyListeners, Biography bio, Image coverImage, RecordLabel recordLabel, Set<String> aliases) {
+    public Artist(@NotEmpty String name, User owner, Image image, @NotNull String musicBrainzId) {
+        super(name, owner, image);
         this.musicBrainzId = musicBrainzId;
-        this.monthlyListeners = monthlyListeners;
-        this.bio = bio;
-        this.coverImage = coverImage;
-        this.recordLabel = recordLabel;
-        this.aliases = aliases;
     }
-
-
-
-
 
     public String getMusicBrainzId() {
         return musicBrainzId;
@@ -91,14 +70,6 @@ public class Artist extends CatalogItem {
         this.relatedArtists = relatedArtists;
     }
 
-    public Set<Song> getPopularSongs() {
-        return popularSongs;
-    }
-
-    public void setPopularSongs(Set<Song> popularSongs) {
-        this.popularSongs = popularSongs;
-    }
-
     public Integer getMonthlyListeners() {
         return monthlyListeners;
     }
@@ -107,11 +78,11 @@ public class Artist extends CatalogItem {
         this.monthlyListeners = monthlyListeners;
     }
 
-    public List<Product> getMerchandise() {
+    public Set<Product> getMerchandise() {
         return merchandise;
     }
 
-    public void setMerchandise(List<Product> merchandise) {
+    public void setMerchandise(Set<Product> merchandise) {
         this.merchandise = merchandise;
     }
 
@@ -129,14 +100,6 @@ public class Artist extends CatalogItem {
 
     public void setCoverImage(Image coverImage) {
         this.coverImage = coverImage;
-    }
-
-    public RecordLabel getRecordLabel() {
-        return recordLabel;
-    }
-
-    public void setRecordLabel(RecordLabel recordLabel) {
-        this.recordLabel = recordLabel;
     }
 
     public List<Album> getAlbums() {

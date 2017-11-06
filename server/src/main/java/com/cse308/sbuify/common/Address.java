@@ -1,49 +1,55 @@
 package com.cse308.sbuify.common;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.cse308.sbuify.concert.Venue;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
-public class Address implements Serializable{
+public class Address implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "id")
+    private Venue venue;
+
+    @NotNull
     @NotEmpty
     private String addressLine1;
 
-    @NotEmpty
-    private String addressline2;
+    private String addressLine2;
 
+    @NotNull
     @NotEmpty
     private String city;
 
+    @NotNull
     @NotEmpty
     private String state;
 
+    @NotNull
     @NotEmpty
     private String country;
 
+    @NotNull
     @NotEmpty
-    private String zipcode;
+    private String postcode;
 
-    public Address() {
-    }
+    public Address() {}
 
-    public Address(Integer id, @NotEmpty String addressLine1, @NotEmpty String addressline2, @NotEmpty String city, @NotEmpty String state, @NotEmpty String country, @NotEmpty String zipcode) {
-        this.id = id;
+    public Address(@NotEmpty String addressLine1, String addressLine2, @NotEmpty String city, @NotEmpty String state, @NotEmpty String country, @NotEmpty String postcode) {
         this.addressLine1 = addressLine1;
-        this.addressline2 = addressline2;
+        this.addressLine2 = addressLine2;
         this.city = city;
         this.state = state;
         this.country = country;
-        this.zipcode = zipcode;
+        this.postcode = postcode;
     }
 
     public Integer getId() {
@@ -62,12 +68,12 @@ public class Address implements Serializable{
         this.addressLine1 = addressLine1;
     }
 
-    public String getAddressline2() {
-        return addressline2;
+    public String getAddressLine2() {
+        return addressLine2;
     }
 
-    public void setAddressline2(String addressline2) {
-        this.addressline2 = addressline2;
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
     }
 
     public String getCity() {
@@ -75,37 +81,30 @@ public class Address implements Serializable{
     }
 
     public void setCity(String city) {
-
         this.city = city;
     }
 
     public String getState() {
-
         return state;
     }
 
     public void setState(String state) {
-
         this.state = state;
     }
 
     public String getCountry() {
-
         return country;
     }
 
     public void setCountry(String country) {
-
         this.country = country;
     }
 
-    public String getZipcode() {
-
-        return zipcode;
+    public String getPostcode() {
+        return postcode;
     }
 
-    public void setZipcode(String zipcode) {
-
-        this.zipcode = zipcode;
+    public void setPostcode(String postcode) {
+        this.postcode = postcode;
     }
 }

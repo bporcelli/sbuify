@@ -7,8 +7,9 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 public class TimeRange {
+
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @NotNull
@@ -17,12 +18,10 @@ public class TimeRange {
     @NotNull
     private Double end;
 
-
     @ManyToOne
     public Stream stream;
 
-    public TimeRange() {
-    }
+    public TimeRange() {}
 
     public TimeRange(@NotNull Double start, @NotNull Double end, Stream stream) {
         this.start = start;

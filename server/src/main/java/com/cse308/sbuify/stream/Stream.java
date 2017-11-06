@@ -7,6 +7,8 @@ import com.cse308.sbuify.common.TimeRange;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.playlist.Playlist;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,39 +16,42 @@ import java.util.List;
 
 @Entity
 public class Stream implements Serializable {
+
+    // todo: make sure stream is kept around when the playlist and/or customer are deleted.
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @NotNull
-    private  Boolean premium;
+    private Boolean premium;
 
     @NotNull
     private LocalDateTime time;
 
     @OneToOne
-    @PrimaryKeyJoinColumn
     private Playlist playlist;
 
-    @OneToMany
-    private List<TimeRange> timeRanges;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "time_range_id"))
+    private List<TimeRange> played;
 
     @OneToOne
-    @PrimaryKeyJoinColumn
     private Customer customer;
 
     @OneToOne
-    @PrimaryKeyJoinColumn
     private Song song;
 
-    public Stream() {
-    }
+    public Stream() {}
 
-    public Stream(@NotNull Boolean premium, @NotNull LocalDateTime time, Playlist playlist, List<TimeRange> timeRanges, Customer customer, Song song) {
+    public Stream(@NotNull Boolean premium,
+                  @NotNull LocalDateTime time,
+                  List<TimeRange> played,
+                  Customer customer,
+                  Song song) {
         this.premium = premium;
         this.time = time;
-        this.playlist = playlist;
-        this.timeRanges = timeRanges;
+        this.played = played;
         this.customer = customer;
         this.song = song;
     }
@@ -83,12 +88,12 @@ public class Stream implements Serializable {
         this.playlist = playlist;
     }
 
-    public List<TimeRange> getTimeRanges() {
-        return timeRanges;
+    public List<TimeRange> getPlayed() {
+        return played;
     }
 
-    public void setTimeRanges(List<TimeRange> timeRanges) {
-        this.timeRanges = timeRanges;
+    public void setPlayed(List<TimeRange> played) {
+        this.played = played;
     }
 
     public Customer getCustomer() {

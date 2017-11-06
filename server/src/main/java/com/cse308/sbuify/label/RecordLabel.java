@@ -15,39 +15,36 @@ import java.util.Set;
  * Entity representing a Record Label.
  */
 @Entity
-@DiscriminatorValue(value = "recordlabel")
 public class RecordLabel extends User {
 
+    /**
+     * The MusicBrainz label this RecordLabel is associated with.
+     */
+    @OneToOne
     @NotNull
-    private String name;
+    private Label label;
 
-    @NotNull
-    @Column(unique = true)
-    private String musicBrainzId;
-
-
-    @OneToMany
+    /**
+     * Artists managed by the record label.
+     */
+    @OneToMany(mappedBy = "owner")
     private Set<Artist> artists = new HashSet<>();
 
-    public RecordLabel(@NotNull String email, @NotNull String password, @NotNull String name) {
+    public RecordLabel(@NotNull String email, @NotNull String password, @NotNull Label label) {
         super(email, password);
-        this.name = name;
+        this.label = label;
     }
 
     public String getName() {
-        return name;
+        return label.getName();
     }
 
     public void setName(String name) {
-        this.name = name;
+        label.setName(name);
     }
 
     public Set<Artist> getArtists() {
         return artists;
-    }
-
-    public void setArtists(Set<Artist> artists) {
-        this.artists = artists;
     }
 
     @JsonIgnore

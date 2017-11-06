@@ -2,50 +2,48 @@ package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "type")
 public class Playlist extends CatalogItem implements PlaylistComponent {
 
+    // Sort position
+    private Integer position;
+
+    // Parent folder, if any
+    @OneToOne
+    private PlaylistFolder parentFolder;
+
+    // Description (nullable)
     private String description;
 
+    // Is the playlist hidden from public view?
     @NotNull
-    private Boolean isPrivate;
+    private Boolean hidden;
 
-    @NotNull
-    private Integer numSongs;
+    // Songs in playlist (zero or more)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "saved_song_id"))
+    private List<SavedSong> songs;
 
-    // TODO: saved songs and catalog item
-    @OneToMany
-    private List<Song> songs;
+    public Playlist() {}
 
-    public Playlist() {
-
+    public Playlist(@NotEmpty String name, User owner, Image image, @NotNull Boolean hidden) {
+        super(name, owner, image);
+        this.hidden = hidden;
     }
 
-    public Playlist(@NotEmpty String name, @NotNull LocalDateTime dateCreation, @NotNull Boolean active, @NotNull User owner, Image image) {
-        super(name, dateCreation, active, owner, image);
-    }
-
-    public Playlist(@NotEmpty String name, @NotNull LocalDateTime dateCreation, @NotNull Boolean active, @NotNull User owner, Image image, String description, @NotNull Boolean isPrivate, @NotNull Integer numSongs, List<Song> songs) {
-        super(name, dateCreation, active, owner, image);
-        this.description = description;
-        this.isPrivate = isPrivate;
-        this.numSongs = numSongs;
-        this.songs = songs;
-    }
-
+    /**
+     * Getters and setters.
+     */
     public String getDescription() {
         return description;
     }
@@ -54,32 +52,52 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
         this.description = description;
     }
 
-    public Boolean getPrivate() {
-        return isPrivate;
+    public Boolean isHidden() {
+        return hidden;
     }
 
-    public void setPrivate(Boolean aPrivate) {
-        isPrivate = aPrivate;
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
     }
 
+    // todo: map to JSON property num_songs
     public Integer getNumSongs() {
-        return numSongs;
+        if (songs == null) {
+            return 0;
+        } else {
+            return songs.size();
+        }
     }
 
-    public void setNumSongs(Integer numSongs) {
-        this.numSongs = numSongs;
-    }
-
-    public List<Song> getSongs() {
+    public List<SavedSong> getSongs() {
         return songs;
     }
 
-    public void setSongs(List<Song> songs) {
-        this.songs = songs;
+    /**
+     * Playlist component overrides.
+     */
+    @Override
+    public Integer getPosition() {
+        return this.position;
     }
 
     @Override
-    public void setParent(PlaylistFolder folder) {
+    public void setPosition(Integer position) {
+        this.position = position;
+    }
 
+    @Override
+    public PlaylistFolder getParentFolder() {
+        return this.parentFolder;
+    }
+
+    @Override
+    public void setParentFolder(PlaylistFolder folder) {
+        this.parentFolder = folder;
+    }
+
+    @Override
+    public Boolean isFolder() {
+        return false;
     }
 }

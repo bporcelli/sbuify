@@ -8,23 +8,21 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 
 @Entity
-public class PlayQueue implements Serializable{
+public class PlayQueue implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @OneToOne
-    @PrimaryKeyJoinColumn
+    @MapsId
+    @JoinColumn(name = "id")
     private Customer customer;
 
     @OneToMany
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
     private Collection<Song> songs = new ArrayDeque<>();
 
     public PlayQueue() {
-    }
-
-    public PlayQueue(Customer customer) {
-        this.customer = customer;
     }
 
     public PlayQueue(Collection<Song> songs) {
@@ -45,13 +43,5 @@ public class PlayQueue implements Serializable{
 
     public void setSongs(Collection<Song> songs) {
         this.songs = songs;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
     }
 }

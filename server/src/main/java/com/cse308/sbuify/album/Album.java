@@ -29,11 +29,11 @@ public class Album extends CatalogItem implements Queueable {
     @Column(unique = true)
     private String musicBrainzId;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
+    @ManyToOne
     private Artist artist;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
     private Set<Song> songs = new HashSet<>();
 
     @Override
@@ -41,8 +41,7 @@ public class Album extends CatalogItem implements Queueable {
         return this.songs;
     }
 
-    public Album() {
-    }
+    public Album() {}
 
     public void addSong(Song song) {
         // todo
