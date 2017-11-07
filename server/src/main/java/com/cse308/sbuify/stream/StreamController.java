@@ -26,50 +26,44 @@ import com.cse308.sbuify.user.User;
 @Controller
 public class StreamController {
 
+    // todo: set appropriate security policies for each method
+
 	@Autowired
 	private StreamRepository streamRepo;
 
+	@Autowired
 	private AuthFacade authFacade;
 
 	@PostMapping(path = "/api/customer/streams")
 	public ResponseEntity<?> recordStream(@RequestBody Stream stream) {
+		Customer customer = (Customer) authFacade.getCurrentUser();
 
-		User user = authFacade.getCurrentUser();
-
-		if (!(user instanceof Customer)) {
-			return new ResponseEntity<>("{}", HttpStatus.FORBIDDEN);
-		}
-
-		stream.setCustomer((Customer) user);
+		stream.setCustomer(customer);
 
 		streamRepo.save(stream);
 
-		return new ResponseEntity<>("{}", HttpStatus.OK);
+		// todo: return saved stream object with 201 header
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@GetMapping(path = "/api/stream/{songId}")
 	public ResponseEntity<?> streamSong(HttpServletResponse response, @RequestParam int songId) {
 		Customer cust = (Customer) authFacade.getCurrentUser();
 
-		if (cust == null) {
-			return new ResponseEntity<>("{}", HttpStatus.FORBIDDEN);
-		}
-
-		boolean premium = cust.isPreminum();
-
 		// select file path
-		String path;
+        boolean premium = cust.isPreminum();
+        boolean hq = false;
+
 		if (premium == true) {
-			boolean hq = cust.getPreference(Preferences.HQ_STREAMING, Boolean.class);
-			path = getFilePath(songId, hq);
-		} else { // if not premium, send none hq file
-			path = getFilePath(songId, false);
+            hq = cust.getPreference(Preferences.HQ_STREAMING, Boolean.class);
 		}
+
+        String path = getFilePath(songId, hq);
 
 		// validate the path
 		boolean exists = fileExists(path);
 		if (!exists) {
-			return new ResponseEntity<>("{}", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
 		File mp3File = new File(path);
@@ -83,15 +77,16 @@ public class StreamController {
 			IOUtils.copy(input, response.getOutputStream());
 			response.flushBuffer();
 
+			// todo: body should be song bytes (not sure about return type used)
 			return new ResponseEntity<>("{}", HttpStatus.OK);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return new ResponseEntity<>("{}", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return new ResponseEntity<>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
