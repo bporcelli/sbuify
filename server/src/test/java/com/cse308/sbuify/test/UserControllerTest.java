@@ -1,20 +1,29 @@
 package com.cse308.sbuify.test;
 
-import static org.junit.Assert.assertNotNull;
-
+import com.cse308.sbuify.admin.Admin;
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.customer.PlayQueue;
+import com.cse308.sbuify.playlist.Library;
+import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.UserController;
+import com.cse308.sbuify.user.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.cse308.sbuify.user.User;
-import com.cse308.sbuify.user.UserController;
-import com.cse308.sbuify.user.UserRepository;
+import java.time.Instant;
+import java.util.Date;
+import java.util.Optional;
+
+import static com.cse308.sbuify.test.TestUtils.randomEmail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,16 +38,74 @@ public class UserControllerTest {
 	private UserRepository userRepository;
 
 	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
-
-	@Autowired
 	private UserController controller;
-	
+
+	/**
+	 * Test: does registration succeed when a unique email is provided?
+	 */
 	@Test
-	public void contexLoads() throws Exception {
-		assertNotNull(controller);
+	public void registrationSucceedsWithUniqueEmail() {
+	    ResponseEntity<Void> response;
+
+	    // Test customer registration
+		Date birthday = Date.from(Instant.now());
+        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
+
+        response = sendRegisterRequest(customer);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        // Test admin registration
+        Admin admin = new Admin(randomEmail(), "123", "Test", "Admin", false);
+
+        response = sendRegisterRequest(admin);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
 	}
-	
+
+    /**
+     * Test: does registration fail when an existing email is provided?
+     */
+    @Test
+    public void registrationFailsWithDuplicateEmail() {
+        ResponseEntity<Void> response;
+
+        Date birthday = Date.from(Instant.now());
+        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
+
+        // First attempt should succeed
+        response = sendRegisterRequest(customer);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        // Second attempt should fail
+        response = sendRegisterRequest(customer);
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+    }
+
+    /**
+     * Test: is a customer's play queue and library created upon registration?
+     */
+    @Test
+    public void customerInitializedOnRegistration() {
+        ResponseEntity<Void> response;
+
+        // Test customer registration
+        Date birthday = Date.from(Instant.now());
+        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
+
+        response = sendRegisterRequest(customer);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        // Get the new customer
+        Optional<User> savedCust = userRepository.findByEmail(customer.getEmail());
+        Customer saved = (Customer) savedCust.get();
+
+        // Ensure the customer's Play Queue and Library were created
+        PlayQueue playQueue = saved.getPlayQueue();
+        Library library = saved.getLibrary();
+
+        assertNotNull(playQueue);
+        assertNotNull(library);
+    }
+
 	/**
 	 * Helper: send a registration request and return the response.
 	 */
