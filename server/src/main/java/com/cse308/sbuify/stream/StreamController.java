@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +26,6 @@ import com.cse308.sbuify.user.User;
 
 @Controller
 public class StreamController {
-
-    // todo: set appropriate security policies for each method
 
 	@Autowired
 	private StreamRepository streamRepo;
@@ -47,6 +46,7 @@ public class StreamController {
 	}
 	
 	@GetMapping(path = "/api/stream/{songId}")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')") // todo: change api endpoint to /api/customer/stream so we don't need this?
 	public ResponseEntity<?> streamSong(HttpServletResponse response, @RequestParam int songId) {
 		Customer cust = (Customer) authFacade.getCurrentUser();
 
