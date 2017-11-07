@@ -1,18 +1,14 @@
 package com.cse308.sbuify.test;
 
-import static com.cse308.sbuify.security.SecurityConstants.HEADER_NAME;
-import static com.cse308.sbuify.security.SecurityConstants.HEADER_PREFIX;
-import static com.cse308.sbuify.security.SecurityConstants.SECRET;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Optional;
-
+import com.cse308.sbuify.admin.Admin;
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.customer.PlayQueue;
+import com.cse308.sbuify.playlist.Library;
+import com.cse308.sbuify.security.SecurityUtils;
+import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +20,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.cse308.sbuify.admin.Admin;
-import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.customer.PlayQueue;
-import com.cse308.sbuify.playlist.Library;
-import com.cse308.sbuify.security.SecurityUtils;
-import com.cse308.sbuify.user.User;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Optional;
 
-import com.cse308.sbuify.user.UserController;
-import com.cse308.sbuify.user.UserRepository;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import static com.cse308.sbuify.security.SecurityConstants.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Login & registration tests.
@@ -55,14 +49,6 @@ public class AuthTests {
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-
-	@Autowired
-	private UserController controller;
-	
-	@Test
-	public void contexLoads() throws Exception {
-		assertNotNull(controller);
-	}
 
 	/**
 	 * Test Customer registration.
@@ -184,10 +170,9 @@ public class AuthTests {
 	 * Helper: check whether token is valid for user.
 	 */
 	private boolean tokenValid(String token, User user) {
-		assertNotNull(Jwts.parser());
-		assertNotNull(SECRET.getBytes());
-		assertNotNull(token.replace(HEADER_PREFIX, ""));
-		Claims claims = Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(token.replace(HEADER_PREFIX, ""))
+		Claims claims = Jwts.parser()
+				.setSigningKey(SECRET.getBytes())
+                .parseClaimsJws(token.replace(HEADER_PREFIX, ""))
 				.getBody();
 
 		String email = claims.getSubject();
