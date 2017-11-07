@@ -2,6 +2,7 @@ package com.cse308.sbuify.user;
 
 import java.util.Optional;
 
+import com.cse308.sbuify.customer.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,6 @@ public class UserController {
     /**
      * Register a user.
      *
-     * NOTE: The response body MUST include an empty JSON object or Angular will treat successful responses as errors.
-     * See https://github.com/angular/angular/issues/18680.
-     *
      * @return ResponseEntity<>
      */
     @PostMapping
@@ -40,11 +38,9 @@ public class UserController {
 
         // Hash password and save user
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        user = userRepository.save(user);
 
-        // todo: send created user in response body (standard semantics for 201 response)
-        // todo: update frontend code accordingly
-        return new ResponseEntity<>("{}", HttpStatus.CREATED);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
     
 }

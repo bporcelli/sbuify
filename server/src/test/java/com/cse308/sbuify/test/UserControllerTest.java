@@ -7,6 +7,7 @@ import com.cse308.sbuify.playlist.Library;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserController;
 import com.cse308.sbuify.user.UserRepository;
+import org.hibernate.Hibernate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class UserControllerTest {
 	 */
 	@Test
 	public void registrationSucceedsWithUniqueEmail() {
-	    ResponseEntity<Void> response;
+	    ResponseEntity<User> response;
 
 	    // Test customer registration
 		Date birthday = Date.from(Instant.now());
@@ -66,7 +67,7 @@ public class UserControllerTest {
      */
     @Test
     public void registrationFailsWithDuplicateEmail() {
-        ResponseEntity<Void> response;
+        ResponseEntity<User> response;
 
         Date birthday = Date.from(Instant.now());
         User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
@@ -85,7 +86,7 @@ public class UserControllerTest {
      */
     @Test
     public void customerInitializedOnRegistration() {
-        ResponseEntity<Void> response;
+        ResponseEntity<User> response;
 
         // Test customer registration
         Date birthday = Date.from(Instant.now());
@@ -95,21 +96,19 @@ public class UserControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
         // Get the new customer
-        Optional<User> savedCust = userRepository.findByEmail(customer.getEmail());
-        Customer saved = (Customer) savedCust.get();
+        Optional<User> cust = userRepository.findByEmail(customer.getEmail());
+        assert(cust.isPresent());
+        Customer saved = (Customer) cust.get();
 
         // Ensure the customer's Play Queue and Library were created
-        PlayQueue playQueue = saved.getPlayQueue();
-        Library library = saved.getLibrary();
-
-        assertNotNull(playQueue);
-        assertNotNull(library);
+        assertNotNull(saved.getPlayQueue());
+        assertNotNull(saved.getLibrary());
     }
 
 	/**
 	 * Helper: send a registration request and return the response.
 	 */
-	private ResponseEntity<Void> sendRegisterRequest(User user) {
-		return restTemplate.postForEntity("http://localhost:" + port + "/api/users", user, Void.class);
+	private ResponseEntity<User> sendRegisterRequest(User user) {
+		return restTemplate.postForEntity("http://localhost:" + port + "/api/users", user, User.class);
 	}
 }
