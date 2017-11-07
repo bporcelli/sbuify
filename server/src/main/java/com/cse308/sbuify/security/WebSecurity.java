@@ -1,8 +1,5 @@
 package com.cse308.sbuify.security;
 
-import static com.cse308.sbuify.security.SecurityConstants.LOGIN_URL;
-import static com.cse308.sbuify.security.SecurityConstants.SIGN_UP_URL;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,6 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import static com.cse308.sbuify.security.SecurityConstants.*;
 
 /**
  * Spring Security configuration.
@@ -29,11 +28,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     /**
      * Customize the default web security configuration.
      *
-     * Permit all POST requests to LOGIN_URL and SIGN_UP_URL and require authentication for all other requests.
-     *
-     * Require the user role ROLE_CUSTOMER for all endpoints beginning with the prefix /api/customer.
-     *
-     * Disable session creation.
+     * Only a basic security policy is enforced at the web-application level. In general, method
+     * security should be used to control access.
      *
      * @param http
      * @throws Exception
@@ -45,14 +41,23 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .disable()
                 .authorizeRequests()
+                    // sign up, login, and reset are publicly accessible
                     .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                     .antMatchers(HttpMethod.POST, LOGIN_URL).permitAll()
-                    .antMatchers("/api/customer/**").hasRole("CUSTOMER")
+                    .antMatchers(HttpMethod.POST, RESET_URL).permitAll()
+                    // admin endpoints are only accessible to admins
+                    .antMatchers(ADMIN_PATTERN).hasRole("ADMIN")
+                    // customer endpoints are only accessible to customers
+                    .antMatchers(CUSTOMER_PATTERN).hasRole("CUSTOMER")
+                    // cron endpoints are only accessible by localhost
+                    .antMatchers(CRON_PATTERN).hasIpAddress("localhost")
+                    // by default, endpoints are only accessible to authenticated users
                     .anyRequest().authenticated()
                     .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
                 .sessionManagement()
+                    // disable session creation
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
