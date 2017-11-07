@@ -1,29 +1,21 @@
 package com.cse308.sbuify.customer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.playlist.Library;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.*;
 
 @Entity
 public class Customer extends User {
@@ -52,9 +44,6 @@ public class Customer extends User {
 	@NotEmpty
 	private String lastName;
 
-    @NotNull
-	private Boolean premium;
-
 	@NotNull
 	private Date birthday;
 
@@ -82,8 +71,7 @@ public class Customer extends User {
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Image profileImage;
 
-
-	// Must include no-arg constructor to satisfy Jackson
+    // Must include no-arg constructor to satisfy Jackson
 	public Customer() {
 	}
 
@@ -181,19 +169,38 @@ public class Customer extends User {
 	}
 
 	@JsonIgnore
-	public String getRole() {
-		return "ROLE_CUSTOMER";
-	}
-
-	@JsonIgnore
 	public boolean isPremium() {
-		// TODO Auto-generated method stub
-        return premium;
+		return subscription != null;
 	}
 
-	public boolean getPreferences(String hqStreaming, Class<Boolean> booleanClass) {
-		// TODO
-        return booleanClass.cast(preferences.get(hqStreaming));
+	/**
+     * Get a preference with the given name and type.
+     */
+    public <T> T getPreference(String prefKey, Class<T> clazz) {
+        String prefVal = preferences.get(prefKey);
 
-	}
+        if (prefVal == null) { // use default value
+            prefVal = DEFAULT_PREFS.get(prefKey);
+        }
+
+        try {
+            ObjectReader objectMapper = new ObjectMapper().readerFor(clazz);
+            return objectMapper.readValue(prefVal);
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Set a preference with the given name and type.
+     */
+    public <T> void setPreference(String prefKey, T prefVal, Class<T> clazz) {
+        ObjectWriter objectMapper = new ObjectMapper().writerFor(clazz);
+
+        try {
+            preferences.put(prefKey, objectMapper.writeValueAsString(prefVal));
+        } catch (JsonProcessingException ex) {
+            // better way to handle?
+        }
+    }
 }
