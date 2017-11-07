@@ -5,9 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.cse308.sbuify.song.Song;
+import com.cse308.sbuify.song.SongRepository;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,9 @@ public class StreamController {
 	private StreamRepository streamRepo;
 
 	@Autowired
+    private SongRepository songRepo;
+
+    @Autowired
 	private AuthFacade authFacade;
 
 	@PostMapping(path = "/api/customer/streams")
@@ -51,7 +57,7 @@ public class StreamController {
 		Customer cust = (Customer) authFacade.getCurrentUser();
 
 		// select file path
-        boolean premium = cust.isPreminum();
+        boolean premium = cust.isPremium();
         boolean hq = false;
 
 		if (premium == true) {
@@ -91,12 +97,19 @@ public class StreamController {
 	}
 
 	private boolean fileExists(String path) {
-		// TODO Auto-generated method stub
-		return false;
+        return new File(path).exists();
 	}
 
 	private String getFilePath(int songId, boolean hq) {
-		// TODO Auto-generated method stub
-		return null;
+        Optional<Song> findSong = songRepo.findById(songId);
+        if(!findSong.isPresent()){
+            return null;
+        }
+        Song song = findSong.get();
+        if (!song.isActive()){
+            return null;
+        }
+
+		return "/songs/" + songId + (hq ? "hq" : "") + ".mp3";
 	}
 }

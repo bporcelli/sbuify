@@ -169,7 +169,7 @@ public class Customer extends User {
 	}
 
 	@JsonIgnore
-	public boolean isPreminum() {
+	public boolean isPremium() {
 		return subscription != null;
 	}
 
