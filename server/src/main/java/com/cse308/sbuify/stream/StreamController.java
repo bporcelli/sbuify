@@ -60,7 +60,7 @@ public class StreamController {
 		// select file path
 		String path;
 		if (premium == true) {
-			boolean hq = cust.getPreferences(Preferences.HQ_STREAMING, Boolean.class);
+			boolean hq = cust.getPreference(Preferences.HQ_STREAMING, Boolean.class);
 			path = getFilePath(songId, hq);
 		} else { // if not premium, send none hq file
 			path = getFilePath(songId, false);

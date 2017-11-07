@@ -1,5 +1,6 @@
 package com.cse308.sbuify.customer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -17,6 +18,10 @@ import javax.persistence.PrePersist;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -79,7 +84,7 @@ public class Customer extends User {
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Image profileImage;
 
-	// Must include no-arg constructor to satisfy Jackson
+    // Must include no-arg constructor to satisfy Jackson
 	public Customer() {
 	}
 
@@ -177,18 +182,38 @@ public class Customer extends User {
 	}
 
 	@JsonIgnore
-	public String getRole() {
-		return "ROLE_CUSTOMER";
-	}
-
-	@JsonIgnore
 	public boolean isPreminum() {
-		// TODO Auto-generated method stub
-		return false;
+		return subscription != null;
 	}
 
-	public boolean getPreferences(String hqStreaming, Class<Boolean> class1) {
-		// TODO
-		return false;
-	}
+	/**
+     * Get a preference with the given name and type.
+     */
+    public <T> T getPreference(String prefKey, Class<T> clazz) {
+        String prefVal = preferences.get(prefKey);
+
+        if (prefVal == null) { // use default value
+            prefVal = DEFAULT_PREFS.get(prefKey);
+        }
+
+        try {
+            ObjectReader objectMapper = new ObjectMapper().readerFor(clazz);
+            return objectMapper.readValue(prefVal);
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Set a preference with the given name and type.
+     */
+    public <T> void setPreference(String prefKey, T prefVal, Class<T> clazz) {
+        ObjectWriter objectMapper = new ObjectMapper().writerFor(clazz);
+
+        try {
+            preferences.put(prefKey, objectMapper.writeValueAsString(prefVal));
+        } catch (JsonProcessingException ex) {
+            // better way to handle?
+        }
+    }
 }
