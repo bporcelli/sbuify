@@ -46,7 +46,7 @@ public class StreamController {
 	}
 	
 	@GetMapping(path = "/api/stream/{songId}")
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')") // todo: change api endpoint to /api/customer/stream so we don't need this?
+    @PreAuthorize("hasRole('CUSTOMER')") // todo: change api endpoint to /api/customer/stream so we don't need this?
 	public ResponseEntity<?> streamSong(HttpServletResponse response, @RequestParam int songId) {
 		Customer cust = (Customer) authFacade.getCurrentUser();
 
