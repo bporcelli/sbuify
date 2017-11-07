@@ -52,6 +52,9 @@ public class Customer extends User {
 	@NotEmpty
 	private String lastName;
 
+    @NotNull
+	private Boolean premium;
+
 	@NotNull
 	private Date birthday;
 
@@ -78,6 +81,7 @@ public class Customer extends User {
 	// Profile image for customer. When customer is updated/deleted, cascade.
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Image profileImage;
+
 
 	// Must include no-arg constructor to satisfy Jackson
 	public Customer() {
@@ -182,13 +186,14 @@ public class Customer extends User {
 	}
 
 	@JsonIgnore
-	public boolean isPreminum() {
+	public boolean isPremium() {
 		// TODO Auto-generated method stub
-		return false;
+        return premium;
 	}
 
-	public boolean getPreferences(String hqStreaming, Class<Boolean> class1) {
+	public boolean getPreferences(String hqStreaming, Class<Boolean> booleanClass) {
 		// TODO
-		return false;
+        return booleanClass.cast(preferences.get(hqStreaming));
+
 	}
 }
