@@ -1,9 +1,13 @@
 package com.cse308.sbuify.common;
 
-import com.cse308.sbuify.stream.Stream;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+
+import com.cse308.sbuify.stream.Stream;
 
 @Entity
 public class TimeRange {

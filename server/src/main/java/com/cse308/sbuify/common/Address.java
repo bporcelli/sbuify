@@ -1,12 +1,17 @@
 package com.cse308.sbuify.common;
 
 
-import com.cse308.sbuify.concert.Venue;
+import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+
+import com.cse308.sbuify.concert.Venue;
 
 @Entity
 public class Address implements Serializable {

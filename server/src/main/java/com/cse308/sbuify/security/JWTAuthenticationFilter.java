@@ -1,24 +1,29 @@
 package com.cse308.sbuify.security;
 
-import com.cse308.sbuify.user.User;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import static com.cse308.sbuify.security.SecurityConstants.HEADER_NAME;
+import static com.cse308.sbuify.security.SecurityConstants.HEADER_PREFIX;
+import static com.cse308.sbuify.security.SecurityConstants.SECRET;
+import static java.util.Collections.emptyList;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
+import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static com.cse308.sbuify.security.SecurityConstants.*;
-import static java.util.Collections.emptyList;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 /**
  * JWT Authentication Filter.

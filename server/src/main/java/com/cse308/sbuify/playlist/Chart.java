@@ -1,15 +1,15 @@
 package com.cse308.sbuify.playlist;
 
 
-import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.user.User;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import java.util.Date;
+import com.cse308.sbuify.image.Image;
+import com.cse308.sbuify.user.User;
 
 @Entity
 public class Chart extends Playlist {

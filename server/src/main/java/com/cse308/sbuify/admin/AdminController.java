@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cse308.sbuify.admin.Admin;
-import com.cse308.sbuify.admin.AdminRepository;
-
 @Controller
 @RequestMapping(path = "/admins")
 public class AdminController {

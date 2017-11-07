@@ -1,18 +1,24 @@
 package com.cse308.sbuify.stream;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
-import com.cse308.sbuify.common.TimeRange;
-import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.playlist.Playlist;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+
+import com.cse308.sbuify.common.TimeRange;
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.playlist.Playlist;
+import com.cse308.sbuify.song.Song;
 
 @Entity
 public class Stream implements Serializable {

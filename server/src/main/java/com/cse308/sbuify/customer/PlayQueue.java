@@ -1,11 +1,18 @@
 package com.cse308.sbuify.customer;
 
-import com.cse308.sbuify.song.Song;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Collection;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+
+import com.cse308.sbuify.song.Song;
 
 @Entity
 public class PlayQueue implements Serializable {

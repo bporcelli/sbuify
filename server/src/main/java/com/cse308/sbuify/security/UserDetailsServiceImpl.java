@@ -1,14 +1,15 @@
 package com.cse308.sbuify.security;
 
-import com.cse308.sbuify.user.User;
-import com.cse308.sbuify.user.UserRepository;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.UserRepository;
 
 /**
  * User Details Service.

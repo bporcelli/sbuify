@@ -1,13 +1,12 @@
 package com.cse308.sbuify.playlist;
 
+import java.util.Set;
+
+import javax.persistence.Entity;
+
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.customer.Customer;
-
-import javax.persistence.Entity;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
-import java.util.Set;
 
 @Entity
 public class Library extends Playlist {

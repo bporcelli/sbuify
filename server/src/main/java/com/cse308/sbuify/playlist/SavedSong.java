@@ -1,12 +1,18 @@
 package com.cse308.sbuify.playlist;
 
-import com.cse308.sbuify.song.Song;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.validation.constraints.NotNull;
+
+import com.cse308.sbuify.song.Song;
 
 @Entity
 public class SavedSong implements Serializable {

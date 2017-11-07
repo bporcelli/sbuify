@@ -1,14 +1,22 @@
 package com.cse308.sbuify.playlist;
 
-import com.cse308.sbuify.common.CatalogItem;
-import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.user.User;
+import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import java.util.List;
+import com.cse308.sbuify.common.CatalogItem;
+import com.cse308.sbuify.image.Image;
+import com.cse308.sbuify.user.User;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

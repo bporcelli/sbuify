@@ -1,14 +1,20 @@
 package com.cse308.sbuify.common;
 
-import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.user.User;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import com.cse308.sbuify.image.Image;
+import com.cse308.sbuify.user.User;
 
 @MappedSuperclass
 public abstract class CatalogItem implements Serializable {
