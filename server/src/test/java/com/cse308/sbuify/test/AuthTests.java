@@ -22,7 +22,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.customer.Customer;
@@ -30,6 +30,8 @@ import com.cse308.sbuify.customer.PlayQueue;
 import com.cse308.sbuify.playlist.Library;
 import com.cse308.sbuify.security.SecurityUtils;
 import com.cse308.sbuify.user.User;
+
+import com.cse308.sbuify.user.UserController;
 import com.cse308.sbuify.user.UserRepository;
 
 import io.jsonwebtoken.Claims;
@@ -38,159 +40,162 @@ import io.jsonwebtoken.Jwts;
 /**
  * Login & registration tests.
  */
-@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuthTests {
 
-    @LocalServerPort
-    private int port;
+	@LocalServerPort
+	private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+	@Autowired
+	private TestRestTemplate restTemplate;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
-    /**
-     * Test Customer registration.
-    */
-    @Test
+	@Autowired
+	private UserController controller;
+	
+	@Test
+	public void contexLoads() throws Exception {
+		assertNotNull(controller);
+	}
+
+	/**
+	 * Test Customer registration.
+	 */
+	@Test
 	public void customerRegistrationSucceeds() {
-        DateFormat format = new SimpleDateFormat("MM/dd/YYYY");
+		DateFormat format = new SimpleDateFormat("MM/dd/YYYY");
 
-        try {
-            Date birthday = format.parse("06/04/1996");
+		try {
+			Date birthday = format.parse("06/04/1996");
 
-            User customer = new Customer("test.email@test.com", "123", "John", "Doe",
-                                         birthday);
+			User customer = new Customer("test.email@test.com", "123", "John", "Doe", birthday);
 
-            ResponseEntity<Void> response = sendRegisterRequest(customer);
+			ResponseEntity<Void> response = sendRegisterRequest(customer);
 
-            // 201 response expected
-            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+			// 201 response expected
+			assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-            // Get the new customer
-            Optional<User> savedCust = userRepository.findByEmail(customer.getEmail());
-            Customer saved = (Customer) savedCust.get();
+			// Get the new customer
+			Optional<User> savedCust = userRepository.findByEmail(customer.getEmail());
+			Customer saved = (Customer) savedCust.get();
 
-            // Ensure the customer's Play Queue and Library were created
-            PlayQueue playQueue = saved.getPlayQueue();
-            Library library = saved.getLibrary();
+			// Ensure the customer's Play Queue and Library were created
+			PlayQueue playQueue = saved.getPlayQueue();
+			Library library = saved.getLibrary();
 
-            assertNotNull(playQueue);
-            assertNotNull(library);
+			assertNotNull(playQueue);
+			assertNotNull(library);
 
-            // If we try again with the same email, we should get a CONFLICT response
-            response = sendRegisterRequest(customer);
+			// If we try again with the same email, we should get a CONFLICT response
+			response = sendRegisterRequest(customer);
 
-            assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        } catch (ParseException ex) {
-            System.out.println("Failed to parse date:" + ex.getMessage());
-        }
-    }
+			assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+		} catch (ParseException ex) {
+			System.out.println("Failed to parse date:" + ex.getMessage());
+		}
+	}
 
-    /**
-     * Test Admin registration.
-     */
-    @Test
-    public void adminRegistrationSucceeds() {
-        Admin admin = new Admin("test.admin@test.com", "123", "Test",
-                                "Admin", false);
+	/**
+	 * Test Admin registration.
+	 */
+	@Test
+	public void adminRegistrationSucceeds() {
+		Admin admin = new Admin("test.admin@test.com", "123", "Test", "Admin", false);
 
-        ResponseEntity<Void> response = sendRegisterRequest(admin);
+		ResponseEntity<Void> response = sendRegisterRequest(admin);
 
-        // Expect success
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    }
+		// Expect success
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+	}
 
-    /**
-     * Test Customer authentication.
-     */
-    @Test
-    public void customerAuthenticationSucceeds() {
-        // Create user
-        Customer dummyCust = new Customer("test.customer@test.com", "12345", "Jane",
-                                         "Doe", new Date());
+	/**
+	 * Test Customer authentication.
+	 */
+	@Test
+	public void customerAuthenticationSucceeds() {
+		// Create user
+		Customer dummyCust = new Customer("test.customer@test.com", "12345", "Jane", "Doe", new Date());
 
-        registerUser(dummyCust);
+		registerUser(dummyCust);
 
-        // Authentication should succeed with a valid password
-        ResponseEntity<Void> response = sendLoginRequest(dummyCust);
+		// Authentication should succeed with a valid password
+		ResponseEntity<Void> response = sendLoginRequest(dummyCust);
 
-        assert(tokenValid(response.getHeaders().getFirst(HEADER_NAME), dummyCust));
+		assert (tokenValid(response.getHeaders().getFirst(HEADER_NAME), dummyCust));
 
-        // Authentication should fail with an invalid password
-        dummyCust.setPassword("invalid");
+		// Authentication should fail with an invalid password
+		dummyCust.setPassword("invalid");
 
-        response = sendLoginRequest(dummyCust);
+		response = sendLoginRequest(dummyCust);
 
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-    }
+		assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+	}
 
-    /**
-     * Test Admin authentication.
-     */
-    @Test
-    public void adminAuthenticationSucceeds() {
-        // Create admin
-        Admin admin = new Admin("test.admin@gmail.com", "123", "Test", "Admin",
-                                false);
-        registerUser(admin);
+	/**
+	 * Test Admin authentication.
+	 */
+	@Test
+	public void adminAuthenticationSucceeds() {
+		// Create admin
+		Admin admin = new Admin("test.admin@gmail.com", "123", "Test", "Admin", false);
+		registerUser(admin);
 
-        // Attempt authentication
-        ResponseEntity<Void> response = sendLoginRequest(admin);
+		// Attempt authentication
+		ResponseEntity<Void> response = sendLoginRequest(admin);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assert(tokenValid(response.getHeaders().getFirst(HEADER_NAME), admin));
-    }
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assert (tokenValid(response.getHeaders().getFirst(HEADER_NAME), admin));
+	}
 
-    /**
-     * Helper: save a user and return the saved user instance.
-     *
-     * @return User
-     */
-    private User registerUser(User user) {
-        String originalPassword = user.getPassword();
-        user.setPassword(passwordEncoder.encode(originalPassword));
-        userRepository.save(user);
-        user.setPassword(originalPassword);
-        return user;
-    }
+	/**
+	 * Helper: save a user and return the saved user instance.
+	 *
+	 * @return User
+	 */
+	private User registerUser(User user) {
+		String originalPassword = user.getPassword();
+		user.setPassword(passwordEncoder.encode(originalPassword));
+		userRepository.save(user);
+		user.setPassword(originalPassword);
+		return user;
+	}
 
-    /**
-     * Helper: send a registration request and return the response.
-     */
-    private ResponseEntity<Void> sendRegisterRequest(User user) {
-        return restTemplate.postForEntity("http://localhost:" + port + "/api/users",
-                                          user, Void.class);
-    }
+	/**
+	 * Helper: send a registration request and return the response.
+	 */
+	private ResponseEntity<Void> sendRegisterRequest(User user) {
+		return restTemplate.postForEntity("http://localhost:" + port + "/api/users", user, Void.class);
+	}
 
-    /**
-     * Helper: send a login request and return the response.
-     */
-    private ResponseEntity<Void> sendLoginRequest(User user) {
-        return restTemplate.postForEntity("http://localhost:" + port + "/api/login",
-                                          user, Void.class);
-    }
+	/**
+	 * Helper: send a login request and return the response.
+	 */
+	private ResponseEntity<Void> sendLoginRequest(User user) {
+		return restTemplate.postForEntity("http://localhost:" + port + "/api/login", user, Void.class);
+	}
 
-    /**
-     * Helper: check whether token is valid for user.
-     */
-    private boolean tokenValid(String token, User user) {
-        Claims claims = Jwts.parser()
-                                .setSigningKey(SECRET.getBytes())
-                                .parseClaimsJws(token.replace(HEADER_PREFIX, ""))
-                                .getBody();
+	/**
+	 * Helper: check whether token is valid for user.
+	 */
+	private boolean tokenValid(String token, User user) {
+		assertNotNull(Jwts.parser());
+		assertNotNull(SECRET.getBytes());
+		assertNotNull(token.replace(HEADER_PREFIX, ""));
+		Claims claims = Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(token.replace(HEADER_PREFIX, ""))
+				.getBody();
 
-        String email = claims.getSubject();
-        ArrayList<String> scopes = (ArrayList<String>) claims.get("scopes");
+		String email = claims.getSubject();
+		ArrayList<String> scopes = (ArrayList<String>) claims.get("scopes");
 
-        boolean emailMatches = user.getEmail().equals(email);
-        boolean roleMatches = scopes.equals(SecurityUtils.getAuthorityStrings(user));
+		boolean emailMatches = user.getEmail().equals(email);
+		boolean roleMatches = scopes.equals(SecurityUtils.getAuthorityStrings(user));
 
-        return emailMatches && roleMatches;
-    }
+		return emailMatches && roleMatches;
+	}
 }

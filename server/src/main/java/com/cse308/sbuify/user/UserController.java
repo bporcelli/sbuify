@@ -46,4 +46,5 @@ public class UserController {
         // todo: update frontend code accordingly
         return new ResponseEntity<>("{}", HttpStatus.CREATED);
     }
+    
 }

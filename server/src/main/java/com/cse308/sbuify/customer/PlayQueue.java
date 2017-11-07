@@ -1,8 +1,10 @@
 package com.cse308.sbuify.customer;
 
+
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -43,4 +45,9 @@ public class PlayQueue implements Serializable {
     public void setSongs(Collection<Song> songs) {
         this.songs = songs;
     }
+
+	public void update(List<Song> songs2) {
+		// TODO Auto-generated method stub
+		
+	}
 }
