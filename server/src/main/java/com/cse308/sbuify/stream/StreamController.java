@@ -64,15 +64,12 @@ public class StreamController {
             hq = cust.getPreference(Preferences.HQ_STREAMING, Boolean.class);
 		}
 
-        String path = getFilePath(songId, hq);
+        File mp3File = getFile(songId, hq);
 
 		// validate the path
-		boolean exists = fileExists(path);
-		if (!exists) {
+		if (mp3File == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-
-		File mp3File = new File(path);
 
 		response.setContentType("audio/mp3");
 		response.setContentLength((int) mp3File.length());
@@ -96,20 +93,26 @@ public class StreamController {
 		}
 	}
 
-	private boolean fileExists(String path) {
-        return new File(path).exists();
-	}
 
-	private String getFilePath(int songId, boolean hq) {
+	private File getFile(int songId, boolean hq) {
         Optional<Song> findSong = songRepo.findById(songId);
+
         if(!findSong.isPresent()){
             return null;
         }
+
         Song song = findSong.get();
+
         if (!song.isActive()){
             return null;
         }
+        File file = new File("/songs/" + songId + (hq ? "hq" : "") + ".mp3");
 
-		return "/songs/" + songId + (hq ? "hq" : "") + ".mp3";
+        if (file.exists()){
+            return file;
+        }
+
+        return null;
+
 	}
 }
