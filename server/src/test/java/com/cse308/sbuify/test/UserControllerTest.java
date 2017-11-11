@@ -3,6 +3,8 @@ package com.cse308.sbuify.test;
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.customer.PlayQueue;
+import com.cse308.sbuify.email.Email;
+import com.cse308.sbuify.email.NewAccountEmail;
 import com.cse308.sbuify.playlist.Library;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserController;
@@ -111,4 +113,27 @@ public class UserControllerTest {
 	private ResponseEntity<User> sendRegisterRequest(User user) {
 		return restTemplate.postForEntity("http://localhost:" + port + "/api/users", user, User.class);
 	}
+    /**
+     * Test Customer Registration Email Registration
+     */
+    @Test
+    public void finishRegistrationEmail(){
+        // Test customer registration
+
+        Date birthday = Date.from(Instant.now());
+
+        User customer = new Customer("SBUify@gmail.com", "123", "John", "Doe", birthday);
+
+        ResponseEntity<User> response  = sendRegisterRequest(customer);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        Email customerRegistration = new NewAccountEmail(customer);
+
+        assertEquals(customerRegistration.dispatch(), true);
+
+
+
+
+    }
 }
