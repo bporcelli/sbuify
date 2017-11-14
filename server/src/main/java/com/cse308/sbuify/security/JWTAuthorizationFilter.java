@@ -1,27 +1,21 @@
 package com.cse308.sbuify.security;
 
-import static com.cse308.sbuify.security.SecurityConstants.HEADER_NAME;
-import static com.cse308.sbuify.security.SecurityConstants.HEADER_PREFIX;
-import static com.cse308.sbuify.security.SecurityConstants.SECRET;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import static com.cse308.sbuify.security.SecurityConstants.*;
 
 /**
  * JWT Authorization Filter.
@@ -30,8 +24,11 @@ import io.jsonwebtoken.Jwts;
  */
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
+    private UserDetailsServiceImpl userDetailsService;
+
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailsService) {
         super(authenticationManager);
+        this.userDetailsService = userDetailsService;
     }
 
     /**
@@ -44,8 +41,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         String header = request.getHeader(HEADER_NAME);
 
         if (header != null && header.startsWith(HEADER_PREFIX)) {  // JWT provided
-
-            UsernamePasswordAuthenticationToken token = getAuthenticationToken(header);
+            Authentication token = getAuthenticationToken(header);
 
             // Provide token to security context
             SecurityContextHolder.getContext().setAuthentication(token);
@@ -59,7 +55,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
      *
      * If parsing fails, an exception will be thrown and handled by the default AccessDeniedHandler.
      */
-    private UsernamePasswordAuthenticationToken getAuthenticationToken(String header) {
+    private Authentication getAuthenticationToken(String header) {
         Claims body = Jwts.parser()
                                 .setSigningKey(SECRET.getBytes())
                                 .parseClaimsJws(header.replace(HEADER_PREFIX, ""))
@@ -68,16 +64,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         String email = body.getSubject();
 
         if (email != null) {
-            // TODO: NEED TO SUPPLY AUTHORITIES HERE?
-            List<GrantedAuthority> scopes = new ArrayList<>();
-
-            for (String str: (ArrayList<String>) body.get("scopes")) {
-                scopes.add(new SimpleGrantedAuthority(str));
-            }
-
-            return new UsernamePasswordAuthenticationToken(email, null, scopes);
+            UserDetails user = userDetailsService.loadUserByUsername(email);
+            return new PreAuthenticatedAuthenticationToken(user, user.getPassword(), user.getAuthorities());
         }
-
         return null;
     }
 

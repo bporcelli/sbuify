@@ -4,6 +4,7 @@ import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.playlist.Library;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -65,6 +66,7 @@ public class Customer extends User {
 	@MapKeyColumn(name = "PREF_KEY")
 	@Column(name = "PREF_VALUE")
 	@CollectionTable(name = "customer_preferences")
+	@JsonIgnore
 	private Map<String, String> preferences = DEFAULT_PREFS;
 
 	// Profile image for customer. When customer is updated/deleted, cascade.

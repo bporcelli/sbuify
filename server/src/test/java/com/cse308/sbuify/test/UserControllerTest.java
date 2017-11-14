@@ -119,7 +119,6 @@ public class UserControllerTest {
     @Test
     public void finishRegistrationEmail(){
         // Test customer registration
-
         Date birthday = Date.from(Instant.now());
 
         User customer = new Customer("SBUify@gmail.com", "123", "John", "Doe", birthday);
@@ -130,10 +129,6 @@ public class UserControllerTest {
 
         Email customerRegistration = new NewAccountEmail(customer);
 
-        assertEquals(customerRegistration.dispatch(), true);
-
-
-
-
+        assert(customerRegistration.dispatch());
     }
 }
