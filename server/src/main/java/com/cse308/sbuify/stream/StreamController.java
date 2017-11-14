@@ -47,8 +47,7 @@ public class StreamController {
 
 		streamRepo.save(stream);
 
-		// todo: return saved stream object with 201 header
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(stream, HttpStatus.CREATED);
 	}
 	
 	@GetMapping(path = "/api/stream/{songId}")
