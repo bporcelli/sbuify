@@ -1,5 +1,6 @@
 package com.cse308.sbuify.playlist;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -15,7 +16,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.common.CatalogItem;
+import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.image.Image;
+import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
 
 @Entity
@@ -42,7 +45,8 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "saved_song_id"))
     private List<SavedSong> songs;
 
-    public Playlist() {}
+    public Playlist() {
+    }
 
     public Playlist(@NotEmpty String name, User owner, Image image, @NotNull Boolean hidden) {
         super(name, owner, image);
@@ -68,7 +72,7 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
         this.hidden = hidden;
     }
 
-    // todo: map to JSON property num_songs
+    // TODO: map to JSON property num_songs
     public Integer getNumSongs() {
         if (songs == null) {
             return 0;
@@ -107,5 +111,29 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
     @Override
     public Boolean isFolder() {
         return false;
+    }
+
+    /**
+     * Specific methods for playlist
+     */
+
+    public int add(Queueable item) {
+        // TODO
+        return 0;
+    }
+
+    public int remove(Queueable item) {
+        // TODO
+        return 0;
+    }
+
+    public int addAll(Collection<Song> songs) {
+        // TODO
+        return 0;
+    }
+
+    public int removeAll(Collection<Song> songs) {
+        // TODO
+        return 0;
     }
 }
