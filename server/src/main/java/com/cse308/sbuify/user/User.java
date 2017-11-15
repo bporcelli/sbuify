@@ -131,7 +131,5 @@ public abstract class User implements Serializable, UserDetails {
 
     @Override
     @JsonIgnore
-    public String getName() {
-        return null;
-    }
+    public abstract String getName();
 }

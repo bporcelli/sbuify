@@ -71,4 +71,9 @@ public class Admin extends User {
     public Collection<GrantedAuthority> getAuthorities() {
         return AUTHORITIES;
     }
+
+    @Override
+    public String getName() {
+        return this.firstName + " " + this.lastName;
+    }
 }

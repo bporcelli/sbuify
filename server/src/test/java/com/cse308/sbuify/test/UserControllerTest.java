@@ -129,5 +129,14 @@ public class UserControllerTest {
         Email customerRegistration = new NewAccountEmail(customer);
 
         assertEquals(true, customerRegistration.dispatch());
+
+        // Get the new customer
+        Optional<User> cust = userRepository.findByEmail(customer.getEmail());
+        assert (cust.isPresent());
+        Customer saved = (Customer) cust.get();
+
+        // Ensure the customer's Play Queue and Library were created
+        assertNotNull(saved.getPlayQueue());
+        assertNotNull(saved.getLibrary());
     }
 }
