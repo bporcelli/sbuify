@@ -1,5 +1,6 @@
 package com.cse308.sbuify.playlist;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,7 +17,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.common.CatalogItem;
-import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
@@ -113,27 +113,56 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
         return false;
     }
 
-    /**
+    /*
      * Specific methods for playlist
      */
 
-    public int add(Queueable item) {
-        // TODO
-        return 0;
+    /**
+     * 
+     * @param song:
+     *            Song to add to the playlist
+     * @return SavedSong object
+     */
+    // parameter type changed to song to remove confusion
+    public SavedSong add(Song song) {
+        SavedSong ss = new SavedSong(this, song);
+        songs.add(ss);
+        return ss;
     }
 
-    public int remove(Queueable item) {
-        // TODO
-        return 0;
+    /**
+     * 
+     * @param song:
+     *            Song to remove
+     * @return Return null if the song does not exists in the list, Return SavedSong
+     *         information if it exists
+     */
+    // parameter type changed to song to remove confusion
+    public SavedSong remove(Song song) {
+        for (SavedSong ss : songs) {
+            if (ss.getSong().equals(song)) {
+                songs.remove(ss);
+                return ss;
+            }
+        }
+        return null;
     }
 
-    public int addAll(Collection<Song> songs) {
-        // TODO
-        return 0;
+    public List<SavedSong> addAll(Collection<Song> songs) {
+        List<SavedSong> ssCollection = new ArrayList<>();
+        for (Song s : songs) {
+            SavedSong ret = add(s);
+            ssCollection.add(ret);
+        }
+        return ssCollection;
     }
 
-    public int removeAll(Collection<Song> songs) {
-        // TODO
-        return 0;
+    public List<SavedSong> removeAll(Collection<Song> songs) {
+        List<SavedSong> ssCollection = new ArrayList<>();
+        for (Song s : songs) {
+            SavedSong ret = remove(s);
+            ssCollection.add(ret);
+        }
+        return ssCollection;
     }
 }

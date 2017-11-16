@@ -32,11 +32,13 @@ public class SavedSong implements Serializable {
     @NotNull
     private LocalDateTime added;
 
-    public SavedSong() {}
+    public SavedSong() {
+    }
 
     public SavedSong(@NotNull Playlist playlist, @NotNull Song song) {
         this.playlist = playlist;
         this.song = song;
+        this.added = LocalDateTime.now();
     }
 
     /**
