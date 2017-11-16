@@ -1,13 +1,12 @@
 package com.cse308.sbuify.customer;
 
-
 import java.io.Serializable;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 
+import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.song.Song;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,11 +29,11 @@ public class PlayQueue implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL) // fetchtype necessary to solve org.hibernate.LazyInitializationException
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
-    @JsonSerialize(as=ArrayList.class, contentAs=Song.class)
-    @JsonDeserialize(as=ArrayList.class, contentAs=Song.class)
-//    private Collection<Song> songs = new ArrayDeque<>();
+    @JsonSerialize(as = ArrayList.class, contentAs = Song.class)
+    @JsonDeserialize(as = ArrayList.class, contentAs = Song.class)
+    // private Collection<Song> songs = new ArrayDeque<>();
     private Collection<Song> songs = new ArrayList<>();
 
     public PlayQueue() {
@@ -55,24 +55,35 @@ public class PlayQueue implements Serializable {
         this.songs = songs;
     }
 
-	public void update(Collection<Song> songs2) {
-		// TODO Auto-generated method stub
-	}
+    public void update(Collection<Song> collection) {
+        songs = new ArrayList<>();
+        addAll(collection);
+    }
 
-	public void addAll(List<Song> songs2) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void addAll(Queueable qAble) {
+        Collection<Song> collection = qAble.getItems();
+        addAll(collection);
+    }
 
-	public void removeAll(List<Song> songs2) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
+    public void removeAll(Queueable qAble) {
+        Collection<Song> collection = qAble.getItems();
+        removeAll(collection);
+    }
+
+    public void addAll(Collection<Song> collection) {
+        for (Song toAdd : collection)
+            songs.add(toAdd);
+    }
+
+    public void removeAll(Collection<Song> collection) {
+        for (Song toAdd : collection)
+            songs.remove(toAdd);
+    }
+
+    @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
-        
+
         String jsonString = "";
         try {
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -80,7 +91,32 @@ public class PlayQueue implements Serializable {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        
+
         return jsonString;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (!(that instanceof PlayQueue))
+            return false;
+
+        PlayQueue thatPq = (PlayQueue) that;
+
+        if (this.getId() != thatPq.getId())
+            return false;
+
+        for (Song s : this.getSongs()) {
+            if (!thatPq.getSongs().contains(s)) {
+                return false;
+            }
+        }
+
+        for (Song s : thatPq.getSongs()) {
+            if (!this.getSongs().contains(s)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

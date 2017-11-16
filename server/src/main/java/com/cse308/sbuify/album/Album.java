@@ -19,8 +19,11 @@ import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.song.Song;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @Entity
+@JsonTypeName("album")
 public class Album extends CatalogItem implements Queueable {
 
     @NotNull
@@ -40,10 +43,11 @@ public class Album extends CatalogItem implements Queueable {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
-    @JsonIgnore
+    @JsonDeserialize(as=HashSet.class)
     private Set<Song> songs = new HashSet<>();
 
     @Override
+    @JsonIgnore
     public Collection<Song> getItems() {
         return this.songs;
     }
@@ -51,11 +55,11 @@ public class Album extends CatalogItem implements Queueable {
     public Album() {}
 
     public void addSong(Song song) {
-        // todo
+        songs.add(song);
     }
 
     public void removeSong(Song song) {
-        // todo
+        songs.remove(song);
     }
 
     public Date getReleaseDate() {

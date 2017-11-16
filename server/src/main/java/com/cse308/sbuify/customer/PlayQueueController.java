@@ -1,6 +1,5 @@
 package com.cse308.sbuify.customer;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
 
 @Controller
@@ -32,11 +31,11 @@ public class PlayQueueController {
     private AuthFacade authFacade;
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updatePlayQueue(@RequestBody List<Song> songs) {
+    public ResponseEntity<?> updatePlayQueue(@RequestBody PlayQueue newPlayQueue) {
         User user = authFacade.getCurrentUser();
 
         PlayQueue pq = ((Customer) user).getPlayQueue();
-        pq.update(songs);
+        pq.update(newPlayQueue.getSongs());
 
         pqRepo.save(pq);
 
@@ -44,40 +43,28 @@ public class PlayQueueController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<?> addToPlayQueue(@RequestBody List<Song> songs) {
-        User user = authFacade.getCurrentUser();
-
-        if (!(user instanceof Customer) || user == null) {
-            return new ResponseEntity<>("{}", HttpStatus.FORBIDDEN);
-        }
-
-        Customer cust = (Customer) user;
+    public ResponseEntity<?> addToPlayQueue(@RequestBody Queueable qAble) {
+        Customer cust = (Customer) authFacade.getCurrentUser();
 
         PlayQueue pq = cust.getPlayQueue();
 
-        pq.addAll(songs);
+        pq.addAll(qAble.getItems());
 
         pqRepo.save(pq);
 
-        return new ResponseEntity<>("{}", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping(path = "/remove")
-    public ResponseEntity<?> removeFromPlayQueue(@RequestBody List<Song> songs) {
-        User user = authFacade.getCurrentUser();
-
-        if (!(user instanceof Customer) || user == null) {
-            return new ResponseEntity<>("{}", HttpStatus.FORBIDDEN);
-        }
-
-        Customer cust = (Customer) user;
+    public ResponseEntity<?> removeFromPlayQueue(@RequestBody Queueable qAble) {
+        Customer cust = (Customer) authFacade.getCurrentUser();
 
         PlayQueue pq = cust.getPlayQueue();
 
-        pq.removeAll(songs);
+        pq.removeAll(qAble.getItems());
 
         pqRepo.save(pq);
 
-        return new ResponseEntity<>("{}", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

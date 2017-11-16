@@ -47,6 +47,7 @@ public abstract class CatalogItem implements Serializable {
     @OneToOne
     private User owner;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Image image;
 
@@ -129,5 +130,28 @@ public abstract class CatalogItem implements Serializable {
         }
 
         return jsonString;
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        if(that == null || !(that instanceof CatalogItem))
+            return false;
+        
+        final CatalogItem thatCI = (CatalogItem) that;
+        
+        if(this.getId() == null ? thatCI.getId() != null : !this.getId().equals(thatCI.getId()))
+            return false;
+        if(this.getName() == null ? thatCI.getName() != null : !this.getName().equals(thatCI.getName()))
+            return false;
+        if(this.getCreatedDate() == null ? thatCI.getCreatedDate() != null : !this.getCreatedDate().equals(thatCI.getCreatedDate()))
+            return false;
+        if(this.isActive() == null ? thatCI.isActive() != null : !this.isActive().equals(thatCI.isActive()))
+            return false;
+//        if(this.getOwner() == null ? thatCI.getOwner() != null : !this.getOwner().equals(thatCI.getOwner()))
+//            return false;
+//        if(this.getImage() == null ? thatCI.getImage() != null : !this.getImage().equals(thatCI.getImage()))
+//            return false;
+        
+        return true;
     }
 }

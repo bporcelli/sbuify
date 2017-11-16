@@ -1,8 +1,8 @@
 package com.cse308.sbuify.song;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -10,18 +10,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @Entity
+@JsonTypeName("song")
 public class Song extends CatalogItem implements Queueable {
 
     // Length of song in seconds
@@ -42,7 +40,7 @@ public class Song extends CatalogItem implements Queueable {
     private Set<Genre> genres = new HashSet<>();
 
     @ManyToOne
-    @NotNull
+//    @NotNull
     @JsonIgnore
     private Album album;
 
@@ -64,7 +62,7 @@ public class Song extends CatalogItem implements Queueable {
 
     @JsonIgnore
     @Override
-    public Collection<Song> getItems() {
+    public List<Song> getItems() {
         return Arrays.asList(this);
     }
 
@@ -118,5 +116,31 @@ public class Song extends CatalogItem implements Queueable {
 
     public String getMBID() {
         return MBID;
+    }
+    
+    @Override
+    public boolean equals(Object that) {
+        if (!(that instanceof Song))
+            return false;
+        
+        Song thatSong = (Song) that;
+        
+        // TODO: check equality of the catalogitem attributes
+//        System.out.println(super.getClass());
+//        if( !super.equals(thatSong) )
+//            return false;
+        if ( this.getLength() == null ? thatSong.getLength() != null : this.getLength().equals(thatSong.getLength()))
+            return false;
+        if ( this.getTrackNumber() == null ? thatSong.getTrackNumber() != null : this.getTrackNumber().equals(thatSong.getTrackNumber()))
+            return false;
+        if ( this.getPlayCount() == null ? thatSong.getPlayCount() != null : this.getPlayCount().equals(thatSong.getPlayCount()))
+            return false;
+        if ( this.getMBID() == null ? thatSong.getMBID() != null : this.getMBID().equals(thatSong.getMBID()))
+            return false;
+        if ( this.getPlayCount() == null ? thatSong.getPlayCount() != null : this.getPlayCount().equals(thatSong.getPlayCount()))
+            return false;
+        
+        // TODO Genres, albums, featuredArtists
+        return true;
     }
 }
