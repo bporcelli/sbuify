@@ -14,7 +14,15 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.image.Image;
+import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @MappedSuperclass
 public abstract class CatalogItem implements Serializable {
@@ -33,14 +41,17 @@ public abstract class CatalogItem implements Serializable {
     @NotNull
     private Boolean active = true;
 
-    // todo: set cascade actions
+    // TODO: set cascade actions
+
+    @JsonIgnore
     @OneToOne
     private User owner;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Image image;
 
-    public CatalogItem() {}
+    public CatalogItem() {
+    }
 
     public CatalogItem(@NotEmpty String name, User owner, Image image) {
         this.name = name;
@@ -102,5 +113,21 @@ public abstract class CatalogItem implements Serializable {
 
     public void setImage(Image image) {
         this.image = image;
+    }
+    
+
+    @Override
+    public String toString() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        String jsonString = "";
+        try {
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            jsonString = mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return jsonString;
     }
 }

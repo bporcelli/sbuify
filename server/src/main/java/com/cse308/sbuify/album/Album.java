@@ -18,6 +18,7 @@ import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.song.Song;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Album extends CatalogItem implements Queueable {
@@ -39,6 +40,7 @@ public class Album extends CatalogItem implements Queueable {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
+    @JsonIgnore
     private Set<Song> songs = new HashSet<>();
 
     @Override

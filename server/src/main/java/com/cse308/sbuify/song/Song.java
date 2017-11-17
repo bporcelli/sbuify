@@ -16,6 +16,10 @@ import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Entity
 public class Song extends CatalogItem implements Queueable {
@@ -34,18 +38,31 @@ public class Song extends CatalogItem implements Queueable {
 
     @OneToMany
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    @JsonIgnore
     private Set<Genre> genres = new HashSet<>();
 
     @ManyToOne
     @NotNull
+    @JsonIgnore
     private Album album;
 
     @OneToMany
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "artist_id"))
+    @JsonIgnore
     private Set<Artist> featuredArtists = new HashSet<>();
 
-    public Song() {}
+//    public Song(Float length, Integer trackNumber, Integer playCount, String MBID) {
+//        setLength(length);
+//        setTrackNumber(trackNumber);
+//        setPlayCount(playCount);
+//        setMBID(MBID);
+//    }
 
+    public void setMBID(String mBID) {
+        MBID = mBID;
+    }
+
+    @JsonIgnore
     @Override
     public Collection<Song> getItems() {
         return Arrays.asList(this);

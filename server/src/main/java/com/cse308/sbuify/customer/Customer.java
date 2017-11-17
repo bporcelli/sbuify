@@ -170,6 +170,11 @@ public class Customer extends User {
 		return AUTHORITIES;
 	}
 
+	@Override
+	public String getName() {
+		return this.firstName + " " + this.lastName;
+	}
+
 	@JsonIgnore
 	public boolean isPremium() {
 		return subscription != null;
