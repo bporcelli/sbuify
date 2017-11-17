@@ -66,14 +66,14 @@ def parse_release_date(release):
         elif len(date_string) == 7:  # date missing
             date_string += "-01"
         return datetime.strptime(date_string, "%Y-%m-%d")
-    except KeyError: # no date specified
+    except KeyError:  # no date specified
         return None
-    except ValueError: # invalid date format
+    except ValueError:  # invalid date format
         return None
 
 
 def clean_string(string):
-    """Clean a string by trimming leading and trailing whitespace and 
+    """Clean a string by trimming leading and trailing whitespace and
     converting to ASCII."""
     return ascii(string.strip())[1:-1]
 
@@ -137,8 +137,7 @@ def save_genres(song_id, recording):
         if int(tag['count']) == 0:  # tag not applied to recording
             continue
         genre_id, inserted = safe_insert('genre', tag['name'], tag)
-        if inserted:
-            insert('song_genre', (song_id, genre_id))
+        insert('song_genre', (song_id, genre_id))
 
 
 def save_album_songs(label_id, album_id, image_id, tracklist):
@@ -208,7 +207,7 @@ def save_artist(artist):
     artist_id, inserted = safe_insert('artist', artist['id'], to_save)
     if inserted and 'alias-list' in artist:
         for alias in artist['alias-list']:
-            insert('artist_alias', (artist_id, alias['alias']))            
+            insert('artist_alias', (artist_id, alias['alias']))
     return artist_id
 
 
