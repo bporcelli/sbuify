@@ -40,14 +40,8 @@ public class SearchTest {
      */
     @Test
     public void searchSongs() {
-        // Create an account
-        Customer customer = new Customer(randomEmail(), "12345", "Jane", "Doe", new Date());
-        LoginHelper.registerUser(passwordEncoder, userRepository, customer);
-
-        // Test customer authentication
-        ResponseEntity<Void> loginRes = LoginHelper.sendLoginRequest(port, restTemplate, customer);
-        LoginHelper.checkToken(loginRes, customer);
-
+        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
+        
         String keyword = "hello";
 
         // Send get request to the server and get the response
@@ -58,4 +52,115 @@ public class SearchTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+    
+    /**
+     * Test: is search artists work properly? Unmanaged = false by default
+     */
+    @Test
+    public void searchArtistsWithDefault() {
+        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
+        
+        String keyword = "hello";
+
+        // Send get request to the server and get the response
+        ResponseEntity<String> response;
+
+        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/artists?keyword=" + keyword,
+                String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+    
+    /**
+     * Test: is search artists work properly? Unmanaged = false by set value
+     */
+    @Test
+    public void searchArtistsUnmanaged() {
+        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
+        
+        String keyword = "hello";
+
+        // Send get request to the server and get the response
+        ResponseEntity<String> response;
+
+        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/artists?keyword=" + keyword + "&unmanaged=" + false,
+                String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+    
+
+    /**
+     * Test: is search artists work properly? Unmanaged = false by set value
+     */
+    @Test
+    public void searchArtistsManaged() {
+        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
+        
+        String keyword = "hello";
+
+        // Send get request to the server and get the response
+        ResponseEntity<String> response;
+
+        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/artists?keyword=" + keyword + "&unmanaged=" + true,
+                String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+    
+    /**
+     * Test: is search albums work properly?
+     */
+    @Test
+    public void searchAlbums() {
+        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
+        
+        String keyword = "hello";
+
+        // Send get request to the server and get the response
+        ResponseEntity<String> response;
+
+        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/albums?keyword=" + keyword,
+                String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+    
+    /**
+     * Test: is search playlist work properly?
+     */
+    @Test
+    public void searchPlaylist() {
+        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
+        
+        String keyword = "hello";
+
+        // Send get request to the server and get the response
+        ResponseEntity<String> response;
+
+        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/playlists?keyword=" + keyword,
+                String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+    
+    /**
+     * Test: is search record label work properly?
+     */
+    @Test
+    public void searchLabel() {
+        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
+        
+        String keyword = "hello";
+
+        // Send get request to the server and get the response
+        ResponseEntity<String> response;
+
+        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/labels?keyword=" + keyword,
+                String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+    
+    
 }
