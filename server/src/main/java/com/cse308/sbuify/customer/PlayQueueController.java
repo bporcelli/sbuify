@@ -45,6 +45,7 @@ public class PlayQueueController {
 
     @PostMapping(path = "/add")
     public ResponseEntity<?> addToPlayQueue(@RequestBody List<Song> songs) {
+        // todo: update to handle optional "first" argument (used by previous song)
         User user = authFacade.getCurrentUser();
 
         if (!(user instanceof Customer) || user == null) {
