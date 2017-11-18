@@ -4,15 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -29,9 +21,9 @@ public class Artist extends CatalogItem {
 
     @NotNull
     @Column(unique = true)
-    private String musicBrainzId;
+    private String MBID;
 
-    @OneToMany
+    @ManyToMany
     private Set<Artist> relatedArtists = new HashSet<>();
 
     @ElementCollection
@@ -41,8 +33,7 @@ public class Artist extends CatalogItem {
     @NotNull
     private Integer monthlyListeners;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "artist")
     private Set<Product> merchandise;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -58,17 +49,17 @@ public class Artist extends CatalogItem {
 
     public Artist() {}
 
-    public Artist(@NotEmpty String name, User owner, Image image, @NotNull String musicBrainzId) {
+    public Artist(@NotEmpty String name, User owner, Image image, @NotNull String MBID) {
         super(name, owner, image);
-        this.musicBrainzId = musicBrainzId;
+        this.MBID = MBID;
     }
 
-    public String getMusicBrainzId() {
-        return musicBrainzId;
+    public String getMBID() {
+        return MBID;
     }
 
-    public void setMusicBrainzId(String musicBrainzId) {
-        this.musicBrainzId = musicBrainzId;
+    public void setMBID(String MBID) {
+        this.MBID = MBID;
     }
 
     public Set<Artist> getRelatedArtists() {

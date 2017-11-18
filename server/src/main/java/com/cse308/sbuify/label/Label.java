@@ -9,5 +9,5 @@ import com.cse308.sbuify.common.CatalogItem;
 public class Label extends CatalogItem {
 
     @Column(unique = true)
-    private String musicBrainzId;
+    private String MBID;
 }

@@ -5,13 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.artist.Artist;
@@ -26,17 +20,16 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonTypeName("album")
 public class Album extends CatalogItem implements Queueable {
 
-    @NotNull
     private Date releaseDate;
 
     @NotNull
-    private Double duration;
+    private Integer length = 0;
 
     @NotNull
-    private Integer numSongs;
+    private Integer numSongs = 0;
 
     @Column(unique = true)
-    private String musicBrainzId;
+    private String MBID;
 
     @ManyToOne
     private Artist artist;
@@ -46,11 +39,9 @@ public class Album extends CatalogItem implements Queueable {
     @JsonDeserialize(as=HashSet.class)
     private Set<Song> songs = new HashSet<>();
 
-    @Override
-    @JsonIgnore
-    public Collection<Song> getItems() {
-        return this.songs;
-    }
+    @Enumerated(value=EnumType.STRING)
+    @NotNull
+    private AlbumType type;
 
     public Album() {}
 
@@ -70,12 +61,15 @@ public class Album extends CatalogItem implements Queueable {
         this.releaseDate = releaseDate;
     }
 
-    public Double getDuration() {
-        return duration;
+    /**
+     * Length of album in milliseconds.
+     */
+    public Integer getLength() {
+        return length;
     }
 
-    public void setDuration(Double duration) {
-        this.duration = duration;
+    public void setLength(Integer length) {
+        this.length = length;
     }
 
     public Integer getNumSongs() {
@@ -86,12 +80,12 @@ public class Album extends CatalogItem implements Queueable {
         this.numSongs = numSongs;
     }
 
-    public String getMusicBrainzId() {
-        return musicBrainzId;
+    public String getMBID() {
+        return MBID;
     }
 
-    public void setMusicBrainzId(String musicBrainzId) {
-        this.musicBrainzId = musicBrainzId;
+    public void setMBID(String MBID) {
+        this.MBID = MBID;
     }
 
     public Artist getArtist() {
@@ -108,5 +102,11 @@ public class Album extends CatalogItem implements Queueable {
 
     public void setSongs(Set<Song> songs) {
         this.songs = songs;
+    }
+
+    @Override
+    @JsonIgnore
+    public Collection<Song> getItems() {
+        return this.songs;
     }
 }
