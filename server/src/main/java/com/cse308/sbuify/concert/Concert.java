@@ -25,6 +25,7 @@ public class Concert extends CatalogItem {
     private LocalDateTime time;
 
     @OneToOne
+    @NotNull
     private Venue venue;
 
     public Concert() {}
