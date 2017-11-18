@@ -9,8 +9,6 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotEmpty;
@@ -27,6 +25,7 @@ import com.cse308.sbuify.user.User;
 public class Playlist extends CatalogItem implements PlaylistComponent {
 
     // Sort position
+    @NotNull
     private Integer position;
 
     // Parent folder, if any
@@ -41,9 +40,8 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
     private Boolean hidden;
 
     // Songs in playlist (zero or more)
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "saved_song_id"))
-    private List<SavedSong> songs;
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlaylistSong> songs;
 
     public Playlist() {
     }
@@ -81,7 +79,7 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
         }
     }
 
-    public List<SavedSong> getSongs() {
+    public List<PlaylistSong> getSongs() {
         return songs;
     }
 
@@ -121,11 +119,11 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
      * 
      * @param song:
      *            Song to add to the playlist
-     * @return SavedSong object
+     * @return PlaylistSong object
      */
     // parameter type changed to song to remove confusion
-    public SavedSong add(Song song) {
-        SavedSong ss = new SavedSong(this, song);
+    public PlaylistSong add(Song song) {
+        PlaylistSong ss = new PlaylistSong(this, song);
         songs.add(ss);
         return ss;
     }
@@ -134,12 +132,12 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
      * 
      * @param song:
      *            Song to remove
-     * @return Return null if the song does not exists in the list, Return SavedSong
+     * @return Return null if the song does not exists in the list, Return PlaylistSong
      *         information if it exists
      */
     // parameter type changed to song to remove confusion
-    public SavedSong remove(Song song) {
-        for (SavedSong ss : songs) {
+    public PlaylistSong remove(Song song) {
+        for (PlaylistSong ss : songs) {
             if (ss.getSong().equals(song)) {
                 songs.remove(ss);
                 return ss;
@@ -148,19 +146,19 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
         return null;
     }
 
-    public List<SavedSong> addAll(Collection<Song> songs) {
-        List<SavedSong> ssCollection = new ArrayList<>();
+    public List<PlaylistSong> addAll(Collection<Song> songs) {
+        List<PlaylistSong> ssCollection = new ArrayList<>();
         for (Song s : songs) {
-            SavedSong ret = add(s);
+            PlaylistSong ret = add(s);
             ssCollection.add(ret);
         }
         return ssCollection;
     }
 
-    public List<SavedSong> removeAll(Collection<Song> songs) {
-        List<SavedSong> ssCollection = new ArrayList<>();
+    public List<PlaylistSong> removeAll(Collection<Song> songs) {
+        List<PlaylistSong> ssCollection = new ArrayList<>();
         for (Song s : songs) {
-            SavedSong ret = remove(s);
+            PlaylistSong ret = remove(s);
             ssCollection.add(ret);
         }
         return ssCollection;

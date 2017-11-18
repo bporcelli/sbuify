@@ -1,10 +1,11 @@
 package com.cse308.sbuify.customer;
 
+import com.cse308.sbuify.customer.preferences.Language;
+import com.cse308.sbuify.customer.preferences.Preferences;
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.playlist.Library;
+import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -60,7 +61,7 @@ public class Customer extends User {
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@NotNull
 	@JsonIgnore
-	private Library library;
+	private Playlist library;
 
 	@ElementCollection
 	@MapKeyColumn(name = "PREF_KEY")
@@ -73,7 +74,6 @@ public class Customer extends User {
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Image profileImage;
 
-    // Must include no-arg constructor to satisfy Jackson
 	public Customer() {
 	}
 
@@ -141,7 +141,7 @@ public class Customer extends User {
 		this.playQueue = playQueue;
 	}
 
-	public Library getLibrary() {
+	public Playlist getLibrary() {
 		return library;
 	}
 
