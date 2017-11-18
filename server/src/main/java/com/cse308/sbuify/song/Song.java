@@ -5,11 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.artist.Artist;
@@ -18,47 +15,41 @@ import com.cse308.sbuify.common.Queueable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
+/**
+ * Represents a song on a particular album.
+ */
 @Entity
 @JsonTypeName("song")
 public class Song extends CatalogItem implements Queueable {
 
-    // Length of song in seconds
-    private Float length;
+    @NotNull
+    private Integer length;
 
-    // Track number on album
+    @NotNull
     private Integer trackNumber;
 
-    // Total number of plays (updated periodically)
-    private Integer playCount;
+    @NotNull
+    private Integer playCount = 0;
 
-    // MusicBrainz ID
+    @NotNull
     private String MBID;
 
-    @OneToMany
+    private String lyrics = "";
+
+    @ManyToMany
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "genre_id"))
     @JsonIgnore
     private Set<Genre> genres = new HashSet<>();
 
     @ManyToOne
-//    @NotNull
+    @NotNull
     @JsonIgnore
     private Album album;
 
-    @OneToMany
+    @ManyToMany
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "artist_id"))
     @JsonIgnore
     private Set<Artist> featuredArtists = new HashSet<>();
-
-//    public Song(Float length, Integer trackNumber, Integer playCount, String MBID) {
-//        setLength(length);
-//        setTrackNumber(trackNumber);
-//        setPlayCount(playCount);
-//        setMBID(MBID);
-//    }
-
-    public void setMBID(String mBID) {
-        MBID = mBID;
-    }
 
     @JsonIgnore
     @Override
@@ -66,58 +57,83 @@ public class Song extends CatalogItem implements Queueable {
         return Arrays.asList(this);
     }
 
-    public Float getLength() {
+    /**
+     * Length of song in milliseconds.
+     */
+    public Integer getLength() {
         return length;
     }
 
-    public void setLength(Float length) {
+    /**
+     * {@link #getLength()}
+     */
+    public void setLength(Integer length) {
         this.length = length;
     }
 
+    /**
+     * Track number (position in album).
+     */
     public Integer getTrackNumber() {
         return trackNumber;
     }
 
-    public void setTrackNumber(Integer trackNumber) {
-        this.trackNumber = trackNumber;
-    }
-
+    /**
+     * The number of times this song has been played (updated periodically).
+     */
     public Integer getPlayCount() {
         return playCount;
     }
 
-    public void setPlayCount(Integer playCount) {
-        this.playCount = playCount;
+    /**
+     * MusicBrainz ID. Used to identify song during a data update.
+     */
+    public String getMBID() {
+        return MBID;
     }
 
+    /**
+     * The genres the song falls into.
+     */
     public Set<Genre> getGenres() {
         return genres;
     }
 
+    /**
+     * {@link #getGenres()}
+     */
     public void setGenres(Set<Genre> genres) {
         this.genres = genres;
     }
 
+    /**
+     * The album the song appears on.
+     */
     public Album getAlbum() {
         return album;
     }
 
-    public void setAlbum(Album album) {
-        this.album = album;
-    }
-
+    /**
+     * Artists featured on this song.
+     */
     public Set<Artist> getFeaturedArtists() {
         return featuredArtists;
     }
 
-    public void setFeaturedArtists(Set<Artist> featuredArtists) {
-        this.featuredArtists = featuredArtists;
+    /**
+     * HTML markup for displaying the song's lyrics.
+     */
+    public String getLyrics() {
+        return lyrics;
     }
 
-    public String getMBID() {
-        return MBID;
+    /**
+     * {@link #getLyrics()}
+     */
+    public void setLyrics(String lyrics) {
+        this.lyrics = lyrics;
     }
-    
+
     @Override
     public boolean equals(Object that) {
         if (!(that instanceof Song))
