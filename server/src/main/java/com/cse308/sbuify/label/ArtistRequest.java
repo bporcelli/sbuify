@@ -18,22 +18,23 @@ import com.cse308.sbuify.artist.Artist;
 public class ArtistRequest implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
     @OneToOne
+    @NotNull
     private Artist artist;
 
     @ManyToOne
     @NotNull
-    private RecordLabel label;
+    private LabelOwner label;
 
     @NotNull
     private LocalDateTime created;
 
     public ArtistRequest() {}
 
-    public ArtistRequest(@NotNull RecordLabel label, @NotNull Artist artist) {
+    public ArtistRequest(@NotNull LabelOwner label, @NotNull Artist artist) {
         this.label = label;
         this.artist = artist;
     }
@@ -65,11 +66,11 @@ public class ArtistRequest implements Serializable {
         this.artist = artist;
     }
 
-    public RecordLabel getLabel() {
+    public LabelOwner getLabel() {
         return label;
     }
 
-    public void setLabel(RecordLabel label) {
+    public void setLabel(LabelOwner label) {
         this.label = label;
     }
 }

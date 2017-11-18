@@ -4,15 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.song.Song;
@@ -26,14 +18,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class PlayQueue implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL) // fetchtype necessary to solve org.hibernate.LazyInitializationException
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL) // fetchtype necessary to solve org.hibernate.LazyInitializationException
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
     @JsonSerialize(as = ArrayList.class, contentAs = Song.class)
     @JsonDeserialize(as = ArrayList.class, contentAs = Song.class)
-    // private Collection<Song> songs = new ArrayDeque<>();
+    // private Collection<Song> songs = new ArrayDeque<>(); // todo: should be backed by deque if possible
     private Collection<Song> songs = new ArrayList<>();
 
     public PlayQueue() {
