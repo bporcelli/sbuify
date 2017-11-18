@@ -1,27 +1,25 @@
-package com.cse308.sbuify.common;
+package com.cse308.sbuify.stream;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-import com.cse308.sbuify.stream.Stream;
-
 @Entity
+@Table(name = "stream_time_ranges")
 public class TimeRange {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
     @NotNull
+    @Column(name = "range_start")
     private Double start;
 
     @NotNull
+    @Column(name = "range_end")
     private Double end;
 
+    @NotNull
     @ManyToOne
     public Stream stream;
 
