@@ -3,11 +3,7 @@ package com.cse308.sbuify.common;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -17,12 +13,8 @@ import com.cse308.sbuify.concert.Venue;
 public class Address implements Serializable {
 
     @Id
+    @GeneratedValue
     private Integer id;
-
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "id")
-    private Venue venue;
 
     @NotNull
     @NotEmpty
