@@ -1,5 +1,7 @@
 package com.cse308.sbuify.web;
 
+import com.cse308.sbuify.label.Label;
+import com.cse308.sbuify.label.LabelRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,6 @@ import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.album.AlbumRepository;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
-import com.cse308.sbuify.label.RecordLabel;
-import com.cse308.sbuify.label.RecordLabelRepository;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistRepository;
 import com.cse308.sbuify.song.Song;
@@ -37,7 +37,7 @@ public class SearchController {
     private PlaylistRepository playlistRepo;
 
     @Autowired
-    private RecordLabelRepository labelRepo;
+    private LabelRepository labelRepo;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -85,10 +85,9 @@ public class SearchController {
     }
 
     @GetMapping(path = "/labels")
-    public @ResponseBody Iterable<RecordLabel> searchLabel(@RequestParam String keyword) {
+    public @ResponseBody Iterable<Label> searchLabels(@RequestParam String keyword) {
         logger.debug("Queried keyword: " + keyword);
-        Iterable<RecordLabel> searchResult = labelRepo.findByKeyword(keyword);
-
+        Iterable<Label> searchResult = labelRepo.findByKeyword(keyword);
         return searchResult;
     }
 }
