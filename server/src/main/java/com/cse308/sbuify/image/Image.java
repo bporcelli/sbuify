@@ -12,11 +12,12 @@ import java.nio.file.Paths;
 
 @Entity
 public class Image implements Serializable {
+
     private static final String IMAGE_DIR = "/content/images/";  // todo: decide where to put static content & update
     private static final String SIZE_DELIM = "-";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
     @NotNull

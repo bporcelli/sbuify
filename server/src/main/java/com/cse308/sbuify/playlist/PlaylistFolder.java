@@ -13,12 +13,14 @@ import com.cse308.sbuify.user.User;
 public class PlaylistFolder implements PlaylistComponent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
+    @NotNull
     private String name;
 
     // Sort position
+    @NotNull
     private Integer position;
 
     // Folder owner
