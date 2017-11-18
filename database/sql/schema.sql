@@ -394,19 +394,16 @@ DROP TABLE IF EXISTS `label`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `label` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `active` bit(1) NOT NULL DEFAULT b'1',
-  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `name` varchar(255) NOT NULL,
   `mbid` char(36) NOT NULL,
-  `image_id` int(11) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `address_id` int(11) NOT NULL,
   `owner_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UK_m2qc3p1vsclhg4gejf93n495h` (`mbid`),
-  KEY `FKpkuveyf6aygegr0j9qpss2qgw` (`image_id`),
-  KEY `FK2q8wuoo70p3lwoutju8yvcgk7` (`owner_id`),
-  CONSTRAINT `FK2q8wuoo70p3lwoutju8yvcgk7` FOREIGN KEY (`owner_id`) REFERENCES `user` (`id`),
-  CONSTRAINT `FKpkuveyf6aygegr0j9qpss2qgw` FOREIGN KEY (`image_id`) REFERENCES `image` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+  KEY `address_id` (`address_id`),
+  KEY `owner_id` (`owner_id`),
+  CONSTRAINT `label_ibfk_1` FOREIGN KEY (`address_id`) REFERENCES `address` (`id`),
+  CONSTRAINT `label_ibfk_2` FOREIGN KEY (`owner_id`) REFERENCES `label_owner` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -420,6 +417,23 @@ CREATE TABLE `label_owner` (
   `id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `label_owner_ibfk_1` FOREIGN KEY (`id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `label_song`
+--
+
+DROP TABLE IF EXISTS `label_song`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `label_song` (
+  `label_id` int(11) NOT NULL,
+  `song_id` int(11) NOT NULL,
+  PRIMARY KEY (`label_id`,`song_id`),
+  UNIQUE KEY `song_id` (`song_id`),
+  CONSTRAINT `label_song_ibfk_1` FOREIGN KEY (`label_id`) REFERENCES `label` (`id`),
+  CONSTRAINT `label_song_ibfk_2` FOREIGN KEY (`song_id`) REFERENCES `song` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -439,8 +453,8 @@ CREATE TABLE `payment` (
   PRIMARY KEY (`id`),
   KEY `FKs6fue04dwm42nhkb9ivrdlfp4` (`payee_id`),
   KEY `period_id` (`period_id`),
-  CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`payee_id`) REFERENCES `label` (`id`),
-  CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`period_id`) REFERENCES `payment_period` (`id`)
+  CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`period_id`) REFERENCES `payment_period` (`id`),
+  CONSTRAINT `payment_ibfk_3` FOREIGN KEY (`payee_id`) REFERENCES `label` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -712,23 +726,6 @@ CREATE TABLE `song_genres` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `song_label`
---
-
-DROP TABLE IF EXISTS `song_label`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `song_label` (
-  `song_id` int(11) NOT NULL,
-  `label_id` int(11) NOT NULL,
-  PRIMARY KEY (`song_id`,`label_id`),
-  KEY `label_id` (`label_id`),
-  CONSTRAINT `song_label_ibfk_1` FOREIGN KEY (`song_id`) REFERENCES `song` (`id`),
-  CONSTRAINT `song_label_ibfk_2` FOREIGN KEY (`label_id`) REFERENCES `label` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `stream`
 --
 
@@ -912,4 +909,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-18 17:23:04
+-- Dump completed on 2017-11-18 17:45:07
