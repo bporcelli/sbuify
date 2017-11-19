@@ -46,9 +46,10 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
     public Playlist() {
     }
 
-    public Playlist(@NotEmpty String name, User owner, Image image, @NotNull Boolean hidden) {
+    public Playlist(@NotEmpty String name, User owner, Image image, @NotNull Boolean hidden, @NotNull Integer pos) {
         super(name, owner, image);
         this.hidden = hidden;
+        this.position = pos;
     }
 
     /**

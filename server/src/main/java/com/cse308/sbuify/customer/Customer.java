@@ -89,13 +89,8 @@ public class Customer extends User {
 	 */
 	@PrePersist
 	private void initialize() {
-		// Create library
-		Library library = new Library(this);
-		this.setLibrary(library);
-
-		// Create Play Queue
-		PlayQueue playQueue = new PlayQueue();
-		this.setPlayQueue(playQueue);
+		this.setLibrary(new Playlist(getName(), this, null, true, 0));
+		this.setPlayQueue(new PlayQueue());
 	}
 
 	/**
@@ -145,7 +140,7 @@ public class Customer extends User {
 		return library;
 	}
 
-	public void setLibrary(Library library) {
+	public void setLibrary(Playlist library) {
 		this.library = library;
 	}
 
