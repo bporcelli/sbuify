@@ -1,5 +1,6 @@
 package com.cse308.sbuify.test;
 
+import static com.cse308.sbuify.test.TestUtils.randomEmail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -49,13 +50,13 @@ public class UserControllerTest {
 
         // Test customer registration
         Date birthday = Date.from(Instant.now());
-        User customer = new Customer("HelloCustomer@asdf.com", "123", "John", "Doe", birthday);
+        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
 
         response = sendRegisterRequest(customer);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
         // Test admin registration
-        Admin admin = new Admin("HelloAdmin@asdf.com", "123", "Test", "Admin", false);
+        Admin admin = new Admin(randomEmail(), "123", "Test", "Admin", false);
 
         response = sendRegisterRequest(admin);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -69,7 +70,7 @@ public class UserControllerTest {
         ResponseEntity<User> response;
 
         Date birthday = Date.from(Instant.now());
-        User customer = new Customer("Customer@asdf.com", "123", "John", "Doe", birthday);
+        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
 
         // First attempt should succeed
         response = sendRegisterRequest(customer);
@@ -89,7 +90,7 @@ public class UserControllerTest {
 
         // Test customer registration
         Date birthday = Date.from(Instant.now());
-        User customer = new Customer("asdf@asdfasdf.com", "123", "John", "Doe", birthday);
+        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
 
         response = sendRegisterRequest(customer);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -120,7 +121,7 @@ public class UserControllerTest {
 
         Date birthday = Date.from(Instant.now());
 
-        User customer = new Customer("SBUify@gmail.com", "123", "John", "Doe", birthday);
+        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
 
         ResponseEntity<User> response = sendRegisterRequest(customer);
 
