@@ -1,13 +1,11 @@
 package com.cse308.sbuify.song;
 
 
+import com.cse308.sbuify.image.Image;
+
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -15,21 +13,23 @@ import javax.validation.constraints.NotNull;
 public class Genre implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
-
-    @Column(unique = true)
-    private String tagId;
 
     @NotNull
     @NotEmpty
     @Column(unique = true)
     private String name;
 
+    @NotNull
+    @OneToOne
+    private Image image;
+
     public Genre() {}
 
-    public Genre(@NotEmpty String name) {
+    public Genre(@NotEmpty String name, @NotNull Image image) {
         this.name = name;
+        this.image = image;
     }
 
     public Integer getId() {
@@ -46,5 +46,13 @@ public class Genre implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 }

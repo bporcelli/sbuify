@@ -1,4 +1,4 @@
-package com.cse308.sbuify.customer;
+package com.cse308.sbuify.customer.preferences;
 
 public enum RepeatMode {
     NONE,

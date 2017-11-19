@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 public class Subscription implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
     @OneToOne(mappedBy = "subscription")
@@ -29,6 +29,7 @@ public class Subscription implements Serializable {
     private String stripeId;
 
     // Subscription start date
+    @NotNull
     private LocalDateTime start;
 
     // Subscription end date

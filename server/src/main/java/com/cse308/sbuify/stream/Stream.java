@@ -1,24 +1,14 @@
 package com.cse308.sbuify.stream;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
-
-import com.cse308.sbuify.common.TimeRange;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.song.Song;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Stream implements Serializable {
@@ -26,7 +16,7 @@ public class Stream implements Serializable {
     // todo: make sure stream is kept around when the playlist and/or customer are deleted.
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
     @NotNull
@@ -38,13 +28,13 @@ public class Stream implements Serializable {
     @OneToOne
     private Playlist playlist;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "time_range_id"))
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "stream")
     private List<TimeRange> played;
 
     @OneToOne
     private Customer customer;
 
+    @NotNull
     @OneToOne
     private Song song;
 

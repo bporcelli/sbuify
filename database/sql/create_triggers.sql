@@ -1,15 +1,44 @@
--- old_length is old song length (ms), new_length is new song length (ms)
-create procedure update_album_length(in album_id int, in old_length real, in new_length real)
-	update album set duration = duration - old_length + new_length WHERE id = album_id;
+-- update album length when a song's length changes
+CREATE PROCEDURE update_album_length
+                (IN album_id int,
+                 IN old_song_length int,
+                 IN new_song_length int)
+UPDATE album
+SET length = length - old_song_length + new_song_length
+WHERE id = album_id;
 
-create trigger update_album_duration_on_insert
-	after insert on song
-    for each row call update_album_length(NEW.album_id, 0, NEW.length);
+-- update the number of song's for an album when a song is inserted or deleted
+CREATE PROCEDURE update_album_song_count
+                (IN album_id int,
+                 IN delta int)
+UPDATE album
+SET num_songs = num_songs + delta
+WHERE id = album_id;
 
-create trigger update_album_duration_on_update
-	after update on song
-    for each row call update_album_length(NEW.album_id, OLD.length, NEW.length);
 
-create trigger update_album_duration_on_delete
-	before delete on song
-    for each row call update_album_length(OLD.album_id, OLD.length, 0);
+DELIMITER $$
+
+CREATE TRIGGER update_album_when_song_inserted
+AFTER INSERT ON song
+FOR EACH ROW
+BEGIN
+    CALL update_album_length(NEW.album_id, 0, NEW.LENGTH);
+    CALL update_album_song_count(NEW.album_id, 1);
+END
+$$
+
+CREATE TRIGGER update_album_when_song_deleted
+BEFORE DELETE ON song
+FOR EACH ROW
+BEGIN
+    CALL update_album_length(OLD.album_id, OLD.LENGTH, 0);
+    CALL update_album_song_count(OLD.album_id, -1);
+END
+$$
+
+DELIMITER ;
+
+CREATE TRIGGER update_album_when_song_updated
+AFTER UPDATE ON song
+FOR EACH ROW
+    CALL update_album_length(NEW.album_id, OLD.LENGTH, NEW.LENGTH);

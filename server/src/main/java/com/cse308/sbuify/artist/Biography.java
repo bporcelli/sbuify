@@ -22,7 +22,7 @@ import com.cse308.sbuify.image.Image;
 public class Biography implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
     @OneToOne

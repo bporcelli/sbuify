@@ -23,9 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.customer.Preferences;
+import com.cse308.sbuify.customer.preferences.Preferences;
 import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.user.User;
 
 @Controller
 public class StreamController {
