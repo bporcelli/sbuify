@@ -32,7 +32,7 @@ public class Song extends CatalogItem implements Queueable {
     private Integer playCount = 0;
 
     @NotNull
-    private String MBID;
+    private String mbid;
 
     private String lyrics = "";
 
@@ -89,7 +89,7 @@ public class Song extends CatalogItem implements Queueable {
      * MusicBrainz ID. Used to identify song during a data update.
      */
     public String getMBID() {
-        return MBID;
+        return mbid;
     }
 
     /**

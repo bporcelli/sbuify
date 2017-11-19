@@ -16,17 +16,18 @@ public class Label {
 
     @NotNull
     @Column(unique = true)
-    private String MBID;
+    private String mbid;
 
     @NotNull
     @NotEmpty
     private String name;
 
     @NotNull
+    @OneToOne
     private Address address;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "label")
+    @OneToOne
     private LabelOwner owner;
 
     public Integer getId() {
@@ -34,7 +35,7 @@ public class Label {
     }
 
     public String getMBID() {
-        return MBID;
+        return mbid;
     }
 
     public String getName() {

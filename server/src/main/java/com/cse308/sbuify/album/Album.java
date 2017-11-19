@@ -29,7 +29,7 @@ public class Album extends CatalogItem implements Queueable {
     private Integer numSongs = 0;
 
     @Column(unique = true)
-    private String MBID;
+    private String mbid;
 
     @ManyToOne
     private Artist artist;
@@ -81,11 +81,11 @@ public class Album extends CatalogItem implements Queueable {
     }
 
     public String getMBID() {
-        return MBID;
+        return mbid;
     }
 
     public void setMBID(String MBID) {
-        this.MBID = MBID;
+        this.mbid = MBID;
     }
 
     public Artist getArtist() {

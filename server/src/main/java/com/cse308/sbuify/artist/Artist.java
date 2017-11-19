@@ -21,7 +21,7 @@ public class Artist extends CatalogItem {
 
     @NotNull
     @Column(unique = true)
-    private String MBID;
+    private String mbid;
 
     @ManyToMany
     private Set<Artist> relatedArtists = new HashSet<>();
@@ -49,17 +49,17 @@ public class Artist extends CatalogItem {
 
     public Artist() {}
 
-    public Artist(@NotEmpty String name, User owner, Image image, @NotNull String MBID) {
+    public Artist(@NotEmpty String name, User owner, Image image, @NotNull String mbid) {
         super(name, owner, image);
-        this.MBID = MBID;
+        this.mbid = mbid;
     }
 
     public String getMBID() {
-        return MBID;
+        return mbid;
     }
 
     public void setMBID(String MBID) {
-        this.MBID = MBID;
+        this.mbid = MBID;
     }
 
     public Set<Artist> getRelatedArtists() {
