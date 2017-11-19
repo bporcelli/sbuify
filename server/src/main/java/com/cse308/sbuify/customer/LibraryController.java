@@ -43,7 +43,8 @@ public class LibraryController {
     }
 
     @PostMapping
-    public @ResponseBody ResponseEntity<PlaylistSong> saveSongToLibrary(@RequestBody Song songToAdd) {
+    public @ResponseBody ResponseEntity<PlaylistSong> saveToLibrary(@RequestBody Song songToAdd) {
+        // todo: accept queuable, not song (albums can be saved as well...)
         Customer cust = (Customer) authFacade.getCurrentUser();
 
         Playlist lib = cust.getLibrary();
@@ -56,7 +57,7 @@ public class LibraryController {
     }
 
     @DeleteMapping
-    public @ResponseBody ResponseEntity<?> saveSongToLibrary(@RequestParam Integer songToRmId) {
+    public @ResponseBody ResponseEntity<?> removeFromLibrary(@RequestParam Integer songToRmId) {
         Customer cust = (Customer) authFacade.getCurrentUser();
 
         Playlist lib = cust.getLibrary();
