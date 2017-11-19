@@ -6,6 +6,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface LabelRepository extends CrudRepository<Label, Integer> {
 
-    @Query("FROM Label rl where LOWER(rl.name) = LOWER(:keyword) AND r1.owner == NULL")
+    @Query("SELECT l FROM Label l WHERE LOWER(l.name) = LOWER(:keyword)")
     Iterable<Label> findByKeyword(@Param("keyword") String keyword);
 }
