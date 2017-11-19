@@ -3,6 +3,8 @@ package com.cse308.sbuify.user;
 import java.util.Optional;
 
 import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.email.Email;
+import com.cse308.sbuify.email.NewAccountEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +41,17 @@ public class UserController {
         // Hash password and save user
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user = userRepository.save(user);
+
+        Email userRegistration = new NewAccountEmail(user);
+
+        if (!userRegistration.dispatch()){
+            // send email
+            // return 500 response, error sending email
+            if ( !userRegistration.dispatch()) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        }
 
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }

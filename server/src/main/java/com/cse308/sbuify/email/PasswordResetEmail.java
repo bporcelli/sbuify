@@ -1,8 +1,10 @@
 package com.cse308.sbuify.email;
 
 import com.cse308.sbuify.user.User;
+import org.springframework.boot.web.server.LocalServerPort;
 
 public class PasswordResetEmail extends Email {
+
 	private User user;
 
 	public PasswordResetEmail(User user) {
@@ -16,7 +18,7 @@ public class PasswordResetEmail extends Email {
 		this.subject = "Reset Password Request";
 		this.body = "<h1>Hey, " + user.getName() + "</h1>\n" +
 				"<p>" + "If you did not send this request please ignore this email" + "</p>\n" +
-				"<p>" + "<a href= \"/api/customer/"+ user.getToken() + "\">Reset Password</a>" + "</p>\n" +
+				"<p>" + "<a href=" + "\"" + "http://localhost:" + Email.websitePort + "/api/reset-password" + "\">"+ "Reset Password"+"</a>" + "</p>\n" +
 				"<p>Your Truly, 49er's</p>";
 	}
 }

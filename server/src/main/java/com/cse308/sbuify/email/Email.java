@@ -3,11 +3,34 @@ package com.cse308.sbuify.email;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Date;
 import java.util.Properties;
 
 public abstract class Email {
-	
-    /**
+
+	/*
+	 * Angular 2 port
+	 */
+	protected static String websitePort = "4200";
+
+	/*
+	 * Gmail SMTP port
+	 */
+
+	private static final String SMTP = "587";
+
+	/**
+	 *
+	 * Gmail SMTP host
+	 */
+	private static final String HOST = "smtp.gmail.com";
+
+	/**
+	 *
+	 *
+	 */
+
+    /*
      * Session (used when constructing MimeMessage).
      */
 	private static Session session;
@@ -43,24 +66,21 @@ public abstract class Email {
 	public boolean dispatch() {
 	    this.build();
 		Properties mailServerProperties = System.getProperties();
-
-		mailServerProperties.put("mail.smtps.port", "465");
-		mailServerProperties.put("mail.smtps.auth", "true");
-		mailServerProperties.put("mail.smtps.starttls.enable", "true");
+		mailServerProperties.put("mail.smtp.host", HOST);
+		mailServerProperties.put("mail.smtp.port", SMTP);
+		mailServerProperties.put("mail.smtp.auth", "true");
+		mailServerProperties.put("mail.smtp.starttls.enable", "true");
 
 		session = Session.getDefaultInstance(mailServerProperties, null);
 
 		try {
-			MimeMessage generateMailMessage = new MimeMessage(session);
+			Message generateMailMessage = new MimeMessage(session);
 			generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(this.toEmail));
 			generateMailMessage.setSubject(this.subject);
-
-			String emailBody = this.body;
-
-			generateMailMessage.setContent(emailBody, "text/html");
-
-			Transport transport = session.getTransport("smtps");
-			transport.connect("smtp.gmail.com", "SBUify", "cse308project");
+			generateMailMessage.setSentDate(new Date());
+			generateMailMessage.setContent(this.body,"text/html");
+			Transport transport = session.getTransport("smtp");
+			transport.connect(HOST, "SBUify", "cse308project");
 			transport.sendMessage(generateMailMessage, generateMailMessage.getAllRecipients());
 			transport.close();
 

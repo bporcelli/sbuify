@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AlbumController {
 	@Autowired
 	private AlbumRepository albumRepo;
-	
+
 	// private AlbumSearchServer searchService;
 }
