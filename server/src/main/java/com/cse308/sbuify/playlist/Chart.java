@@ -14,6 +14,8 @@ import com.cse308.sbuify.user.User;
 @Entity
 public class Chart extends Playlist {
 
+    // todo: should subclass playlist?
+
     // The date this chart is for
     @NotNull
     private Date date;
@@ -25,7 +27,7 @@ public class Chart extends Playlist {
     public Chart() {}
 
     public Chart(@NotEmpty String name, User owner, Image image, @NotNull Boolean _private, @NotNull Date date) {
-        super(name, owner, image, _private);
+        super(name, owner, image, _private, 0);
         this.date = date;
     }
 

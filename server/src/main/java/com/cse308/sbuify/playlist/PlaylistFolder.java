@@ -1,13 +1,9 @@
 package com.cse308.sbuify.playlist;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
-
 import com.cse308.sbuify.user.User;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class PlaylistFolder implements PlaylistComponent {
