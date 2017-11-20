@@ -44,13 +44,8 @@ public class UserController {
 
         Email userRegistration = new NewAccountEmail(user);
 
-        if (!userRegistration.dispatch()){
-            // send email
-            // return 500 response, error sending email
-            if ( !userRegistration.dispatch()) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
+        if (!userRegistration.dispatch()) { // email delivery failed -- return 500
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(user, HttpStatus.CREATED);
