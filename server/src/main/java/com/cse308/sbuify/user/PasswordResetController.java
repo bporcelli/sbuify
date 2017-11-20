@@ -2,7 +2,6 @@ package com.cse308.sbuify.user;
 
 
 import com.cse308.sbuify.email.Email;
-import com.cse308.sbuify.email.NewAccountEmail;
 import com.cse308.sbuify.email.PasswordResetEmail;
 import com.cse308.sbuify.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
@@ -36,16 +38,13 @@ public class PasswordResetController {
 
         // Return a 404 response no account found
         if (!existing.isPresent()) {
-
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         User user = existing.get();
 
         user.setToken(SecurityUtils.generateToken());
-
         userRepository.save(user);
-
 
         Email resetEmail = new PasswordResetEmail(user);
 
@@ -65,15 +64,16 @@ public class PasswordResetController {
      * @param password
      * @return ResponseEntity<>
      */
-    @PostMapping("/")
+    @PostMapping("/") // todo: should probably be mapped to a different endpoint
     public ResponseEntity<?> changePassword(@RequestParam("token") String token, @RequestParam("password") String password){
-
         Optional<User> existing = userRepository.findByToken(token);
 
         // Return 400, invalid token, Not Found
         if (!existing.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
+        // todo: CHECK PROVIDED PASSWORD AGAINST EXISTING USER PASS***
 
         User existingUser = existing.get();
 
@@ -83,9 +83,6 @@ public class PasswordResetController {
 
         userRepository.save(existingUser);
 
-
         return new ResponseEntity<>(HttpStatus.OK);
-
     }
-
 }

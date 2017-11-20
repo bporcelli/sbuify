@@ -15,7 +15,6 @@ public class SecurityUtils {
      * @return
      */
 	public static String generateToken() {
-
 	    return UUID.randomUUID().toString();
 	}
 

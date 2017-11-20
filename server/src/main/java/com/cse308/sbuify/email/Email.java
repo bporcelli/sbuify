@@ -8,27 +8,20 @@ import java.util.Properties;
 
 public abstract class Email {
 
-	/*
+	/**
 	 * Angular 2 port
 	 */
 	protected static String websitePort = "4200";
 
-	/*
+	/**
 	 * Gmail SMTP port
 	 */
-
 	private static final String SMTP = "587";
 
 	/**
-	 *
 	 * Gmail SMTP host
 	 */
 	private static final String HOST = "smtp.gmail.com";
-
-	/**
-	 *
-	 *
-	 */
 
     /*
      * Session (used when constructing MimeMessage).
@@ -50,7 +43,7 @@ public abstract class Email {
      * @param msg
      */
 	private void setHeaders(MimeMessage msg) throws MessagingException {
-
+		// todo: proper implementation
 		msg.setHeader("Content-Type", "text/html; charset=UTF-8");
     }
 
@@ -65,6 +58,7 @@ public abstract class Email {
      */
 	public boolean dispatch() {
 	    this.build();
+
 		Properties mailServerProperties = System.getProperties();
 		mailServerProperties.put("mail.smtp.host", HOST);
 		mailServerProperties.put("mail.smtp.port", SMTP);
@@ -75,6 +69,7 @@ public abstract class Email {
 
 		try {
 			Message generateMailMessage = new MimeMessage(session);
+
 			generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(this.toEmail));
 			generateMailMessage.setSubject(this.subject);
 			generateMailMessage.setSentDate(new Date());
@@ -85,7 +80,6 @@ public abstract class Email {
 			transport.close();
 
 			return true;
-
 		} catch (MessagingException e){
 			return false;
 		}

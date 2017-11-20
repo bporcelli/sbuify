@@ -16,18 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.cse308.sbuify.admin.Admin;
-import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.email.Email;
-import com.cse308.sbuify.email.NewAccountEmail;
-import com.cse308.sbuify.user.User;
-import com.cse308.sbuify.user.UserController;
-import com.cse308.sbuify.user.UserRepository;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import javax.xml.ws.http.HTTPBinding;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
@@ -123,60 +114,20 @@ public class UserControllerTest {
         return restTemplate.postForEntity("http://localhost:" + port + "/api/users", user, User.class);
     }
 
-    /**
-     * Test Customer Registration Email Registration
-     */
-    @Test
-    public void finishRegistrationEmail() {
-        // Test customer registration
-
-        Date birthday = Date.from(Instant.now());
-
-        User customer = new Customer(generateEmail(), "123", "John", "Doe", birthday);
-
-        ResponseEntity<User> response = sendRegisterRequest(customer);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-
-        Email customerRegistration = new NewAccountEmail(customer);
-
-        assertEquals(true, customerRegistration.dispatch());
-
-        // Get the new customer
-        Optional<User> cust = userRepository.findByEmail(customer.getEmail());
-        assert (cust.isPresent());
-        Customer saved = (Customer) cust.get();
-
-        // Ensure the customer's Play Queue and Library were created
-        assertNotNull(saved.getPlayQueue());
-        assertNotNull(saved.getLibrary());
-    }
     /*
      * Test send password reset request
      */
     @Test
     public void sendPasswordResetRequest() {
-        // Test customer registration
-        Date birthday = Date.from(Instant.now());
-        User customer = new Customer("sbuify@gmail.com", "123", "John", "Doe", birthday);
+        // use test customer "a" for test (todo: change emails to sbufiy+a, sbuify+b,... @gmail.com
+        Optional<User> userOptional = userRepository.findByEmail("a@sbuify.com");
+        assert(userOptional.isPresent());
+        Customer customer = (Customer) userOptional.get();
 
-        ResponseEntity<?> response = sendRegisterRequest(customer);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-
-        // Get the new customer
-        Optional<User> cust = userRepository.findByEmail(customer.getEmail());
-        assert (cust.isPresent());
-        Customer saved = (Customer) cust.get();
-
-        // Ensure the customer's Play Queue and Library were created
-        assertNotNull(saved.getPlayQueue());
-        assertNotNull(saved.getLibrary());
-
-        // now reset request
-
-        response = restTemplate.postForEntity("http://localhost:" + port + "/api/reset-password", saved.getEmail() , String.class);
-
+        // send reset request
+        ResponseEntity<Void> response;
+        response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/reset-password", customer.getEmail(), Void.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -185,61 +136,27 @@ public class UserControllerTest {
     */
     @Test
     public void changePasswordWithToken() {
-        // Test customer registration
-        Date birthday = Date.from(Instant.now());
-        User customer = new Customer("sbuify@gmail.com", "123", "John", "Doe", birthday);
+        // send reset request
+        sendPasswordResetRequest();
 
+        // get user by email
+        Optional<User> userOptional = userRepository.findByEmail("a@sbuify.com");
+        assert(userOptional.isPresent());
+        Customer customer = (Customer) userOptional.get();
 
-        ResponseEntity<?> response = sendRegisterRequest(customer);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-
-        // Get the new customer
-        Optional<User> cust = userRepository.findByEmail(customer.getEmail());
-        assert (cust.isPresent());
-        Customer saved = (Customer) cust.get();
-
-        // Ensure the customer's Play Queue and Library were created
-        assertNotNull(saved.getPlayQueue());
-        assertNotNull(saved.getLibrary());
-
-        // now reset request
-
-        response = restTemplate.postForEntity("http://localhost:" + port + "/api/reset-password", saved.getEmail() , String.class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-
-        // use token to get user
-
-        cust = userRepository.findByEmail(customer.getEmail());
-        assert (cust.isPresent());
-        saved = (Customer) cust.get();
+        // send change password request
         String pass = "WhatPass";
         MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
-        params.add("token", saved.getToken());
+        params.add("token", customer.getToken());
         params.add("password", pass);
 
-        response = restTemplate.postForEntity("http://localhost:" + port + "/api/reset-password/", params , String.class);
-
+        ResponseEntity<Void> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/reset-password/", params, Void.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        cust = userRepository.findByEmail(customer.getEmail());
-        saved = (Customer) cust.get();
-        assertEquals(null, saved.getToken());
-        assertEquals(true,passwordEncoder.matches(pass,saved.getPassword()));
-
-
-
-
-
-
+        userOptional = userRepository.findByEmail(customer.getEmail());
+        customer = (Customer) userOptional.get();
+        assertEquals(null, customer.getToken());
+        assertEquals(true,passwordEncoder.matches(pass, customer.getPassword()));
     }
-
-
-
-
-
-
-
 }
