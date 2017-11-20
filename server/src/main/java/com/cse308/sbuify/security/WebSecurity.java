@@ -52,8 +52,6 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                     // cron endpoints are only accessible by localhost
                     .antMatchers(CRON_PATTERN).hasIpAddress("localhost")
                     // by default, endpoints are only accessible to authenticated users
-                    // search should be permitted for any?
-                    .antMatchers("/api/search/**").permitAll()
                     .anyRequest().authenticated()
                     .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
