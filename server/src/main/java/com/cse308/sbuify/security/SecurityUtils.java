@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.UUID;
+
 public class SecurityUtils {
 
     /**
@@ -13,8 +15,8 @@ public class SecurityUtils {
      * @return
      */
 	public static String generateToken() {
-		// todo
-	    return null;
+
+	    return UUID.randomUUID().toString();
 	}
 
     /**
