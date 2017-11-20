@@ -1,68 +1,50 @@
 package com.cse308.sbuify.test;
 
-import static org.junit.Assert.assertEquals;
-
+import com.cse308.sbuify.song.Song;
+import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.security.SecurityConstants;
-import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.test.helper.LoginHelper;
-import com.cse308.sbuify.user.UserRepository;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SongTest {
-	@LocalServerPort
-	private int port;
+public class SongTest extends AuthenticatedTest {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
-
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
 
 	/**
 	 * Test: is search song work properly?
 	 */
      @Test
 	public void postCustomerSong() {
-         // *temporarily disabled until updated song data is imported*
-//		Customer customer = LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
+         // todo: update to use demo data
+         // prepare song to send
+//         Song toSend = new Song();
+//         toSend.setLength(30000);
 //
-//		// set headers
-//		HttpHeaders headers = new HttpHeaders();
-//		headers.setContentType(MediaType.APPLICATION_JSON);
-//		headers.add(SecurityConstants.HEADER_NAME, SecurityConstants.HEADER_PREFIX + customer.getToken());
+//         System.out.println(toSend);
 //
-//		// prepare song to send
-////		Song toSend = new Song((float) 0.57, 3, 3, "asdf");
-//		Song toSend = new Song();
-////		toSend.setLength((float) 50.12);
-//
-//		System.out.println(toSend);
-//
-//		HttpEntity<Song> request = new HttpEntity<Song>(toSend, headers);
-//
-//		ResponseEntity<Void> response = restTemplate.exchange("http://localhost:" + port + "/api/customer/songs", HttpMethod.POST, request,
+//         ResponseEntity<Void> response = restTemplate.postForEntity("http://localhost:" + port + "/api/customer/songs", toSend,
 //				Void.class);
 //
-//		assertEquals(HttpStatus.OK, response.getStatusCode());
+//         assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
+
+    @Override
+    public String getEmail() {
+        return "b@sbuify.com";  // use the user b@sbuify.com for all tests in this class
+    }
+
+    @Override
+    public String getPassword() {
+        return "b";
+    }
 }

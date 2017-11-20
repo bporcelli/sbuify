@@ -3,6 +3,7 @@ package com.cse308.sbuify.test;
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.security.SecurityUtils;
+import com.cse308.sbuify.test.helper.AuthUtils;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -15,14 +16,12 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Optional;
 
 import static com.cse308.sbuify.security.SecurityConstants.*;
-import static com.cse308.sbuify.test.TestUtils.randomEmail;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -31,7 +30,8 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuthenticationTest {
-	@LocalServerPort
+
+    @LocalServerPort
 	private int port;
 
 	@Autowired
@@ -40,8 +40,6 @@ public class AuthenticationTest {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
 
 	/**
 	 * Test: does authentication succeed when a correct password is provided?
@@ -50,20 +48,25 @@ public class AuthenticationTest {
 	public void authenticationSucceedsWithCorrectPassword() {
         ResponseEntity<Void> response;
 
-		// Create users
-		Customer customer = new Customer(randomEmail(), "12345", "Jane", "Doe", new Date());
-        registerUser(customer);
+        // Three test customers are available: 'a', 'b', and 'c' with matching passwords
+		Optional<User> uA = userRepository.findByEmail("a@sbuify.com");
+		assert(uA.isPresent());
+		Customer customer = (Customer) uA.get();
+		customer.setPassword("a");
 
-        Admin admin = new Admin(randomEmail(), "123", "Test", "Admin", false);
-        registerUser(admin);
+		// One test admin is available: 'admin' with password 'a'
+		Optional<User> uAdmin = userRepository.findByEmail("admin@sbuify.com");
+		assert(uAdmin.isPresent());
+		Admin admin = (Admin) uAdmin.get();
+		admin.setPassword("a");
 
 		// Test customer authentication
-        response = sendLoginRequest(customer);
-        checkToken(response, customer);
+        response = AuthUtils.sendLoginRequest(port, restTemplate, customer);
+        AuthUtils.checkToken(response, customer);
 
 		// Test admin authentication
-        response = sendLoginRequest(admin);
-        checkToken(response, admin);
+        response = AuthUtils.sendLoginRequest(port, restTemplate, admin);
+        AuthUtils.checkToken(response, admin);
 	}
 
     /**
@@ -71,53 +74,14 @@ public class AuthenticationTest {
      */
     @Test
     public void authenticationFailsWithIncorrectPassword() {
-        Customer customer = new Customer(randomEmail(), "12345", "Jane", "Doe", new Date());
-        registerUser(customer);
+		Optional<User> uA = userRepository.findByEmail("b@sbuify.com");
+		assert(uA.isPresent());
+		Customer customer = (Customer) uA.get();
 
         // invalidate password
         customer.setPassword("invalid");
 
-        ResponseEntity<Void> response = sendLoginRequest(customer);
+        ResponseEntity<Void> response = AuthUtils.sendLoginRequest(port, restTemplate, customer);
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-    }
-
-	/**
-	 * Helper: save a user and return the saved user instance.
-	 *
-	 * @return User
-	 */
-	private User registerUser(User user) {
-		String originalPassword = user.getPassword();
-		user.setPassword(passwordEncoder.encode(originalPassword));
-		userRepository.save(user);
-		user.setPassword(originalPassword);
-		return user;
-	}
-
-	/**
-	 * Helper: send a login request and return the response.
-	 */
-	private ResponseEntity<Void> sendLoginRequest(User user) {
-		return restTemplate.postForEntity("http://localhost:" + port + "/api/login", user, Void.class);
-	}
-
-    /**
-     * Helper: check a response for a valid JWT.
-     */
-    private void checkToken(ResponseEntity<?> response, User user) {
-        String JWT = response.getHeaders().getFirst(HEADER_NAME);
-
-        Claims claims = Jwts.parser()
-                .setSigningKey(SECRET.getBytes())
-                .parseClaimsJws(JWT.replace(HEADER_PREFIX, ""))
-                .getBody();
-
-        String email = claims.getSubject();
-        ArrayList<String> scopes = (ArrayList<String>) claims.get("scopes");
-
-        boolean emailMatches = user.getEmail().equals(email);
-        boolean roleMatches = scopes.equals(SecurityUtils.getAuthorityStrings(user));
-
-        assert(emailMatches && roleMatches);
     }
 }

@@ -3,10 +3,10 @@ package com.cse308.sbuify.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,28 +14,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.common.Queueable;
-import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.customer.PlayQueue;
-import com.cse308.sbuify.security.SecurityConstants;
 import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.test.helper.LoginHelper;
 import com.cse308.sbuify.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PlayQueueTest {
+public class PlayQueueTest extends AuthenticatedTest {
+
     @LocalServerPort
     private int port;
 
@@ -119,39 +114,25 @@ public class PlayQueueTest {
      */
     @Test
     public void putPlayQueue() {
-        // songs need albums, mbids, lengths, and track numbers. disabling this until new song data is available.
-//        // simulate login
-//        Customer customer = LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port,
-//                restTemplate);
-//
-//        // set appropriate headers
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add(SecurityConstants.HEADER_NAME, SecurityConstants.HEADER_PREFIX + customer.getToken());
-//
+        // todo: update to use demo data
 //        // create PlayQueue to send
 //        PlayQueue toSend = new PlayQueue();
 //
 //        Song s1 = new Song();
 //        s1.setName("hello");
-//        s1.setCreatedDate(LocalDateTime.now());
 //
 //        Song s2 = new Song();
 //        s2.setName("world");
-//        s2.setCreatedDate(LocalDateTime.now());
 //
 //        Song s3 = new Song();
 //        s3.setName("album");
-//        s3.setCreatedDate(LocalDateTime.now());
 //
 //        toSend.getSongs().add(s1);
 //        toSend.getSongs().add(s2);
 //        toSend.getSongs().add(s3);
 //
 //        // create request object
-//        HttpEntity<PlayQueue> request = new HttpEntity<>(toSend, headers);
-//
-//        System.out.println(request);
+//        HttpEntity<PlayQueue> request = new HttpEntity<>(toSend);
 //
 //        // send the request
 //        ResponseEntity<Void> response = restTemplate.exchange("http://localhost:" + port + "/api/customer/play-queue",
@@ -162,48 +143,25 @@ public class PlayQueueTest {
 
     @Test
     public void addToPlayQueue() {
-        // songs need albums, mbids, lengths, and track numbers. disabling this until new song data is available.
-//        // simulate login
-//        Customer customer = LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port,
-//                restTemplate);
-//
-//        // set appropriate headers
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add(SecurityConstants.HEADER_NAME, SecurityConstants.HEADER_PREFIX + customer.getToken());
-//
+        // todo: update to abide by db constraints (song must have album, mbid, length, etc.)
 //        Song s1 = new Song();
 //        s1.setName("iWannaAddThis");
-//        s1.setCreatedDate(LocalDateTime.now());
-//
-//        // create request object
-//        HttpEntity<Queueable> request = new HttpEntity<>(s1, headers);
 //
 //        // send the request
-//        ResponseEntity<Void> response = restTemplate.exchange(
-//                "http://localhost:" + port + "/api/customer/play-queue/add", HttpMethod.POST, request, Void.class);
+//        ResponseEntity<Void> response = restTemplate.postForEntity(
+//                "http://localhost:" + port + "/api/customer/play-queue/add", s1, Void.class);
 //
 //        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     public void rmFromPlayQueue() {
-        // songs need albums, mbids, lengths, and track numbers. disabling this until new song data is available.
-//        // simulate login
-//        Customer customer = LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port,
-//                restTemplate);
-//
-//        // set appropriate headers
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add(SecurityConstants.HEADER_NAME, SecurityConstants.HEADER_PREFIX + customer.getToken());
-//
+        // todo: update to abide by db constraints (song must have album, mbid, length, etc.)
 //        Song s1 = new Song();
 //        s1.setName("iWannaAddThis");
-//        s1.setCreatedDate(LocalDateTime.now());
 //
 //        // create request object
-//        HttpEntity<Queueable> request = new HttpEntity<>(s1, headers);
+//        HttpEntity<Queueable> request = new HttpEntity<>(s1);
 //
 //        // send the request
 //        ResponseEntity<Void> response = restTemplate.exchange(
@@ -213,8 +171,18 @@ public class PlayQueueTest {
 //
 //        // now request to remove
 //        response = restTemplate.exchange("http://localhost:" + port + "/api/customer/play-queue/remove",
-//                HttpMethod.POST, request, Void.class);
+//                HttpMethod.DELETE, request, Void.class);
 //
 //        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Override
+    public String getEmail() {
+        return "a@sbuify.com";  // use user "a@sbuify.com" for all tests in this class
+    }
+
+    @Override
+    public String getPassword() {
+        return "a";
     }
 }

@@ -1,13 +1,11 @@
 package com.cse308.sbuify.test;
 
-import static com.cse308.sbuify.test.TestUtils.randomEmail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.time.Instant;
-import java.util.Date;
-import java.util.Optional;
-
+import com.cse308.sbuify.admin.Admin;
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.email.Email;
+import com.cse308.sbuify.email.NewAccountEmail;
+import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.user.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +16,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.cse308.sbuify.admin.Admin;
-import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.email.Email;
-import com.cse308.sbuify.email.NewAccountEmail;
-import com.cse308.sbuify.user.User;
-import com.cse308.sbuify.user.UserController;
-import com.cse308.sbuify.user.UserRepository;
+import java.time.Instant;
+import java.util.Date;
+import java.util.Optional;
+
+import static com.cse308.sbuify.test.helper.AuthUtils.generateEmail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerTest {
+
     @LocalServerPort
     private int port;
 
@@ -37,9 +36,6 @@ public class UserControllerTest {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private UserController controller;
 
     /**
      * Test: does registration succeed when a unique email is provided?
@@ -50,13 +46,13 @@ public class UserControllerTest {
 
         // Test customer registration
         Date birthday = Date.from(Instant.now());
-        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
+        User customer = new Customer(generateEmail(), "123", "John", "Doe", birthday);
 
         response = sendRegisterRequest(customer);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
         // Test admin registration
-        Admin admin = new Admin(randomEmail(), "123", "Test", "Admin", false);
+        Admin admin = new Admin(generateEmail(), "123", "Test", "Admin", false);
 
         response = sendRegisterRequest(admin);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -70,7 +66,7 @@ public class UserControllerTest {
         ResponseEntity<User> response;
 
         Date birthday = Date.from(Instant.now());
-        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
+        User customer = new Customer(generateEmail(), "123", "John", "Doe", birthday);
 
         // First attempt should succeed
         response = sendRegisterRequest(customer);
@@ -90,7 +86,7 @@ public class UserControllerTest {
 
         // Test customer registration
         Date birthday = Date.from(Instant.now());
-        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
+        User customer = new Customer(generateEmail(), "123", "John", "Doe", birthday);
 
         response = sendRegisterRequest(customer);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -121,7 +117,7 @@ public class UserControllerTest {
 
         Date birthday = Date.from(Instant.now());
 
-        User customer = new Customer(randomEmail(), "123", "John", "Doe", birthday);
+        User customer = new Customer(generateEmail(), "123", "John", "Doe", birthday);
 
         ResponseEntity<User> response = sendRegisterRequest(customer);
 

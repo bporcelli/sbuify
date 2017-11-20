@@ -1,47 +1,20 @@
 package com.cse308.sbuify.test;
 
-import static com.cse308.sbuify.test.TestUtils.randomEmail;
-import static org.junit.Assert.assertEquals;
-
-import java.util.Date;
-
+import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.test.helper.LoginHelper;
-import com.cse308.sbuify.user.UserRepository;
+import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SearchTest {
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+public class SearchTest extends AuthenticatedTest {
 
     /**
      * Test: is search song work properly?
      */
     @Test
     public void searchSongs() {
-        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
-        
+        // todo: proper search w/demo data
         String keyword = "hello";
 
         // Send get request to the server and get the response
@@ -58,8 +31,7 @@ public class SearchTest {
      */
     @Test
     public void searchArtistsWithDefault() {
-        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
-        
+        // todo: proper search w/demo data
         String keyword = "hello";
 
         // Send get request to the server and get the response
@@ -76,8 +48,7 @@ public class SearchTest {
      */
     @Test
     public void searchArtistsUnmanaged() {
-        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
-        
+        // todo: proper search w/demo data
         String keyword = "hello";
 
         // Send get request to the server and get the response
@@ -95,8 +66,7 @@ public class SearchTest {
      */
     @Test
     public void searchArtistsManaged() {
-        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
-        
+        // todo: proper search w/demo data
         String keyword = "hello";
 
         // Send get request to the server and get the response
@@ -113,8 +83,7 @@ public class SearchTest {
      */
     @Test
     public void searchAlbums() {
-        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
-        
+        // todo: proper search w/demo data
         String keyword = "hello";
 
         // Send get request to the server and get the response
@@ -131,8 +100,7 @@ public class SearchTest {
      */
     @Test
     public void searchPlaylist() {
-        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
-        
+        // todo: proper search w/demo data
         String keyword = "hello";
 
         // Send get request to the server and get the response
@@ -149,8 +117,7 @@ public class SearchTest {
      */
     @Test
     public void searchLabel() {
-        LoginHelper.simulateCustomerRegisterLogin(passwordEncoder, userRepository, port, restTemplate);
-        
+        // todo: proper search w/demo data
         String keyword = "hello";
 
         // Send get request to the server and get the response
@@ -161,6 +128,14 @@ public class SearchTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
-    
-    
+
+    @Override
+    public String getEmail() {
+        return "a@sbuify.com";  // tests will run with user a@sbuify.com authenticated
+    }
+
+    @Override
+    public String getPassword() {
+        return "a";
+    }
 }
