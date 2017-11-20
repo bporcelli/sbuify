@@ -4,7 +4,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -12,11 +21,13 @@ import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Artist extends CatalogItem {
 
-    // todo: popular songs (not appropriate to maintain in a separate table unless we can make it a view)
+    // todo: popular songs (not appropriate to maintain in a separate table unless
+    // we can make it a view)
     // todo: monthly listeners (does it really make sense to make this a property?)
 
     @NotNull
@@ -31,7 +42,7 @@ public class Artist extends CatalogItem {
     private Set<String> aliases = new HashSet<>();
 
     @NotNull
-    private Integer monthlyListeners;
+    private Integer monthlyListeners = 0;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "artist")
     private Set<Product> merchandise;
@@ -45,9 +56,12 @@ public class Artist extends CatalogItem {
 
     @OneToMany
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "album_id"))
+    @JsonIgnore
     private List<Album> albums;
 
-    public Artist() {}
+    public Artist() {
+        merchandise = new HashSet<>();
+    }
 
     public Artist(@NotEmpty String name, User owner, Image image, @NotNull String mbid) {
         super(name, owner, image);

@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 
 import javax.persistence.CascadeType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
@@ -13,18 +12,25 @@ import javax.persistence.PrePersist;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.cse308.sbuify.album.Album;
+import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 @MappedSuperclass
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @JsonSubTypes.Type(value = Artist.class, name = "artist"),
+        @JsonSubTypes.Type(value = Album.class, name = "album") })
 public abstract class CatalogItem implements Serializable {
 
     @Id
@@ -36,6 +42,8 @@ public abstract class CatalogItem implements Serializable {
     private String name;
 
     @NotNull
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createdDate;
 
     @NotNull
@@ -115,7 +123,6 @@ public abstract class CatalogItem implements Serializable {
     public void setImage(Image image) {
         this.image = image;
     }
-    
 
     @Override
     public String toString() {
@@ -131,27 +138,30 @@ public abstract class CatalogItem implements Serializable {
 
         return jsonString;
     }
-    
+
     @Override
     public boolean equals(Object that) {
-        if(that == null || !(that instanceof CatalogItem))
+        if (that == null || !(that instanceof CatalogItem))
             return false;
-        
+
         final CatalogItem thatCI = (CatalogItem) that;
-        
-        if(this.getId() == null ? thatCI.getId() != null : !this.getId().equals(thatCI.getId()))
+
+        if (this.getId() == null ? thatCI.getId() != null : !this.getId().equals(thatCI.getId()))
             return false;
-        if(this.getName() == null ? thatCI.getName() != null : !this.getName().equals(thatCI.getName()))
+        if (this.getName() == null ? thatCI.getName() != null : !this.getName().equals(thatCI.getName()))
             return false;
-        if(this.getCreatedDate() == null ? thatCI.getCreatedDate() != null : !this.getCreatedDate().equals(thatCI.getCreatedDate()))
+        if (this.getCreatedDate() == null ? thatCI.getCreatedDate() != null
+                : !this.getCreatedDate().equals(thatCI.getCreatedDate()))
             return false;
-        if(this.isActive() == null ? thatCI.isActive() != null : !this.isActive().equals(thatCI.isActive()))
+        if (this.isActive() == null ? thatCI.isActive() != null : !this.isActive().equals(thatCI.isActive()))
             return false;
-//        if(this.getOwner() == null ? thatCI.getOwner() != null : !this.getOwner().equals(thatCI.getOwner()))
-//            return false;
-//        if(this.getImage() == null ? thatCI.getImage() != null : !this.getImage().equals(thatCI.getImage()))
-//            return false;
-        
+        // if(this.getOwner() == null ? thatCI.getOwner() != null :
+        // !this.getOwner().equals(thatCI.getOwner()))
+        // return false;
+        // if(this.getImage() == null ? thatCI.getImage() != null :
+        // !this.getImage().equals(thatCI.getImage()))
+        // return false;
+
         return true;
     }
 }
