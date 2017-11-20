@@ -1,64 +1,73 @@
 from math import ceil
-from mysql import connector
 from datetime import datetime
 from musicbrainzngs.musicbrainz import ResponseError
 from musicbrainzngs.musicbrainz import NetworkError
+import genres
 import musicbrainzngs
+import lyrics
+import db
 import random
-import queries
 import time
 import shutil
 import os
 
-# todo: fix duplicated albums/cover art (release groups instead of releases)
-# todo: clean keys in saved method
 
 # CONFIG
-DB_USER = 'root'
-DB_PASS = '1234'
-DB_HOST = 'localhost'
-DB_NAME = 'test'
-RELEASES_PER_PAGE = 100
-RELEASES_PER_LABEL = 500
-RELEASE_EXTRAS = ['artists', 'media', 'recordings',
-                  'artist-credits', 'tags', 'aliases']
+REL_PER_LABEL = 50  # releases per label
+REQ_PER_LABEL = 5   # requests per label
+REL_PER_REQ = ceil(REL_PER_LABEL / REQ_PER_LABEL)
 RETRY_SECS = 5
-LABELS = {
-    'RCA': '1ca5ed29-e00b-4ea5-b817-0bcca0e04946',
-    'Columbia': '011d1192-6f65-45bd-85c4-0400dd45693e',
-    'Epic': '8f638ddb-131a-4cc3-b3d4-7ebdac201b55',
-    'Warner Bros.': 'c595c289-47ce-4fba-b999-b87503e8cb71',
-    'Atlantic': '50c384a2-0b44-401b-b893-8181173339c7'
-}
-TRUNCATE_SQL = './sql/truncate.sql'
-IMAGE_DIR = '../content/images/'
-
-
-# GLOBALS
-conn = None
-cursor = None
-saved_entities = {}  # map from mb keys to internal ids
+CONTENT_DIR = '../content/'
+IMAGE_DIR = 'images/'
 
 
 # HELPERS
 
-def get_label_releases(mbid, offset, limit):
+def delete_images():
+    """Remove album & artist images from the previous import."""
+    for obj_type in ['album', 'artist']:
+        images_dir = CONTENT_DIR + IMAGE_DIR + obj_type
+        if os.path.exists(images_dir):
+            shutil.rmtree(images_dir)
+        os.makedirs(images_dir)
+
+
+def get_filename():
+    """Generate a filename for a new image."""
+    return str(int(time.time() + random.random())) + ".jpg"
+
+
+def get_label_releases(label_id, offset, limit):
+    """Get up to `limit` releases for label `label_id` starting from
+    offset `offset`."""
     releases = musicbrainzngs.browse_releases(
-        label=mbid,
+        label=label_id,
         release_status=['official'],
         release_type=['album', 'single', 'ep'],
+        includes=['release-groups'],
         limit=limit,
         offset=offset
     )
     return releases
 
 
+def get_release(release_id):
+    """Use the MusicBrainz API to get the release with id `id`. If
+    the API response is invalid, return None; otherwise, return the
+    release group as a dictionary."""
+    try:
+        return musicbrainzngs.get_release_by_id(
+            release_id,
+            includes=['artists', 'artist-credits', 'aliases', 'tags',
+                      'recordings', 'media', 'release-groups']
+        )['release']
+    except IndexError as err:
+        return None
+
+
 def parse_release_date(release):
-    """Release dates in MusicBrainz don't have a standardized format. Some
-    include the year, month, and date, some only a year, and others only
-    a year and month. In some cases, releases don't have a date at all. This
-    function handles the complexity of converting a release's date to a python
-    datetime object."""
+    """Convert an album release date into a Python datetime object,
+    accounting for missing or malformatted data."""
     try:
         date_string = release['date']
         if len(date_string) == 4:    # month and date missing
@@ -66,28 +75,15 @@ def parse_release_date(release):
         elif len(date_string) == 7:  # date missing
             date_string += "-01"
         return datetime.strptime(date_string, "%Y-%m-%d")
-    except KeyError:  # no date specified
+    except KeyError:    # no date specified
         return None
     except ValueError:  # invalid date format
         return None
 
 
-def clean_string(string):
-    """Clean a string by trimming leading and trailing whitespace and
-    converting to ASCII."""
-    return ascii(string.strip())[1:-1]
-
-
-def get_image_path(obj_type):
-    """Get an image path for an object of type obj_type (album, artist)."""
-    path = IMAGE_DIR + obj_type + "/"
-    path += str(int(time.time() + random.random()))
-    path += ".jpg"
-    return path
-
-
 def get_song_length(track):
-    """Get the length of a particular track (ms)."""
+    """Given the song `track`, return its length in milliseconds.
+    If the length is unspecified, return 0."""
     if 'length' in track:
         return int(track['length'])
     elif 'length' in track['recording']:
@@ -96,222 +92,189 @@ def get_song_length(track):
         return 0
 
 
-def save_album_image(release_id):
-    output_path = get_image_path('album')
+# DATA INSERTION ROUTINES
 
-    while True:
+def save_genres(song_id, recording):
+    """Save the tags for recording `recording` as genres for song
+    `song_id`."""
+    song_genres = []
+
+    if 'tag-list' in recording:
+        for tag in recording['tag-list']:
+            if int(tag['count']) == 0:  # tag not applied
+                continue
+            genre_id = genres.find(tag['name'])
+            if genre_id != -1 and genre_id not in song_genres:
+                db.save('song_genre', (song_id, genre_id))
+                song_genres.append(genre_id)
+
+    # put song in 'Other' category if no genres were found
+    if len(song_genres) == 0:
+        db.save('song_genre', (song_id, genres.OTHER))
+
+
+def save_cover_art(release, max_retries=3):  # todo: discard low-res
+    """Save the front cover image for the release `release`. Return
+    the saved image's ID, or None if the image isn't available."""
+    if release['cover-art-archive']['front'] == 'false':
+        return None
+
+    rel_path = IMAGE_DIR + "album/" + get_filename()
+    abs_path = CONTENT_DIR + rel_path
+
+    for retry in range(max_retries):
         try:
-            data = musicbrainzngs.get_image_front(release_id,
-                                                  size="500")
-            with open(output_path, 'wb') as f:
-                f.write(data)
-            image_id, inserted = safe_insert('image', release_id, {
-                'path': output_path,
-                'size': 'CATALOG'
-            })
-            return image_id
+            image_data = musicbrainzngs.get_image_front(release['id'],
+                                                        size="500")
+            with open(abs_path, 'wb') as f:
+                f.write(image_data)
+            return db.save('image', {
+                'path': rel_path,
+            }, release['release-group']['id'])
         except ResponseError as err:
-            if err.cause.code == 404:
-                break  # image doesn't exist
+            if err.cause.code == 404:    # image doesn't exist
+                break
+            elif err.cause.code == 503:  # rate limit exceeded
+                print('rate limit exceeded: retrying in {} seconds.'
+                      .format(RETRY_SECS))
+                time.sleep(RETRY_SECS)
         except NetworkError:
             break
 
 
-def save_featured_artists(song_id, recording):
-    """Save the featured artists for the given recording. Any artist other than
-    the first credited artist is considered a featured artist."""
-    for artist_credit in recording['artist-credit'][1:]:
-        try:
-            save_artist(artist_credit['artist'])
-        except TypeError:
-            # skip strings like '&' and 'feat.'
-            continue
+def save_track(track, album_id, image_id):
+    """Save track `track` from album `album_id` with image
+    `image_id`. Return the saved song's ID."""
+    song = {
+        'name': track['recording']['title'],
+        'mbid': track['id'],
+        'length': get_song_length(track),
+        'track_number': track['number'],
+        'album_id': album_id,
+        'image_id': image_id,
+        'lyrics': lyrics.get_lyrics(track)
+    }
+    song['active'] = song['length'] > 0
+
+    song_id = db.save('song', song)
+
+    featured = track['recording']['artist-credit'][1:]
+    for artist in featured:
+        if isinstance(artist, str):
+            continue  # skip strings like '&' and 'feat.'
+        artist_id = save_artist(artist['artist'])
+        db.save('song_featured_artists', (song_id, artist_id))
+
+    save_genres(song_id, track['recording'])
+    return song_id
 
 
-def save_genres(song_id, recording):
-    """Save the genres for a song by finding the tags associated with its
-    recording."""
-    if 'tag-list' not in recording:
-        return
-    for tag in recording['tag-list']:
-        if int(tag['count']) == 0:  # tag not applied to recording
-            continue
-        genre_id, inserted = safe_insert('genre', tag['name'], tag)
-        insert('song_genre', (song_id, genre_id))
+def save_album(release, label_id, artist_id):
+    """Save album `release` released on label `label_id` by artist
+    `artist_id`."""
+    image_id = save_cover_art(release)
+
+    album_id = db.save('album', {
+        'name': release['title'],
+        'mbid': release['id'],
+        'type': release['release-group']['primary-type'].upper(),
+        'release_date': parse_release_date(release),
+        'image_id': image_id,
+        'artist_id': artist_id,
+    }, release['release-group']['id'])
+
+    medium = release['medium-list'][0]
+
+    for ti, track in enumerate(medium['track-list']):
+        track['number'] = ti + 1
+        song_id = save_track(track, album_id, image_id)
+        db.save('album_song', (album_id, song_id))
+        db.save('label_song', (label_id, song_id))
+
+    db.save('artist_album', (artist_id, album_id))
+
+    print('inserted album {} with {} songs.'
+          .format(release['id'], medium['track-count']), flush=True)
 
 
-def save_album_songs(label_id, album_id, image_id, tracklist):
-    """Save songs in tracklist & associate them with a label and album. Since
-    original track numbers might contain non-numeric characters, we assign
-    sequential integer track numbers to each track."""
-    # todo: save lyrics
-    for idx, track in enumerate(tracklist):
-        length = get_song_length(track)
-        song_id = insert('song', {
-            'active': length > 0,  # disable songs with unknown length
-            'name': track['recording']['title'],
-            'mbid': track['id'],
-            'length': length,
-            'play_count': 0,
-            'track_number': idx + 1,
-            'album_id': album_id,
-            'image_id': image_id   # same as album image
-        })
-        insert('album_song', (album_id, song_id))
-        insert('song_label', (song_id, label_id))
-        save_featured_artists(song_id, track['recording'])
-        save_genres(song_id, track['recording'])
-
-
-# DATA INSERTION ROUTINES
-
-def saved(etype, key):
-    """Check whether an entity with the type `etype` and key `key` has been
-    saved."""
-    if etype not in saved_entities:
-        return False
-    return key in saved_entities[etype]
-
-
-def insert(etype, data):
-    """Insert an entity of type `etype` into the database."""
-    # clean string values in dictionaries
-    if isinstance(data, dict):
-        for key, val in data.items():
-            if isinstance(val, str):
-                data[key] = clean_string(val)
-    cursor.execute(getattr(queries, "insert_" + etype), data)
-    return cursor.lastrowid
-
-
-def safe_insert(etype, key, data):
-    """Insert an entity of type `etype` with key `key` into the database,
-    ensuring that the key is unique. Return a tuple (row_id, saved) indicating
-    the internal id of the entity and whether it was saved or not."""
-    global saved_entities
-    # clean string keys
-    if isinstance(key, str):
-        key = clean_string(key)
-    # insert if not saved already
-    saved_already = saved(etype, key)
-    if not saved_already:
-        if etype not in saved_entities:
-            saved_entities[etype] = {}
-        saved_entities[etype][key] = insert(etype, data)
-    return (saved_entities[etype][key], not saved_already)
-
-
-def save_artist(artist):
-    # todo: find and save cover image (google) & bio (wikipedia)
+def save_artist(artist):  # todo: cover image & bio
+    """Save an artist `artist` and return the artist's ID."""
+    saved_id = db.get_saved_id('artist', artist['id'])
+    if saved_id:
+        return saved_id
     to_save = (artist['name'], artist['id'])
-    artist_id, inserted = safe_insert('artist', artist['id'], to_save)
-    if inserted and 'alias-list' in artist:
+    saved_id = db.save('artist', to_save, to_save[1])
+    if 'alias-list' in artist:
         for alias in artist['alias-list']:
-            insert('artist_alias', (artist_id, alias['alias']))
-    return artist_id
+            db.save('artist_alias', (saved_id, alias['alias']))
+    return saved_id
 
 
 # IMPORT ROUTINES
 
 def import_release(label_id, release):
-    try:
-        release = musicbrainzngs.get_release_by_id(
-            release['id'],
-            includes=RELEASE_EXTRAS
-        )['release']
-    except IndexError as err:
-        print('skipping release {}: invalid response.')
+    """Import release `release` for label `label_id`. Ensure that
+    only one release from each release group is imported."""
+    group_id = release['release-group']['id']
+
+    if db.get_saved_id('album', group_id):  # already imported
+        print('skipping release {}: already imported.'
+              .format(group_id))
         return
 
-    medium = release['medium-list'][0]
+    release = get_release(release['id'])
 
-    # save artist
-    artist_id = save_artist(release['artist-credit'][0]['artist'])
-
-    # save image
-    image_id = None
-    if release['cover-art-archive']['front'] != 'false':
-        image_id = save_album_image(release['id'])
-
-    # save album & songs
-    album_id, inserted = safe_insert('album', release['id'], {
-        'name': release['title'],
-        'release_date': parse_release_date(release),
-        'music_brainz_id': release['id'],
-        'num_songs': medium['track-count'],
-        'image_id': image_id,
-        'artist_id': artist_id,
-        'duration': 0   # updated after songs are imported
-    })
-    if inserted:
-        save_album_songs(label_id, album_id, image_id, medium['track-list'])
-        insert('artist_album', (artist_id, album_id))
-        print('inserted album {} with {} songs.'
-              .format(release['id'], medium['track-count']), flush=True)
+    if release:
+        artist_id = save_artist(release['artist-credit'][0]['artist'])
+        save_album(release, label_id, artist_id)
     else:
-        print('skipping release {}: already imported.'.format(release['id']))
+        print('skipping release {}: invalid response'
+              .format(group_id))
 
 
-def import_label(name, mbid):
+def import_label_releases(label_id, mbid):
+    """Import `REL_PER_LABEL` releases for the label with ID
+    `label_id` and MB id `mbid`, including all associated songs
+    and artists."""
     releases = get_label_releases(mbid, 0, 1)
-    num_releases = releases['release-count']
-    selected = random.sample(range(num_releases - RELEASES_PER_PAGE),
-                             ceil(RELEASES_PER_LABEL / RELEASES_PER_PAGE))
-    label_id = insert('label', {
-        'name': name,
-        'music_brainz_id': mbid
-    })
-    for offset in selected:
-        batch = get_label_releases(mbid, offset, RELEASES_PER_PAGE)
+    sample_range = range(releases['release-count'] - REL_PER_REQ)
+    imported = []
+
+    for req_i in range(REQ_PER_LABEL):  # todo: ensure exactly REL_PER
+        start = random.choice(sample_range)
+        while start in imported:
+            start = random.choice(sample_range)
+        batch = get_label_releases(mbid, start, REL_PER_REQ)
         for release in batch['release-list']:
             import_release(label_id, release)
-    conn.commit()
+        imported += list(range(start, start + REL_PER_REQ + 1))
 
 
-# main method
 def do_import():
-    global conn, cursor
-
     musicbrainzngs.set_useragent("SBUIfy", "0.0.1", "sbuify@gmail.com")
 
-    conn = connector.connect(user=DB_USER, host=DB_HOST, database=DB_NAME,
-                             password=DB_PASS)
-    cursor = conn.cursor()
+    db.init()
 
     # remove existing data
     print('deleting existing data...')
+    delete_images()
+    db.execute_script('truncate.sql')
+    print('done.', flush=True)
 
-    t_start = time.time()
-    with open(TRUNCATE_SQL, 'r') as f:
-        statements = f.read().split(';')
-        for statement in statements:
-            if statement:
-                cursor.execute(statement)
-        conn.commit()
+    # import albums, songs, and artists for all labels
+    db.execute("SELECT * FROM label")
 
-    for obj_type in ['album', 'artist']:
-        images_dir = IMAGE_DIR + obj_type
-        if os.path.exists(images_dir):
-            shutil.rmtree(images_dir)
-        os.makedirs(images_dir)
-    t_end = time.time()
+    for label in db.get_cursor().fetchall():
+        print('importing label {}...'.format(label['name']))
+        import_label_releases(label['id'], label['mbid'])
+        print('done.', flush=True)
 
-    print('data deleted in {:.3f} seconds'.format(t_end - t_start), flush=True)
+    # wrap up
+    print('finishing...')
+    db.execute_script('set_hibernate_sequence.sql')
+    print('done.')
 
-    # import labels & all associated albums, songs, and artists
-    print('importing data...', flush=True)
-
-    for name, mbid in LABELS.items():
-        t_start = time.time()
-        import_label(name, mbid)
-        t_end = time.time()
-
-        print('imported label {} in {:.3f} seconds'
-              .format(name, t_end - t_start), flush=True)
-
-    # clean up
-    cursor.close()
-    conn.close()
+    db.close()
 
 
 do_import()
