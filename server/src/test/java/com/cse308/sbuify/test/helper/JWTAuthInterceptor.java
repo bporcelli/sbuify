@@ -37,7 +37,10 @@ public class JWTAuthInterceptor implements ClientHttpRequestInterceptor {
 
         if (response.getStatusCode() != HttpStatus.FORBIDDEN) {  // save JWT sent in response
             HttpHeaders respHeaders = response.getHeaders();
-            JWT = respHeaders.getFirst(HEADER_NAME);
+            String tempJWT = respHeaders.getFirst(HEADER_NAME);
+            if (tempJWT != null) {
+                JWT = tempJWT;
+            }
         }
         return response;
     }

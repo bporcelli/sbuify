@@ -26,22 +26,13 @@ import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-// @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ArtistControllerTest extends AuthenticatedTest {
 
-    // @LocalServerPort
-    // private int port;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
     /**
-     * Serialize and desericalization of artist
+     * Serialize and deserialization of artist
      * 
      * @throws IOException
      */
-
     @Test
     public void sedeArtist() throws IOException {
         Artist artist = new Artist();
@@ -114,8 +105,6 @@ public class ArtistControllerTest extends AuthenticatedTest {
 
     @Test
     public void getArtistInfoTest() {
-        setRestTemplate(restTemplate);
-
         ResponseEntity<Artist> response = restTemplate.getForEntity("http://localhost:" + port + "/api/artists/" + 1,
                 Artist.class);
 
