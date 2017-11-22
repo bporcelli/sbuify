@@ -42,9 +42,7 @@ export class LoginComponent extends FormComponent implements OnInit {
   ngOnInit(): void {
     let params = this.route.snapshot.paramMap;
     let message = params.get('message');
-
-    console.log('message:', message);
-
+    
     if ('reset-success' == message) {
       this.showFeedback("Password changed successfully.", "success");
     } else if ('register-success' == message) {
