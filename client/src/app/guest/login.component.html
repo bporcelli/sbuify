@@ -16,8 +16,8 @@
             <span class="custom-control-description">Remember Me</span>
         </label>
     </div>
-    <p class="form-error" [hidden]="!errorMessage">{{ errorMessage }}</p>
-    <button type="submit" [disabled]="!loginForm.form.valid">Log in</button>
+    <p *ngIf="feedback" [ngClass]="feedback.class">{{ feedback.text }}</p>
+    <button type="submit" [disabled]="!loginForm.form.valid || disabled">Log in</button>
 </form>
 
 <ul class="text-center" id="loginActions">

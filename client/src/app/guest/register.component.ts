@@ -5,39 +5,40 @@ import { Config } from '../config';
 
 import { Customer } from "../user/customer";
 import { UserService } from "../user/user.service";
+import { FormComponent } from "../common/forms/form.component";
 
 @Component({
     templateUrl: './register.component.html',
 })
-export class RegisterComponent {
+export class RegisterComponent extends FormComponent {
 
-  // Error message
-  errorMessage: String = "";
-
-  // Max birthday year
+  /** Max birthday year */
   maxYear: number = this.getMaxBirthYear();
 
-  // Form model
+  /** Form model */
   model = this.getDefaultCustomer();
 
+  /** Password confirmation */
   @Output('verifyPassword') verifyPassword: string = "";
 
   constructor(private userService: UserService,
-              private router: Router) {}
+              private router: Router) {
+    super();
+  }
 
   /**
    * Handle form submissions.
    */
   onSubmit() {
-    let _this = this;
+    super.onSubmit();
 
-    this.errorMessage = "";
+    let $this = this;
 
     this.userService.register(this.model, function() {
-      // TODO: pass special route param so we can display a success message on the login page
-      _this.router.navigate(['/login']);
+      $this.router.navigate(['/login', { message: 'register-success' }]);
     }, function() {
-      _this.errorMessage = "Your email address is already in use. Please try again.";
+      $this.showFeedback("That email address is in use. Please try again.");
+      $this.disabled = false;
     });
   }
 
@@ -56,7 +57,6 @@ export class RegisterComponent {
   getDefaultCustomer(): Customer {
     return new Customer("", "", "", "", new Date(this.maxYear, 0));
   }
-
 
   /**
    * Getters and setters.
@@ -90,5 +90,4 @@ export class RegisterComponent {
   set birthDate(date: number) {
     this.model.birthday.setDate(date);
   }
-
 }

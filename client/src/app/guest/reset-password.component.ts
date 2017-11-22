@@ -1,52 +1,43 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from "../user/user.service";
-
-class FormFeedback {
-  type: String;
-  text: String;
-
-  constructor(text: String, type: String = "error") {
-    this.type = type;
-    this.text = text;
-  }
-
-  get class(): String {
-    return "form-feedback " + this.type;
-  }
-}
+import { FormComponent } from "../common/forms/form.component";
 
 @Component({
     templateUrl: './reset-password.component.html',
 })
-export class ResetPasswordComponent implements OnInit {
+export class ResetPasswordComponent extends FormComponent implements OnInit {
 
-  token: string = "";  // password reset token
+  /** Password reset token */
+  token: string = "";
+
+  /** Email address */
   email: string = "";
-  password: string = "";
-  passwordConfirmation: string = "";
 
-  feedback: FormFeedback = null;
-  disabled: boolean = false;
+  /** New password */
+  password: string = "";
+
+  /** New password confirmation */
+  @Output('confirmPassword') confirmPassword: string = "";
 
   constructor(private router: Router,
               private route: ActivatedRoute,
-              private userService: UserService) {}
+              private userService: UserService) {
+    super();
+  }
 
   /**
    * Set the password reset token on initialization.
    */
   ngOnInit(): void {
-    let params = this.route.snapshot.queryParamMap;
-    this.token = params.get('t');
+    this.token = this.route.snapshot.queryParamMap.get('t');
   }
 
   /**
    * Form submission handler.
    */
   onSubmit(): void {
-    this.feedback = null;
-    this.disabled = true;
+    super.onSubmit();
 
     if (this.token) {
       this.changePassword();
@@ -59,10 +50,10 @@ export class ResetPasswordComponent implements OnInit {
    * Request password reset link.
    */
   sendResetLink() {
-    let _this = this;
+    let $this = this;
 
     this.userService.sendResetLink(this.email, function() {
-      _this.feedback = new FormFeedback("Success! Please check your inbox for further instructions.", "success");
+      $this.showFeedback("Success! Please check your inbox for further instructions.", "success")
     }, function(status: number) {
       let message = "An error occurred. Please try again.";
 
@@ -71,8 +62,8 @@ export class ResetPasswordComponent implements OnInit {
       } else if (500 == status) {
         message = "Email delivery failed.";
       }
-      _this.feedback = new FormFeedback(message);
-      _this.disabled = false;
+      $this.showFeedback(message);
+      $this.disabled = false;
     });
   }
 
@@ -80,18 +71,18 @@ export class ResetPasswordComponent implements OnInit {
    * Update the user's password.
    */
   changePassword() {
-    let _this = this;
+    let $this = this;
 
     this.userService.resetPassword(this.token, this.password, function() {
-      _this.router.navigate(['/login']); // todo: show message on login page
+      $this.router.navigate(['/login', { message: 'reset-success' }]);
     }, function(status: number) {
       let message = "An error occurred. Please try again.";
 
       if (status == 404) {
         message = "Invalid reset token. Did you enter your password reset link correctly?"
       }
-      _this.feedback = new FormFeedback(message);
-      _this.disabled = false;
+      $this.showFeedback(message);
+      $this.disabled = false;
     });
   }
 

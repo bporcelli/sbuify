@@ -11,14 +11,14 @@ public class NewAccountEmail extends Email {
 
     @Override
     protected void build() {
-        // todo: set toEmail, subject, and body
+        // todo: put HTML in a separate template file
         this.toEmail = user.getEmail();
 
         this.subject = "Thank you for registering with SBUify";
 
-        this.body = "<h1>"  + user.getName() +", Welcome to the SBUify family</h1>\n" +
+        this.body = "<h1>Welcome to SBUify, "+ user.getName() +"</h1>\n" +
                     "<p>Your username is: " + user.getEmail()  + "</p>\n" +
-                    "<p>Your Truly, 49er's</p>";
+                    "<p>- The 49er's</p>";
 
     }
 }

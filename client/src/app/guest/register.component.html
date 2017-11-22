@@ -64,9 +64,9 @@
         </div>
     </fieldset>
 
-    <p class="form-error" [hidden]="!errorMessage">{{ errorMessage }}</p>
+    <p *ngIf="feedback" [ngClass]="feedback.class">{{ feedback.text }}</p>
 
-    <button type="submit" [disabled]="!registerForm.form.valid">Sign Up</button>
+    <button type="submit" [disabled]="!registerForm.form.valid || disabled">Sign Up</button>
 </form>
 
 <ul class="text-center" id="loginActions">
