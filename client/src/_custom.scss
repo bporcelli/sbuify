@@ -552,10 +552,18 @@ textarea#description {
   }
 }
 
-.form-error {
-  border-bottom: 2px solid #dc3545;
+.form-feedback {
+  border-bottom: 2px solid;
   padding: map-get($spacers, 2) 0;
   text-transform: uppercase;
+
+  &.error {
+    border-bottom-color: #dc3545;
+  }
+
+  &.success {
+    border-bottom-color: #28a745;
+  }
 }
 
 // Responsive

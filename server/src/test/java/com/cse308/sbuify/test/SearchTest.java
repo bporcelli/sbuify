@@ -131,7 +131,7 @@ public class SearchTest extends AuthenticatedTest {
 
     @Override
     public String getEmail() {
-        return "a@sbuify.com";  // tests will run with user a@sbuify.com authenticated
+        return "sbuify+a@gmail.com";  // tests will run with user sbuify+a@gmail.com authenticated
     }
 
     @Override

@@ -119,8 +119,8 @@ public class UserControllerTest {
      */
     @Test
     public void sendPasswordResetRequest() {
-        // use test customer "a" for test (todo: change emails to sbufiy+a, sbuify+b,... @gmail.com
-        Optional<User> userOptional = userRepository.findByEmail("a@sbuify.com");
+        // use test customer "a" for test
+        Optional<User> userOptional = userRepository.findByEmail("sbuify+a@gmail.com");
         assert(userOptional.isPresent());
         Customer customer = (Customer) userOptional.get();
 
@@ -140,7 +140,7 @@ public class UserControllerTest {
         sendPasswordResetRequest();
 
         // get user by email
-        Optional<User> userOptional = userRepository.findByEmail("a@sbuify.com");
+        Optional<User> userOptional = userRepository.findByEmail("sbuify+a@gmail.com");
         assert(userOptional.isPresent());
         Customer customer = (Customer) userOptional.get();
 

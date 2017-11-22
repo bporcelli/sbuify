@@ -3,21 +3,19 @@ package com.cse308.sbuify.user;
 
 import com.cse308.sbuify.email.Email;
 import com.cse308.sbuify.email.PasswordResetEmail;
-import com.cse308.sbuify.security.SecurityUtils;
+import com.cse308.sbuify.security.SecurityConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
-@RequestMapping(path = "/api/reset-password")
 public class PasswordResetController {
 
     @Autowired
@@ -27,62 +25,61 @@ public class PasswordResetController {
     private PasswordEncoder passwordEncoder;
 
     /**
-     * Give token to user for password reset and send password reset request
+     * Send a password reset email to the user with the given email address.
      *
+     * @param email Email of user who wants to reset their password.
      * @return ResponseEntity<>
      */
-    @PostMapping
-    public ResponseEntity<?> resetToken(@RequestBody String email) {
+    @PostMapping(path = SecurityConstants.RESET_URL)
+    public ResponseEntity<?> sendResetEmail(@RequestParam String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
-        Optional<User> existing = userRepository.findByEmail(email);
-
-        // Return a 404 response no account found
-        if (!existing.isPresent()) {
+        if (!optionalUser.isPresent()) {  // invalid email
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        User user = existing.get();
-
-        user.setToken(SecurityUtils.generateToken());
+        User user = optionalUser.get();
+        user.setToken(generateToken());
         userRepository.save(user);
 
         Email resetEmail = new PasswordResetEmail(user);
-
-        // send email
-        // return 500 response, error sending email
-        if ( !resetEmail.dispatch()) {
+        if (!resetEmail.dispatch()) {  // error sending email
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Process a request to change a user's password.
+     *
+     * @param token Password reset token.
+     * @param password New password.
+     * @return ResponseEntity<>
+     */
+    @PostMapping(path = SecurityConstants.CHANGE_PASS_URL)
+    public ResponseEntity<?> changePassword(@RequestParam String token, @RequestParam String password) {
+        Optional<User> optionalUser = userRepository.findByToken(token);
+
+        if (!optionalUser.isPresent()) {  // invalid user token
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        User user = optionalUser.get();
+
+        // Hash password and save user
+        user.setPassword(passwordEncoder.encode(password));
+        user.setToken(null);
+        userRepository.save(user);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
-     * given a token, match the correct user, change the password
+     * Generate a cryptographically secure token that can be used to identify a user during the
+     * password reset process.
      *
-     * @param token
-     * @param password
-     * @return ResponseEntity<>
+     * @return Password reset token.
      */
-    @PostMapping("/") // todo: should probably be mapped to a different endpoint
-    public ResponseEntity<?> changePassword(@RequestParam("token") String token, @RequestParam("password") String password){
-        Optional<User> existing = userRepository.findByToken(token);
-
-        // Return 400, invalid token, Not Found
-        if (!existing.isPresent()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        // todo: CHECK PROVIDED PASSWORD AGAINST EXISTING USER PASS***
-
-        User existingUser = existing.get();
-
-        // Hash password and save user
-        existingUser.setPassword(passwordEncoder.encode(password));
-        existingUser.setToken(null);
-
-        userRepository.save(existingUser);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+    private static String generateToken() {
+        return UUID.randomUUID().toString();
     }
 }

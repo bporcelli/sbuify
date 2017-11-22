@@ -40,7 +40,7 @@ public class SongTest extends AuthenticatedTest {
 
     @Override
     public String getEmail() {
-        return "b@sbuify.com";  // use the user b@sbuify.com for all tests in this class
+        return "sbuify+b@gmail.com";  // use the user sbuify+b@gmail.com for all tests in this class
     }
 
     @Override

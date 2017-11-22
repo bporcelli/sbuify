@@ -1,22 +1,12 @@
 package com.cse308.sbuify.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SecurityUtils {
-
-    /**
-     * Generate a secure token to be used during the password reset process.
-     * @return
-     */
-	public static String generateToken() {
-	    return UUID.randomUUID().toString();
-	}
 
     /**
      * Convert the given user's granted authorities to a list of strings.

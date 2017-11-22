@@ -49,13 +49,13 @@ public class AuthenticationTest {
         ResponseEntity<Void> response;
 
         // Three test customers are available: 'a', 'b', and 'c' with matching passwords
-		Optional<User> uA = userRepository.findByEmail("a@sbuify.com");
+		Optional<User> uA = userRepository.findByEmail("sbuify+a@gmail.com");
 		assert(uA.isPresent());
 		Customer customer = (Customer) uA.get();
 		customer.setPassword("a");
 
 		// One test admin is available: 'admin' with password 'a'
-		Optional<User> uAdmin = userRepository.findByEmail("admin@sbuify.com");
+		Optional<User> uAdmin = userRepository.findByEmail("sbuify+admin@gmail.com");
 		assert(uAdmin.isPresent());
 		Admin admin = (Admin) uAdmin.get();
 		admin.setPassword("a");
@@ -74,9 +74,9 @@ public class AuthenticationTest {
      */
     @Test
     public void authenticationFailsWithIncorrectPassword() {
-		Optional<User> uA = userRepository.findByEmail("b@sbuify.com");
-		assert(uA.isPresent());
-		Customer customer = (Customer) uA.get();
+		Optional<User> uB = userRepository.findByEmail("sbuify+b@gmail.com");
+		assert(uB.isPresent());
+		Customer customer = (Customer) uB.get();
 
         // invalidate password
         customer.setPassword("invalid");

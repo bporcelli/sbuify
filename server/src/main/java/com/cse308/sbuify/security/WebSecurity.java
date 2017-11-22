@@ -41,10 +41,11 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .disable()
                 .authorizeRequests()
-                    // sign up, login, and reset are publicly accessible
+                    // sign up, login, reset pass, and change pass are publicly accessible
                     .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                     .antMatchers(HttpMethod.POST, LOGIN_URL).permitAll()
                     .antMatchers(HttpMethod.POST, RESET_URL).permitAll()
+                    .antMatchers(HttpMethod.POST, CHANGE_PASS_URL).permitAll()
                     // admin endpoints are only accessible to admins
                     .antMatchers(ADMIN_PATTERN).hasRole("ADMIN")
                     // customer endpoints are only accessible to customers

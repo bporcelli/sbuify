@@ -153,7 +153,7 @@ public class ArtistControllerTest extends AuthenticatedTest {
 
     @Override
     public String getEmail() {
-        return "a@sbuify.com"; // use user "a@sbuify.com" for all tests in this class
+        return "sbuify+a@gmail.com"; // use user "sbuify+a@gmail.com" for all tests in this class
     }
 
     @Override

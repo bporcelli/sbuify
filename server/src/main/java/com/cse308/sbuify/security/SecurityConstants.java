@@ -6,7 +6,8 @@ package com.cse308.sbuify.security;
 public class SecurityConstants {
     public static final String LOGIN_URL = "/api/login";
     public static final String SIGN_UP_URL = "/api/users";
-    public static final String RESET_URL = "/api/reset-password/**";
+    public static final String RESET_URL = "/api/reset-password";
+    public static final String CHANGE_PASS_URL = "/api/change-password";
     public static final String ADMIN_PATTERN = "/api/admins/**";
     public static final String CUSTOMER_PATTERN = "/api/customer/**";
     public static final String CRON_PATTERN = "/api/cron/**";

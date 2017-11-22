@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 import { GuestRoutingModule } from './guest-routing.module';
 
@@ -14,6 +15,7 @@ import { ResetPasswordComponent } from './reset-password.component';
         ResetPasswordComponent
     ],
     imports: [
+        CommonModule,
         GuestRoutingModule,
         FormsModule
     ],
