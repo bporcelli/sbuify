@@ -124,10 +124,14 @@ public class UserControllerTest {
         assert(userOptional.isPresent());
         Customer customer = (Customer) userOptional.get();
 
+        // send email as a POST parameter
+        MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
+        params.add("email", customer.getEmail());
+
         // send reset request
         ResponseEntity<Void> response;
         response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/reset-password", customer.getEmail(), Void.class);
+                "http://localhost:" + port + "/api/reset-password", params, Void.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -151,7 +155,7 @@ public class UserControllerTest {
         params.add("password", pass);
 
         ResponseEntity<Void> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/reset-password/", params, Void.class);
+                "http://localhost:" + port + "/api/change-password", params, Void.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         userOptional = userRepository.findByEmail(customer.getEmail());
