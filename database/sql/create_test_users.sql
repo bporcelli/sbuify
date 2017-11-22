@@ -22,7 +22,7 @@ INSERT INTO `user`
              `email`,
              `password`)
 VALUES      ('Customer',
-             'a@sbuify.com',
+             'sbuify+a@gmail.com',
              '$2a$10$.KWRUTOqHC99gANfFc4xQ.OBCOSF/LrIw2q3un7EXh6GcIEM1Hy26'); -- 'a'
 
 SET @user_id = LAST_INSERT_ID();
@@ -68,7 +68,7 @@ INSERT INTO `user`
              `email`,
              `password`)
 VALUES      ('Customer',
-             'b@sbuify.com',
+             'sbuify+b@gmail.com',
              '$2a$10$DfaIJNL0eJsPxptze2pRT.jKDUpf3B8ys4PHe3NfifhwIFJtjYnMC'); -- 'b'
 
 SET @user_id = LAST_INSERT_ID();
@@ -114,7 +114,7 @@ INSERT INTO `user`
              `email`,
              `password`)
 VALUES      ('Customer',
-             'c@sbuify.com',
+             'sbuify+c@gmail.com',
              '$2a$10$fBgnuGdCez4miyWfegJ9o.CKXhkAak1ZRXquNchroulkKcDV5N4KG'); -- 'c'
 
 SET @user_id = LAST_INSERT_ID();
@@ -160,7 +160,7 @@ INSERT INTO `user`
              `email`,
              `password`)
 VALUES      ('Admin',
-             'admin@sbuify.com',
+             'sbuify+admin@gmail.com',
              '$2a$10$.KWRUTOqHC99gANfFc4xQ.OBCOSF/LrIw2q3un7EXh6GcIEM1Hy26'); -- 'a'
 
 INSERT INTO `admin`
