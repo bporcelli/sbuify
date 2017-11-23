@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: test2
+-- Host: localhost    Database: test
 -- ------------------------------------------------------
 -- Server version	5.7.18-log
 
@@ -227,6 +227,32 @@ LOCK TABLES `artist_aliases` WRITE;
 /*!40000 ALTER TABLE `artist_aliases` DISABLE KEYS */;
 INSERT INTO `artist_aliases` VALUES (1,'Denver, John'),(1,'John Dennver'),(3,'Bacarra'),(3,'Baccara 2000'),(3,'Баккара'),(4,'The Village People'),(6,'Kansas City Bill Weldon'),(6,'Will Weldon'),(7,'Elvis'),(7,'Elvis A. Presley'),(7,'Elvis Aaron Presley'),(7,'Elvis Presley'),(7,'Presley Elvis'),(7,'Priesley'),(7,'The King of Rock and Roll'),(7,'Элвис Пресли'),(8,'Lucia Dalla'),(9,'The Jordanairs'),(10,'Eiji Kitamura'),(11,'De Gregori'),(11,'F. De Gregori'),(11,'Franvesco De Gregori'),(12,'Dave Mattews Band'),(12,'Matthews Band, Dave'),(12,'The Dave Matthews Band'),(12,'dave mathews band'),(12,'dmb'),(13,'Lou Read'),(13,'Lou Red'),(13,'Lou Ree'),(13,'Reed, Lou'),(14,'Raycharles LaMontagne'),(15,'Hillary Duff'),(16,'Kendall Francis Schmidt'),(17,'Jefferson Aeroplane'),(17,'Jefferson Airplaine'),(17,'Jefferson Airplane/Starship'),(17,'The Jefferson Airplane'),(18,'Belafonte Harry'),(18,'Harold George Belafonte, Jr.'),(18,'Harry Belefonte'),(18,'Harry Belfonte'),(18,'Harry Bellafonte'),(18,'Harry Thomas'),(18,'Henry Belafonte'),(20,'Jim Edward Brown'),(22,'Woodrow Wilson \"Red\" Sovine'),(25,'Giani Morandi'),(27,'Ke$ha'),(27,'Kesha'),(27,'Kesha Rose Sebert'),(28,'Andre 3000'),(30,'Avril Lavinge'),(30,'Avril Ramona Lavigne'),(30,'Avril Ramona Lavigne Kroeger'),(30,'Avril Ramona Lavigne Whibley'),(30,'アヴリル・ラヴィーン'),(31,'3 oh 3'),(31,'30H!3'),(31,'3CH!3'),(32,'Adetayo Ayowale Onile-Ere'),(32,'Jacob Milan Taio Cruz'),(32,'Tayo Onile-Ere'),(32,'Trio Cruz'),(34,'Tyrese Gibson'),(35,'Kelly, R.'),(35,'R Kelly'),(35,'R Kelly'),(35,'R-Kelly'),(35,'R. Kellly'),(35,'R.Kelly'),(35,'Robert Kelly'),(35,'Robert Sylvester Kelly'),(36,'Big Snoop Dogg'),(36,'Snoop'),(36,'Snoop Dogg'),(36,'Snoop Doggy'),(36,'Snoop Doggy Dog'),(36,'Snoop Doggy Dogg'),(39,'Sia Furler'),(39,'Sia Kate I. Furler'),(39,'Sia Kate Isobelle Furler'),(45,'Sampha Sisay'),(49,'Gaia Gozzi'),(52,'G-Easy'),(52,'Gerald Earl Gillum'),(54,'Adam Richard Wiles'),(54,'Adam Richard Wiles'),(54,'Adam Wiles'),(55,'H. Zimmer'),(55,'Hans Florian Zimmer'),(55,'Zimmer'),(57,'Bruce Frederick Joseph Springsteen'),(57,'Bruce Springteen'),(57,'Springsteen'),(57,'Springsteen, Bruce'),(57,'The Boss'),(58,'George Ezra Barnett'),(59,'サンタナ'),(61,'King James Britt'),(62,'King Brit Presents Sylk 130'),(62,'King Britt Pres. Sylk 130'),(62,'King Britt Presents Sylk 130'),(62,'SYLK130'),(62,'Silk 130'),(64,'Anna Bissi'),(64,'Anna Vissi'),(64,'Anna Vissy'),(65,'Josh Wink'),(65,'Josh Wink (DJ Wink)'),(65,'Josh Winx'),(65,'Winc'),(65,'Winks'),(65,'Winx'),(67,'Carey, Mariah'),(67,'M. Carey'),(67,'Mariah'),(67,'Mariah Carrey'),(67,'Mariah-Carey'),(67,'マライア・キャリー'),(68,'Dr. Brat'),(69,'Xcape'),(70,'Blackout All-Stars'),(70,'Blackout Allstars'),(70,'The Blackout All Stars'),(71,'Clubworld'),(71,'Robi Rob\'s Club World'),(71,'Robi Rob\'s Clubworld'),(71,'Robie Rob\'s Clubworld'),(74,'Arleta'),(75,'B. Streizande'),(75,'Barbara Joan Streisand'),(75,'Barbara Streisand'),(75,'Barbara Striesand'),(75,'Streisand Barbra'),(76,'B.Ādamss'),(76,'Brian Adams'),(76,'Bryan Guy Adams'),(80,'Destinys Child'),(80,'Destiny´s Child'),(80,'Destiny’s Child'),(81,'R. Reiser'),(82,'Nasir Jones'),(82,'Nass'),(82,'Scarlett'),(84,'J. R. Cash'),(84,'Johhny Cash'),(84,'John R. Cash'),(84,'Jonny Cash'),(86,'Lowe, Nick'),(86,'Nicholas Drain Lowe'),(87,'Costello, Elvis and the Attractions'),(87,'Elvis Costello and the Attractions'),(88,'Peter H. Brown'),(89,'Deneice Williams'),(89,'Denice Williams'),(89,'Denise Williams'),(89,'Williams, Deniece'),(92,'\"Mwandishi\" Herbie Hancock'),(92,'Hancock Herbie'),(92,'Hancock, Herbie'),(93,'Wham'),(93,'Wham! (feat. George Michael)'),(95,'CHUCK MANGIONE'),(96,'D. Gilmour'),(96,'Dave Gilmour'),(96,'David Gilmore'),(96,'David Jon Gilmour'),(97,'Buddy Jewll'),(98,'Dirty Dozen Brass Band'),(99,'Dion DiMucci'),(99,'Dion di Mucci'),(100,'Amerie Mi Marie Rogers'),(100,'Ameriie'),(101,'Carlton Thomas'),(102,'Eve Jihan Jeffers'),(102,'Eve Jihan Jeffers-Cooper'),(102,'Eve of Destruction'),(102,'Evve'),(103,'KoRn'),(103,'KoЯn'),(107,'Devin Star Tailes'),(109,'Tove Anna Linnéa Östman Styrke'),(110,'Immi'),(110,'Imogen Jennifer Jane Heap'),(110,'イモージェン・ヒープ'),(110,'伊莫金'),(111,'R E O Speedwagon'),(111,'REO Speedwagaon'),(112,'Cyco Nation'),(112,'S.T.'),(112,'ST'),(112,'Sucidal Tendencies'),(112,'Suicidal'),(112,'Suicidal Tendancies'),(113,'JACKSON MICHAEL JOE'),(113,'Michael Jackson'),(113,'Michael Joe Jackson'),(113,'Michael Joseph Jackson'),(113,'Michaël Jackson'),(113,'Micheal'),(113,'Michel Jackson'),(113,'Майкл Джексон'),(113,'マイケル・ジャクソン'),(113,'마이클 잭슨'),(114,'J. Timberlake'),(114,'Justin \"TENNMAN\" Timberlake'),(114,'Justin R. Timberlake'),(114,'Justine Timberlake'),(114,'Trousersnake'),(115,'Judas Prist'),(115,'Judus Priest'),(115,'ジューダス・プリースト'),(119,'Chuck D'),(119,'Mista Chuck'),(120,'Ice Cube'),(120,'O’Shea Jackson'),(120,'O’Shea Jackson, Sr.'),(122,'Front242'),(123,'インディゴ・ガールズ'),(127,'Ottmar Lieber + Luna Negra'),(127,'Ottmar Liebert + Luna Negra'),(127,'Ottmar Liebert and Luna Negra'),(128,'Ironmaiden'),(128,'Maiden'),(128,'鉄の処女'),(130,'Joaqu n Sabina'),(130,'Joaquin Sabina'),(130,'Sabina y Cía.'),(131,'María Dolores Flores Ruiz'),(132,'Michael Polnareff'),(132,'Michel Polnaref'),(134,'Sandi Patti'),(134,'Sandy Patty'),(135,'Choir'),(135,'Youth Choir'),(136,'Barbara Trzetrzelewska'),(136,'Basia Trzetrzelewska'),(136,'バーシア'),(137,'Hollies'),(138,'Flamin Groovies, The'),(138,'Flamin\' Groovies, The'),(138,'Flaming Groovies'),(138,'The Flamin\' Groovies'),(141,'Gun / Gunsight'),(141,'The Gun'),(143,'Jo Anne Kelly'),(143,'Jo-Ann Kelly'),(144,'Kaleidoscope (UK)'),(144,'The Kaleidoscope'),(146,'RHCP'),(146,'Red Hot Chilli Peppers'),(146,'Red Hot Chilly Peppers'),(146,'The Red Hot Chili Peppers'),(146,'The Red Hot Chilli Peppers'),(149,'The Head & The Heart'),(151,'Gorilaz'),(151,'Gorrilaz'),(152,'Vincent Staples'),(153,'Pevan Everett'),(153,'Peyan Everett'),(153,'Prevan Everett'),(155,'Dela Soul'),(155,'Delasoul'),(156,'Daniel Sewell'),(157,'Kelela'),(157,'Kelela Mizanekristos'),(158,'Crace Jones'),(158,'G. Jones'),(162,'Pusha'),(163,'Jaime Principle'),(166,'Benjamin Breakspeare'),(168,'(us 1) PRINCE'),(168,'Formerly Prince'),(168,'Joey Coco'),(168,'O(+>'),(168,'O(+>)'),(168,'Prince'),(168,'Prince Rogers Nelson'),(168,'Symbol'),(168,'T.A.F.K.A.P.'),(168,'The Artist Formerly Known as Prince'),(168,'The Love Symbol'),(168,'Ƭ̵̬̊'),(168,'♀♂'),(169,'Hybrid Theory'),(169,'Limkin Park'),(169,'Lincoln Park'),(169,'Xero'),(170,'Kiara Saulters'),(172,'Al Jarrean'),(172,'Al Jarreou'),(172,'Al Jerrau'),(172,'All Jarreau'),(172,'Alwyn Lopez Jarreau'),(172,'Jarreau, Al'),(173,'Rod Steward'),(173,'Roderick David Stewart'),(173,'Roderick Stewart'),(173,'Stewart, Rod'),(174,'Alice Cooper'),(174,'Vincent Damon Furnier'),(174,'アリス・クーパー'),(175,'Dire Straights'),(175,'Dire Straits (TH)'),(177,'Funkadellic'),(178,'Band'),(180,'Bernard Shakey'),(180,'Neil Percival Young'),(180,'Neil Young & The Shocking Pinks'),(180,'Neil Young-Neil And The Shocking Pinks'),(180,'Niel Young'),(181,'Joni Mitchel'),(181,'Joni Mitchell'),(181,'Roberta Joan Anderson'),(182,'Neil Daimond'),(182,'Neil Leslie Diamond'),(183,'Creaux'),(183,'DR.JOHN'),(183,'Doctor John'),(183,'Dr John'),(183,'Dr. John Mac Rebennack'),(183,'Dr. John, the Night Tripper'),(183,'John Creaux'),(183,'Malcolm John \"Mac\" Rebennack, Jr.'),(184,'Doobie Brothers'),(184,'Dooby Brothers'),(184,'The Dobbie Brothers'),(184,'The Doobie Bros'),(184,'The Doobie Bros.'),(184,'The Doobie Brother'),(184,'The Doobies'),(186,'Marc Bolan & T / Rex'),(186,'Marc Bolan & T-Rex'),(186,'Marc Bolan & T. Rex'),(186,'Marc Bolan & T.Rex'),(186,'Marc Bolan and T-Rex'),(186,'Marc Bolan and T. Rex'),(186,'Marc Boland & T Rex'),(186,'T Rex'),(186,'T Rex with Marc Bolan'),(186,'T-Rex'),(186,'T. Rex (Marc Bolin)'),(186,'T.Rex'),(186,'Tyrannosaurus Rex'),(187,'Tom Petty'),(187,'Tom Petty & the Heartbreakers'),(188,'Earl Vince and the Valiants'),(188,'Fleedwood Mac'),(188,'Fleetwood Mack'),(188,'Flettwood Mac'),(188,'Mac Fleetwood'),(188,'Peter Green\'s Fleetwood Mac'),(189,'Greatful Dead'),(189,'Greatfull Dead'),(189,'The Grateful Dead'),(190,'Russell Steagall'),(191,'Randy Crawford MAXI'),(191,'Veronica Crawford'),(193,'Emmilou Harris'),(193,'Harris, Emmylou Harris'),(194,'Waylon'),(194,'Waylon and the Waymore Blues Band'),(195,'Linda Maria Ronstadt'),(195,'Linda Rondstadt'),(195,'Linda Ronstad'),(195,'Linda Ronstat'),(196,'Dolly Parton and Friends'),(196,'Dolly Rebecca Parton'),(196,'Parton, Dolly'),(198,'Charles Thomas Johnston'),(198,'TOM JOHNSTON'),(200,'David Freizzell'),(202,'S. Grapelly'),(202,'Stepane Grappelli'),(202,'Stephan Grapelli'),(202,'Stephane Grapelli'),(202,'Stephane Grappelli'),(202,'Stephanie Grapelli'),(202,'Stephanie Grappelli'),(202,'Stéphane Grappelly'),(203,'Dave Grisman'),(205,'Mark Freuder Knopfler'),(205,'Mark Knofler'),(205,'Mark Knopfler & His Band'),(205,'Mark Nofler'),(205,'Марк Кнопфлер'),(207,'シーナ・イーストン'),(208,'Mark Lorenn O’Connor'),(208,'Mark O Conner'),(208,'Mark O\' Connor'),(208,'Mark O\'Conner'),(208,'Mike O\'Conner'),(210,'Ofra Chaza'),(210,'Ofra Haza'),(210,'Ofra Hazza'),(210,'Ofra Jaza'),(210,'Ofra Nasa'),(210,'Ofra_Haza'),(210,'Ophra Haza'),(210,'ofra haza'),(210,'עָפְרָה חָזָה'),(210,'עופרה חזה'),(212,'Manhattan Transfer'),(212,'Manhatten Transfer'),(212,'The Manhatten Transfer'),(213,'Chic Le'),(214,'Blues Brothers Band'),(214,'Blues Brothers Band, The'),(214,'Blues Brothers Showband'),(214,'The Blues Brothers'),(214,'The Blues Brothers Band'),(215,'AC'),(215,'AC DC'),(215,'AC-DC'),(215,'AC.DC'),(215,'AC?DC'),(215,'ACDC'),(215,'AC\\DC'),(215,'Ballbreaker'),(216,'イエス'),(217,'Klaus Doldinger & Passport'),(217,'Klaus Doldingers Passport'),(218,'Collins, Phil'),(218,'P. Collins'),(218,'Phil Colins'),(218,'Phill Collins'),(218,'Phillip Charles Collins'),(218,'Phillip David Charles Collins'),(219,'Christopher Russell Edward Squire'),(221,'Kaura Branigan'),(221,'Laura Ann Branigan'),(221,'Laura Branigan Kruteck'),(221,'Laura Brannigan'),(222,'Brandy -'),(222,'Bran’ Nu'),(223,'Bette Middler'),(223,'Bette Milder'),(223,'Bette Mildler'),(223,'Betty Midler'),(224,'Amos, Tori'),(224,'Myra Ellen Amos'),(224,'Torie Amos'),(226,'E. Papathanassiou'),(226,'Papathanassiou'),(226,'Papathanassiou, Vangelis'),(226,'Vangelis & Irene Papas'),(226,'Vangelis O. Papathanassiou'),(226,'Vangelis Papathanassiou'),(226,'Vangelis Papathanassiou & Irene Papas'),(226,'Vangelis Q. Papathanassiou'),(226,'Vangelis Remixed by Gutbrod'),(226,'Vangellis'),(226,'vangelis remixed gutbrod'),(226,'Βαγγέλης Παπαθανασίου'),(226,'ヴァンゲリス'),(227,'Sleez Beez'),(228,'Walter Mink'),(229,'Santo Gold'),(229,'Santogold'),(230,'Death Cab 4 Cutie'),(230,'Deathcab for Cutie'),(230,'dcfc'),(231,'Jason Mrraz'),(231,'Mraz, Jason'),(232,'Colbie Cailat'),(233,'James Morrison Catchpole'),(235,'Hadouken'),(237,'Eddie Harri'),(239,'Art Webb'),(239,'Arthur Webb'),(239,'Artie Webb'),(240,'Boney M'),(240,'Boney M. 2000'),(240,'Bony M'),(240,'Бони М'),(241,'Cherry, Don'),(242,'AWB'),(242,'The Average White Band'),(243,'B. E. King'),(243,'B.E. King'),(243,'Ben E King'),(243,'Ben E, King'),(243,'Ben E.King'),(243,'Ben. E. King'),(243,'Benjamin Earl King'),(243,'Benjamin Earl Nelson'),(243,'Benjamin Nelson'),(243,'King, Ben E.'),(244,'Fred Wesley and the Horny Horns'),(245,'M. Parker'),(245,'Macco Parker'),(246,'Baron Mingus & His Octet'),(246,'Charles Baron Mingus'),(246,'Charles Mingus Jazz Workshop'),(246,'Charles Mingus Octet'),(246,'Charles Mingus Sextet'),(246,'Charles Mingus Sextet With Eric Dolphy'),(246,'Charles Minugs'),(246,'Charlie Mingus'),(246,'Charlies Mingus'),(246,'Mingus, Charles'),(246,'The Charles Mingus Group'),(248,'\'Little\' Loius Vega'),(248,'LLV'),(248,'Lil\' Louie Vega'),(248,'Louie Vega'),(248,'Louis F. Vega'),(248,'Luis Vega'),(249,'Marc Antony'),(249,'Marco Antonio Muñiz'),(249,'Mark Anthony'),(250,'Ernesto Antonio Puente'),(250,'PUENTE, Tito'),(250,'Puente Tito'),(250,'Tito Puente & His Orchestra'),(250,'Tito Puente and his Latin Jazz Ensemble & Orchestra'),(250,'Tito Puente and his orchestra'),(250,'Tito Puente y son Orquestra'),(250,'Tito Puentes'),(250,'Tito Puento'),(251,'Eddie Palmeiri'),(251,'Eddie Palmiere'),(251,'Eddie Palmieri & Friends'),(251,'Eddie Palmieri & His Orchestra'),(251,'Eddie Palmieri and His Orchestra'),(253,'T.S.O.'),(253,'TSO'),(253,'The Trans-Siberian Orchestra'),(253,'Trans Siberian Orchestra'),(253,'Trans- Siberian Orchestra'),(256,'Ben Gibbard'),(256,'Benjamin D. Gibbard'),(257,'Music Soulchild'),(257,'Musiq'),(258,'St Vincent'),(259,'Victoria Garance Alixe Legrand');
 /*!40000 ALTER TABLE `artist_aliases` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `artist_followers`
+--
+
+DROP TABLE IF EXISTS `artist_followers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `artist_followers` (
+  `artist_id` int(11) NOT NULL,
+  `follower_id` int(11) NOT NULL,
+  PRIMARY KEY (`artist_id`,`follower_id`),
+  KEY `follower_id` (`follower_id`),
+  CONSTRAINT `artist_followers_ibfk_1` FOREIGN KEY (`artist_id`) REFERENCES `artist` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `artist_followers_ibfk_2` FOREIGN KEY (`follower_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `artist_followers`
+--
+
+LOCK TABLES `artist_followers` WRITE;
+/*!40000 ALTER TABLE `artist_followers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `artist_followers` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -487,6 +513,110 @@ LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
 INSERT INTO `customer` VALUES ('1996-06-04 00:00:00','Brett','Porcelli',1,1,1,NULL,NULL),('1997-07-04 00:00:00','Jerrel','Sogoni',2,2,2,NULL,NULL),('1995-11-11 00:00:00','Daniel','Soh',3,3,3,NULL,NULL);
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `customer_artists`
+--
+
+DROP TABLE IF EXISTS `customer_artists`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `customer_artists` (
+  `customer_id` int(11) NOT NULL,
+  `artist_id` int(11) NOT NULL,
+  PRIMARY KEY (`customer_id`,`artist_id`),
+  KEY `artist_id` (`artist_id`),
+  CONSTRAINT `customer_artists_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `customer_artists_ibfk_2` FOREIGN KEY (`artist_id`) REFERENCES `artist` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `customer_artists`
+--
+
+LOCK TABLES `customer_artists` WRITE;
+/*!40000 ALTER TABLE `customer_artists` DISABLE KEYS */;
+/*!40000 ALTER TABLE `customer_artists` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `customer_followers`
+--
+
+DROP TABLE IF EXISTS `customer_followers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `customer_followers` (
+  `customer_id` int(11) NOT NULL,
+  `follower_id` int(11) NOT NULL,
+  PRIMARY KEY (`customer_id`,`follower_id`),
+  KEY `follower_id` (`follower_id`),
+  CONSTRAINT `customer_followers_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `customer_followers_ibfk_2` FOREIGN KEY (`follower_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `customer_followers`
+--
+
+LOCK TABLES `customer_followers` WRITE;
+/*!40000 ALTER TABLE `customer_followers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `customer_followers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `customer_friends`
+--
+
+DROP TABLE IF EXISTS `customer_friends`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `customer_friends` (
+  `customer_id` int(11) NOT NULL,
+  `friend_id` int(11) NOT NULL,
+  PRIMARY KEY (`customer_id`,`friend_id`),
+  KEY `friend_id` (`friend_id`),
+  CONSTRAINT `customer_friends_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `customer_friends_ibfk_2` FOREIGN KEY (`friend_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `customer_friends`
+--
+
+LOCK TABLES `customer_friends` WRITE;
+/*!40000 ALTER TABLE `customer_friends` DISABLE KEYS */;
+/*!40000 ALTER TABLE `customer_friends` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `customer_playlists`
+--
+
+DROP TABLE IF EXISTS `customer_playlists`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `customer_playlists` (
+  `customer_id` int(11) NOT NULL,
+  `playlist_id` int(11) NOT NULL,
+  PRIMARY KEY (`customer_id`,`playlist_id`),
+  KEY `playlist_id` (`playlist_id`),
+  CONSTRAINT `customer_playlists_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `customer_playlists_ibfk_2` FOREIGN KEY (`playlist_id`) REFERENCES `playlist` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `customer_playlists`
+--
+
+LOCK TABLES `customer_playlists` WRITE;
+/*!40000 ALTER TABLE `customer_playlists` DISABLE KEYS */;
+/*!40000 ALTER TABLE `customer_playlists` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -871,6 +1001,32 @@ LOCK TABLES `playlist_folder` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `playlist_followers`
+--
+
+DROP TABLE IF EXISTS `playlist_followers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `playlist_followers` (
+  `playlist_id` int(11) NOT NULL,
+  `follower_id` int(11) NOT NULL,
+  PRIMARY KEY (`playlist_id`,`follower_id`),
+  KEY `follower_id` (`follower_id`),
+  CONSTRAINT `playlist_followers_ibfk_1` FOREIGN KEY (`playlist_id`) REFERENCES `playlist` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `playlist_followers_ibfk_2` FOREIGN KEY (`follower_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `playlist_followers`
+--
+
+LOCK TABLES `playlist_followers` WRITE;
+/*!40000 ALTER TABLE `playlist_followers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `playlist_followers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `playlist_songs`
 --
 
@@ -1162,7 +1318,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('Customer',1,'a@sbuify.com','$2a$10$.KWRUTOqHC99gANfFc4xQ.OBCOSF/LrIw2q3un7EXh6GcIEM1Hy26',NULL),('Customer',2,'b@sbuify.com','$2a$10$DfaIJNL0eJsPxptze2pRT.jKDUpf3B8ys4PHe3NfifhwIFJtjYnMC',NULL),('Customer',3,'c@sbuify.com','$2a$10$fBgnuGdCez4miyWfegJ9o.CKXhkAak1ZRXquNchroulkKcDV5N4KG',NULL),('Admin',4,'admin@sbuify.com','$2a$10$.KWRUTOqHC99gANfFc4xQ.OBCOSF/LrIw2q3un7EXh6GcIEM1Hy26',NULL);
+INSERT INTO `user` VALUES ('Customer',1,'sbuify+a@gmail.com','$2a$10$.KWRUTOqHC99gANfFc4xQ.OBCOSF/LrIw2q3un7EXh6GcIEM1Hy26',NULL),('Customer',2,'sbuify+b@gmail.com','$2a$10$DfaIJNL0eJsPxptze2pRT.jKDUpf3B8ys4PHe3NfifhwIFJtjYnMC',NULL),('Customer',3,'sbuify+c@gmail.com','$2a$10$fBgnuGdCez4miyWfegJ9o.CKXhkAak1ZRXquNchroulkKcDV5N4KG',NULL),('Admin',4,'sbuify+admin@gmail.com','$2a$10$.KWRUTOqHC99gANfFc4xQ.OBCOSF/LrIw2q3un7EXh6GcIEM1Hy26',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1193,7 +1349,7 @@ LOCK TABLES `venue` WRITE;
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'test2'
+-- Dumping routines for database 'test'
 --
 /*!50003 DROP PROCEDURE IF EXISTS `update_album_length` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1282,4 +1438,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-22 16:23:18
+-- Dump completed on 2017-11-22 20:39:56

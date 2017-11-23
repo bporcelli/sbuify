@@ -1,5 +1,6 @@
 package com.cse308.sbuify.artist;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,12 +20,14 @@ import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.common.CatalogItem;
+import com.cse308.sbuify.common.Followable;
+import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Artist extends CatalogItem {
+public class Artist extends CatalogItem implements Followable {
 
     // todo: popular songs (not appropriate to maintain in a separate table unless
     // we can make it a view)
@@ -45,7 +48,7 @@ public class Artist extends CatalogItem {
     private Integer monthlyListeners = 0;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "artist")
-    private Set<Product> merchandise;
+    private Set<Product> merchandise = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @PrimaryKeyJoinColumn
@@ -57,10 +60,14 @@ public class Artist extends CatalogItem {
     @OneToMany
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "album_id"))
     @JsonIgnore
-    private List<Album> albums;
+    private List<Album> albums = new ArrayList<>();
+
+    /** Followers. */
+    @ManyToMany
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
+    private Set<Customer> followers = new HashSet<>();
 
     public Artist() {
-        merchandise = new HashSet<>();
     }
 
     public Artist(@NotEmpty String name, User owner, Image image, @NotNull String mbid) {
@@ -130,5 +137,23 @@ public class Artist extends CatalogItem {
 
     public void setAliases(Set<String> aliases) {
         this.aliases = aliases;
+    }
+
+    /**
+     * Followable methods.
+     */
+    @Override
+    public void addFollower(Customer customer) {
+        this.followers.add(customer);
+    }
+
+    @Override
+    public void removeFollower(Customer customer) {
+        this.followers.remove(customer);
+    }
+
+    @Override
+    public boolean isFollowedBy(Customer customer) {
+        return this.followers.contains(customer);
     }
 }

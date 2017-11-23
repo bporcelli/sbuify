@@ -1,5 +1,7 @@
 package com.cse308.sbuify.customer;
 
+import com.cse308.sbuify.artist.Artist;
+import com.cse308.sbuify.common.Followable;
 import com.cse308.sbuify.customer.preferences.Language;
 import com.cse308.sbuify.customer.preferences.Preferences;
 import com.cse308.sbuify.image.Image;
@@ -20,7 +22,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Entity
-public class Customer extends User {
+public class Customer extends User implements Followable {
 
 	// Default preferences
 	// todo: better way to handle this?
@@ -74,6 +76,26 @@ public class Customer extends User {
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Image profileImage;
 
+	/** Customers that follow this customer. */
+	@ManyToMany
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
+	private Set<Customer> followers = new HashSet<>();
+
+	/** Playlists followed by this customer. */
+    @ManyToMany
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "playlist_id"))
+    private Set<Playlist> playlists = new HashSet<>();
+
+	/** Customers followed by this customer. */
+    @ManyToMany
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "friend_id"))
+	private Set<Customer> friends = new HashSet<>();
+
+    /** Artists followed by this customer. */
+    @ManyToMany
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "artist_id"))
+    private Set<Artist> artists = new HashSet<>();
+
 	public Customer() {
 	}
 
@@ -93,7 +115,69 @@ public class Customer extends User {
 		this.setPlayQueue(new PlayQueue());
 	}
 
-	/**
+    /**
+     * Followable methods.
+     */
+    @Override
+    public void addFollower(Customer customer) {
+        this.followers.add(customer);
+    }
+
+    @Override
+    public void removeFollower(Customer customer) {
+        this.followers.remove(customer);
+    }
+
+    @Override
+    public boolean isFollowedBy(Customer customer) {
+        return this.followers.contains(customer);
+    }
+
+    /**
+     * Does the customer follow the given followable?
+     *
+     * @param followable
+     * @return boolean indicating whether the customer follows the followable.
+     */
+    public boolean isFollowing(Followable followable) {
+        if (followable instanceof Playlist) {
+            return this.playlists.contains(followable);
+        } else {
+            return this.friends.contains(followable);
+        }
+    }
+
+    /**
+     * Follow a playlist or customer.
+     *
+     * @param followable
+     */
+    public void follow(Followable followable) {
+        followable.addFollower(this);
+
+        if (followable instanceof Customer) {
+            this.friends.add((Customer) followable);
+        } else if (followable instanceof Playlist) {
+            this.playlists.add((Playlist) followable);
+        }
+    }
+
+    /**
+     * Unfollow a playlist or customer.
+     *
+     * @param followable
+     */
+    public void unfollow(Followable followable) {
+        followable.removeFollower(this);
+
+        if (followable instanceof Customer) {
+            this.friends.remove(followable);
+        } else if (followable instanceof Playlist) {
+            this.playlists.remove(followable);
+        }
+    }
+
+    /**
 	 * Getters and setters.
 	 */
 	public String getFirstName() {

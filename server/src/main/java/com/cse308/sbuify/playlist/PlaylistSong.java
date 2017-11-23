@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "playlist_songs")
-@IdClass(PlaylistSongPK.class)
+@IdClass(PlaylistSong.PlaylistSongPK.class)
 public class PlaylistSong implements Serializable {
 
     @Id
@@ -64,5 +64,31 @@ public class PlaylistSong implements Serializable {
 
     public LocalDateTime getDateSaved() {
         return dateSaved;
+    }
+
+    /**
+     * Primary key for PlaylistSong.
+     */
+    public class PlaylistSongPK implements Serializable {
+        private int playlist;
+        private int song;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            PlaylistSongPK that = (PlaylistSongPK) o;
+
+            if (playlist != that.playlist) return false;
+            return song == that.song;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = playlist;
+            result = 31 * result + song;
+            return result;
+        }
     }
 }

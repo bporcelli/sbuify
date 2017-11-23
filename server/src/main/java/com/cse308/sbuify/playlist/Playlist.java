@@ -1,20 +1,14 @@
 package com.cse308.sbuify.playlist;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.common.CatalogItem;
+import com.cse308.sbuify.common.Followable;
+import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
@@ -22,7 +16,7 @@ import com.cse308.sbuify.user.User;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type")
-public class Playlist extends CatalogItem implements PlaylistComponent {
+public class Playlist extends CatalogItem implements PlaylistComponent, Followable {
 
     // Sort position
     @NotNull
@@ -43,6 +37,11 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaylistSong> songs;
 
+    /** Playlist followers */
+    @ManyToMany
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
+    private Set<Customer> followers = new HashSet<>();
+
     public Playlist() {
     }
 
@@ -50,6 +49,24 @@ public class Playlist extends CatalogItem implements PlaylistComponent {
         super(name, owner, image);
         this.hidden = hidden;
         this.position = pos;
+    }
+
+    /**
+     * Followable methods.
+     */
+    @Override
+    public void addFollower(Customer customer) {
+        this.followers.add(customer);
+    }
+
+    @Override
+    public void removeFollower(Customer customer) {
+        this.followers.remove(customer);
+    }
+
+    @Override
+    public boolean isFollowedBy(Customer customer) {
+        return this.followers.contains(customer);
     }
 
     /**
