@@ -3,6 +3,7 @@ package com.cse308.sbuify.customer;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -11,8 +12,6 @@ import com.cse308.sbuify.song.Song;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 public class PlayQueue implements Serializable {
@@ -23,10 +22,9 @@ public class PlayQueue implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL) // fetchtype necessary to solve org.hibernate.LazyInitializationException
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
-    @JsonSerialize(as = ArrayList.class, contentAs = Song.class)
-    @JsonDeserialize(as = ArrayList.class, contentAs = Song.class)
-    // private Collection<Song> songs = new ArrayDeque<>(); // todo: should be backed by deque if possible
-    private Collection<Song> songs = new ArrayList<>();
+//    @JsonSerialize(as = ArrayList.class, contentAs = Song.class)
+//    @JsonDeserialize(as = ArrayList.class, contentAs = Song.class)
+    private List<Song> songs = new ArrayList<>();
 
     public PlayQueue() {
     }
@@ -39,11 +37,11 @@ public class PlayQueue implements Serializable {
         this.id = id;
     }
 
-    public Collection<Song> getSongs() {
+    public List<Song> getSongs() {
         return songs;
     }
 
-    public void setSongs(Collection<Song> songs) {
+    public void setSongs(List<Song> songs) {
         this.songs = songs;
     }
 

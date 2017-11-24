@@ -5,16 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -38,9 +29,10 @@ public class Artist extends CatalogItem implements Followable {
     private String mbid;
 
     @ManyToMany
+    @JsonIgnore
     private Set<Artist> relatedArtists = new HashSet<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "alias")
     private Set<String> aliases = new HashSet<>();
 
@@ -48,6 +40,7 @@ public class Artist extends CatalogItem implements Followable {
     private Integer monthlyListeners = 0;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "artist")
+    @JsonIgnore
     private Set<Product> merchandise = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -139,9 +132,6 @@ public class Artist extends CatalogItem implements Followable {
         this.aliases = aliases;
     }
 
-    /**
-     * Followable methods.
-     */
     @Override
     public void addFollower(Customer customer) {
         this.followers.add(customer);
@@ -153,7 +143,7 @@ public class Artist extends CatalogItem implements Followable {
     }
 
     @Override
-    public boolean isFollowedBy(Customer customer) {
+    public Boolean isFollowedBy(Customer customer) {
         return this.followers.contains(customer);
     }
 }

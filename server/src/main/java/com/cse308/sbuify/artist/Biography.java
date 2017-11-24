@@ -35,15 +35,14 @@ public class Biography implements Serializable {
 
     @NotNull
     @NotEmpty
-    private String text;
+    private String text = "";
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "image_id"))
-    private List<Image> images;
+    private List<Image> images = new ArrayList<>();
 
     public Biography() {
-        text = "";
-        images = new ArrayList<>();
+
     }
 
     public Integer getId() {
@@ -87,6 +86,7 @@ public class Biography implements Serializable {
 
     @Override
     public boolean equals(Object that) {
+        // todo: need more than id?
         if (that == null || !(that instanceof Biography))
             return false;
 
