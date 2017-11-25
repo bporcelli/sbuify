@@ -1,6 +1,7 @@
 package com.cse308.sbuify.customer;
 
 import java.io.Serializable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -25,8 +26,8 @@ public class PlayQueue implements Serializable {
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
     @JsonSerialize(as = ArrayList.class, contentAs = Song.class)
     @JsonDeserialize(as = ArrayList.class, contentAs = Song.class)
-    // private Collection<Song> songs = new ArrayDeque<>(); // todo: should be backed by deque if possible
-    private Collection<Song> songs = new ArrayList<>();
+    private Collection<Song> songs = new ArrayDeque<>(); // todo: should be backed by deque if possible
+//    private Collection<Song> songs = new ArrayList<>();
 
     public PlayQueue() {
     }
@@ -72,6 +73,10 @@ public class PlayQueue implements Serializable {
             songs.remove(toAdd);
     }
 
+    public void addSong(Song song){
+        songs.add(song);
+    }
+
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
@@ -89,26 +94,30 @@ public class PlayQueue implements Serializable {
 
     @Override
     public boolean equals(Object that) {
-        if (!(that instanceof PlayQueue))
+        if (!(that instanceof PlayQueue)){
             return false;
+        }
 
         PlayQueue thatPq = (PlayQueue) that;
 
-        if (this.getId() != thatPq.getId())
+        if (!(this.getId().equals(thatPq.getId()))) {
             return false;
-
-        for (Song s : this.getSongs()) {
-            if (!thatPq.getSongs().contains(s)) {
-                return false;
-            }
         }
 
-        for (Song s : thatPq.getSongs()) {
-            if (!this.getSongs().contains(s)) {
+        ArrayList<Integer> idList = new ArrayList<>();
+        
+        for (Song s : this.getSongs()){
+            idList.add(s.getId());
+        }
+
+        for (Song s : thatPq.getSongs()){
+            if(!idList.contains(s.getId())){
                 return false;
             }
         }
 
         return true;
+
+
     }
 }

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.customer.PlayQueueRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,11 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.cse308.sbuify.album.Album;
@@ -41,8 +40,7 @@ public class PlayQueueTest extends AuthenticatedTest {
     private UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
+    private PlayQueueRepository playQueueRepository;
     @Test
     public void sedeSong() throws IOException {
         Song song = new Song();
@@ -142,16 +140,21 @@ public class PlayQueueTest extends AuthenticatedTest {
     }
 
     @Test
-    public void addToPlayQueue() {
-        // todo: update to abide by db constraints (song must have album, mbid, length, etc.)
-//        Song s1 = new Song();
-//        s1.setName("iWannaAddThis");
-//
-//        // send the request
-//        ResponseEntity<Void> response = restTemplate.postForEntity(
-//                "http://localhost:" + port + "/api/customer/play-queue/add", s1, Void.class);
-//
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
+    public void getCustomerPlayQueue() {
+
+        ResponseEntity<PlayQueue> response = restTemplate.getForEntity("http://localhost:" + port + "/api/customer/play-queue", PlayQueue.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        PlayQueue playQueue = response.getBody();
+
+        PlayQueue customerPlayQueue = playQueueRepository.findById(((Customer)userRepository.findByEmail(getEmail()).get()).getPlayQueue().getId()).get();
+
+        assert(customerPlayQueue.equals(playQueue));
+
+
+
+
     }
 
     @Test
