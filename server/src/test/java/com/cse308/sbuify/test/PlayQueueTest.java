@@ -1,5 +1,13 @@
 package com.cse308.sbuify.test;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.customer.PlayQueueRepository;
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.album.AlbumRepository;
 import com.cse308.sbuify.common.Queueable;
@@ -13,6 +21,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -105,6 +115,22 @@ public class PlayQueueTest extends AuthenticatedTest {
         ResponseEntity<Void> response = restTemplate.postForEntity(
                 "http://localhost:" + port + "/api/customer/play-queue/add", s1, Void.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void getCustomerPlayQueue() {
+
+        ResponseEntity<PlayQueue> response = restTemplate.getForEntity("http://localhost:" + port + "/api/customer/play-queue", PlayQueue.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        PlayQueue playQueue = response.getBody();
+
+        PlayQueue customerPlayQueue = playQueueRepository.findById(((Customer)userRepository.findByEmail(getEmail()).get()).getPlayQueue().getId()).get();
+
+        assert(customerPlayQueue.equals(playQueue));
+
+
     }
 
     @Test
