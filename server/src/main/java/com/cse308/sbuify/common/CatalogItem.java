@@ -10,12 +10,16 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import static org.hibernate.search.annotations.IndexedEmbedded.DEFAULT_NULL_TOKEN;
 
 @MappedSuperclass
 public abstract class CatalogItem implements Serializable {
@@ -26,6 +30,7 @@ public abstract class CatalogItem implements Serializable {
 
     @NotNull
     @NotEmpty
+    @Field
     private String name;
 
     @NotNull
@@ -40,6 +45,7 @@ public abstract class CatalogItem implements Serializable {
 
     @JsonIgnore
     @OneToOne
+    @IndexedEmbedded(indexNullAs = DEFAULT_NULL_TOKEN)
     private User owner;
 
     @JsonIgnore

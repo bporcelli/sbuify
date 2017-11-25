@@ -5,7 +5,7 @@ import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.song.Song;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@JsonTypeName("album")
+@Indexed
 public class Album extends CatalogItem implements Queueable {
 
     private Date releaseDate;
@@ -38,7 +38,7 @@ public class Album extends CatalogItem implements Queueable {
 
     @Enumerated(value = EnumType.STRING)
     @NotNull
-    private AlbumType type;
+    private AlbumType type;  // todo: make searchable?
 
     public Album() {}
 

@@ -1,132 +1,222 @@
 package com.cse308.sbuify.test;
 
+import com.cse308.sbuify.album.Album;
+import com.cse308.sbuify.album.AlbumRepository;
+import com.cse308.sbuify.artist.Artist;
+import com.cse308.sbuify.artist.ArtistRepository;
+import com.cse308.sbuify.label.Label;
+import com.cse308.sbuify.label.LabelRepository;
+import com.cse308.sbuify.playlist.Playlist;
+import com.cse308.sbuify.playlist.PlaylistRepository;
+import com.cse308.sbuify.song.Song;
+import com.cse308.sbuify.song.SongRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.assertEquals;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.*;
 
 public class SearchTest extends AuthenticatedTest {
+
+    @Autowired
+    private SongRepository songRepository;
+
+    @Autowired
+    private ArtistRepository artistRepository;
+
+    @Autowired
+    private AlbumRepository albumRepository;
+
+    @Autowired
+    private PlaylistRepository playlistRepository;
+
+    @Autowired
+    private LabelRepository labelRepository;
 
     /**
      * Test: is search song work properly?
      */
     @Test
     public void searchSongs() {
-        // todo: proper search w/demo data
-        String keyword = "hello";
+        Song testSong = getSongById(1);
 
-        // Send get request to the server and get the response
-        ResponseEntity<String> response;
+        // use the name of the song as the search keyword
+        String keyword = testSong.getName();
 
-        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/songs?keyword=" + keyword,
-                String.class);
-
+        // execute the search
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("keyword", keyword);
+        ResponseEntity<List<Song>> response =
+                restTemplate.exchange("http://localhost:" + port + "/api/search/songs?keyword={keyword}",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Song>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // expect testSong to be the first result
+        List<Song> results = response.getBody();
+        assertFalse(results.isEmpty());
+        assertEquals(testSong, results.get(0));
     }
     
     /**
-     * Test: is search artists work properly? Unmanaged = false by default
+     * Test: searching for artists with default 'owned' value.
      */
     @Test
-    public void searchArtistsWithDefault() {
-        // todo: proper search w/demo data
-        String keyword = "hello";
+    public void searchArtists() {
+        Artist testArtist = getArtistById(1);
 
-        // Send get request to the server and get the response
-        ResponseEntity<String> response;
+        // use the name of the artist as the search keyword
+        String keyword = testArtist.getName();
 
-        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/artists?keyword=" + keyword,
-                String.class);
-
+        // execute the search
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("keyword", keyword);
+        ResponseEntity<List<Artist>> response =
+                restTemplate.exchange("http://localhost:" + port + "/api/search/artists?keyword={keyword}",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Artist>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // expect first result to be testArtist
+        List<Artist> results = response.getBody();
+        assertFalse(results.isEmpty());
+        assertEquals(testArtist, results.get(0));
     }
     
     /**
-     * Test: is search artists work properly? Unmanaged = false by set value
+     * Test: searching for artists with custom 'owned' value.
      */
     @Test
-    public void searchArtistsUnmanaged() {
-        // todo: proper search w/demo data
-        String keyword = "hello";
+    public void searchArtistsWithOwned() {
+        Artist testArtist = getArtistById(1);
 
-        // Send get request to the server and get the response
-        ResponseEntity<String> response;
+        // use the name of the artist as the search keyword
+        String keyword = testArtist.getName();
 
-        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/artists?keyword=" + keyword + "&unmanaged=" + false,
-                String.class);
+        // search for OWNED entities matching the keyword
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("kw", keyword);
+        queryParams.put("owned", "true");
 
+        ResponseEntity<List<Artist>> response =
+                restTemplate.exchange("http://localhost:" + port + "/api/search/artists?keyword={kw}&owned={owned}",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Artist>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-    
 
-    /**
-     * Test: is search artists work properly? Unmanaged = false by set value
-     */
-    @Test
-    public void searchArtistsManaged() {
-        // todo: proper search w/demo data
-        String keyword = "hello";
-
-        // Send get request to the server and get the response
-        ResponseEntity<String> response;
-
-        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/artists?keyword=" + keyword + "&unmanaged=" + true,
-                String.class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        // expect an empty result set (in test data, no artists are owned)
+        List<Artist> managedArtists = response.getBody();
+        assertTrue(managedArtists.isEmpty());
     }
     
     /**
-     * Test: is search albums work properly?
+     * Test: searching for albums.
      */
     @Test
     public void searchAlbums() {
-        // todo: proper search w/demo data
-        String keyword = "hello";
+        Album testAlbum = getAlbumById(1);
 
-        // Send get request to the server and get the response
-        ResponseEntity<String> response;
+        // use album name as keyword
+        String keyword = testAlbum.getName();
 
-        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/albums?keyword=" + keyword,
-                String.class);
-
+        // execute the search
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("keyword", keyword);
+        ResponseEntity<List<Album>> response =
+                restTemplate.exchange("http://localhost:" + port + "/api/search/albums?keyword={keyword}",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Album>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // expect first result to be testAlbum
+        List<Album> results = response.getBody();
+        assertFalse(results.isEmpty());
+        assertEquals(testAlbum, results.get(0));
     }
     
     /**
-     * Test: is search playlist work properly?
+     * Test: searching for playlists.
      */
     @Test
     public void searchPlaylist() {
-        // todo: proper search w/demo data
-        String keyword = "hello";
+        Playlist testPlaylist = getPlaylistById(1);
 
-        // Send get request to the server and get the response
-        ResponseEntity<String> response;
+        // use playlist name as keyword
+        String keyword = testPlaylist.getName();
 
-        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/playlists?keyword=" + keyword,
-                String.class);
-
+        // execute the search
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("keyword", keyword);
+        ResponseEntity<List<Playlist>> response =
+                restTemplate.exchange("http://localhost:" + port + "/api/search/playlists?keyword={keyword}",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Playlist>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // expect first result to be testPlaylist
+        List<Playlist> results = response.getBody();
+        assertFalse(results.isEmpty());
+        assertEquals(testPlaylist, results.get(0));
     }
     
     /**
-     * Test: is search record label work properly?
+     * Test: searching record labels.
      */
     @Test
     public void searchLabel() {
-        // todo: proper search w/demo data
-        String keyword = "hello";
+        Label testLabel = getLabelById(1);
+        assertNull(testLabel.getOwner()); // only unowned labels are returned from the label search endpoint
 
-        // Send get request to the server and get the response
-        ResponseEntity<String> response;
+        // use playlist name as keyword
+        String keyword = testLabel.getName();
 
-        response = restTemplate.getForEntity("http://localhost:" + port + "/api/search/labels?keyword=" + keyword,
-                String.class);
-
+        // execute the search
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("keyword", keyword);
+        ResponseEntity<List<Label>> response =
+                restTemplate.exchange("http://localhost:" + port + "/api/search/labels?keyword={keyword}",
+                        HttpMethod.GET, null, new ParameterizedTypeReference<List<Label>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // expect first result to be testLabel
+        List<Label> results = response.getBody();
+        assertFalse(results.isEmpty());
+        Label first = results.get(0);
+        assertEquals(testLabel, first);
+    }
+
+    private Song getSongById(Integer id) {
+        Optional<Song> optionalSong = songRepository.findById(id);
+        assertTrue(optionalSong.isPresent());
+        return optionalSong.get();
+    }
+
+    private Artist getArtistById(Integer id) {
+        Optional<Artist> optionalArtist = artistRepository.findById(id);
+        assertTrue(optionalArtist.isPresent());
+        return optionalArtist.get();
+    }
+
+    private Album getAlbumById(Integer id) {
+        Optional<Album> optionalAlbum = albumRepository.findById(id);
+        assertTrue(optionalAlbum.isPresent());
+        return optionalAlbum.get();
+    }
+
+    private Playlist getPlaylistById(Integer id) {
+        Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
+        assertTrue(optionalPlaylist.isPresent());
+        return optionalPlaylist.get();
+    }
+
+    private Label getLabelById(Integer id) {
+        Optional<Label> optionalLabel = labelRepository.findById(id);
+        assertTrue(optionalLabel.isPresent());
+        return optionalLabel.get();
     }
 
     @Override

@@ -14,10 +14,16 @@ import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Followable;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.image.Image;
+import com.cse308.sbuify.search.OwnerFilter;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.search.annotations.FullTextFilterDef;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 @Entity
+@Indexed
+@FullTextFilterDef(name = "ownerFilter", impl = OwnerFilter.class)
 public class Artist extends CatalogItem implements Followable {
 
     // todo: popular songs (not appropriate to maintain in a separate table unless
@@ -34,6 +40,7 @@ public class Artist extends CatalogItem implements Followable {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "alias")
+    @IndexedEmbedded
     private Set<String> aliases = new HashSet<>();
 
     @NotNull
@@ -45,7 +52,7 @@ public class Artist extends CatalogItem implements Followable {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @PrimaryKeyJoinColumn
-    private Biography bio;
+    private Biography bio;  // todo: include in search index?
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Image coverImage;

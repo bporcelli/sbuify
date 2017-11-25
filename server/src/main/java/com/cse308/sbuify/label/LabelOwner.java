@@ -3,6 +3,7 @@ package com.cse308.sbuify.label;
 
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.user.User;
+import org.hibernate.search.annotations.ContainedIn;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -27,6 +28,7 @@ public class LabelOwner extends User {
         AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_LABEL"));
     }
 
+    @ContainedIn
     @OneToOne(mappedBy = "owner")
     @NotNull
     private Label label;

@@ -12,10 +12,13 @@ import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type")
+@Indexed
 public class Playlist extends CatalogItem implements PlaylistComponent, Followable {
 
     // Sort position
@@ -31,6 +34,7 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
 
     // Is the playlist hidden from public view?
     @NotNull
+    @Field
     private Boolean hidden;
 
     // Songs in playlist (zero or more)

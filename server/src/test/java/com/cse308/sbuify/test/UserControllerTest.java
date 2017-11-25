@@ -2,8 +2,6 @@ package com.cse308.sbuify.test;
 
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.email.Email;
-import com.cse308.sbuify.email.NewAccountEmail;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
 import org.junit.Test;

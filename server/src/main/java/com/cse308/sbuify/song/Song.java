@@ -1,26 +1,25 @@
 package com.cse308.sbuify.song;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import org.hibernate.search.annotations.Indexed;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a song on a particular album.
  */
 @Entity
-@JsonTypeName("song")
+@Indexed
 public class Song extends CatalogItem implements Queueable {
 
     @NotNull
