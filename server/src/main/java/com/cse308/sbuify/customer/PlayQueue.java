@@ -20,10 +20,9 @@ public class PlayQueue implements Serializable {
     @GeneratedValue
     private Integer id;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL) // fetchtype necessary to solve org.hibernate.LazyInitializationException
+    // Note: fetch type necessary to solve org.hibernate.LazyInitializationException
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE, CascadeType.PERSIST })
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
-//    @JsonSerialize(as = ArrayList.class, contentAs = Song.class)
-//    @JsonDeserialize(as = ArrayList.class, contentAs = Song.class)
     private List<Song> songs = new ArrayList<>();
 
     public PlayQueue() {

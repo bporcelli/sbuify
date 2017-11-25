@@ -1,93 +1,51 @@
 package com.cse308.sbuify.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.artist.Artist;
+import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.artist.Biography;
-import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class ArtistControllerTest extends AuthenticatedTest {
 
+    @Autowired
+    private ArtistRepository artistRepository;
+
     /**
-     * Serialize and deserialization of artist
+     * Test serialization/deserialization of artists.
      * 
      * @throws IOException
      */
     @Test
     public void sedeArtist() throws IOException {
-        Artist artist = new Artist();
-
-        artist.setId(1);
-        artist.setName("ArtistName1");
-
-        Set<String> aliases = new HashSet<>();
-        aliases.add("Great Artist");
-        aliases.add("ArtistName2");
-
-        artist.setAliases(aliases);
-
-        artist.setCreatedDate(LocalDateTime.now());
-
-        artist.setMBID("asdfasdf");
-
-        System.out.println(artist);
+        Artist artist = getArtistById(1);
 
         String result = new ObjectMapper().writeValueAsString(artist);
-
-        System.out.println(result);
-
-        Artist newArtist = new ObjectMapper().readerFor(CatalogItem.class).readValue(result);
+        Artist newArtist = new ObjectMapper().readerFor(Artist.class).readValue(result);
 
         assertEquals(artist, newArtist);
     }
 
-    @Test
-    public void sedeAlbum() throws IOException {
-        Album album = new Album();
-
-        Song s1 = new Song();
-        s1.setName("hello");
-
-        Song s2 = new Song();
-        s1.setName("world");
-
-        Song s3 = new Song();
-        s1.setName("album");
-
-        album.addSong(s1);
-        album.addSong(s2);
-        album.addSong(s3);
-
-        String result = new ObjectMapper().writeValueAsString(album);
-
-        CatalogItem newAlbum = new ObjectMapper().readerFor(CatalogItem.class).readValue(result);
-
-        assertEquals(album, newAlbum);
-    }
-    
+    /**
+     * Test serialization/deserialization of artist biographies.
+     *
+     * @throws IOException
+     */
     @Test
     public void sedeBio() throws IOException {
-
         Biography bio = new Biography();
         bio.setId(1);
         
@@ -107,24 +65,12 @@ public class ArtistControllerTest extends AuthenticatedTest {
     public void getArtistInfoTest() {
         ResponseEntity<Artist> response = restTemplate.getForEntity("http://localhost:" + port + "/api/artists/" + 1,
                 Artist.class);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Artist artist = response.getBody();
+        Artist actual = response.getBody();
+        Artist expected = getArtistById(1);
 
-        Artist expected = new Artist();
-        
-        expected.setId(1);
-        expected.setName("John Denver");
-        expected.setCreatedDate(LocalDateTime.of(2017, 11, 19, 21, 19, 3));
-        expected.setMBID("34e10b51-b5c6-4bc1-b70e-f05f141eda1e");
-        
-        Set<String> aliases = new HashSet<>();
-        aliases.add("John Dennver");
-        aliases.add("Denver, John");
-        expected.setAliases(aliases);
-
-        assertEquals(expected, artist);
+        assertEquals(expected, actual);
     }
     
  // TODO: Use real bio info
@@ -150,6 +96,12 @@ public class ArtistControllerTest extends AuthenticatedTest {
 //        
 //        assertEquals(expected, bio);
 //    }
+
+    private Artist getArtistById(Integer id) {
+        Optional<Artist> optionalArtist = artistRepository.findById(id);
+        assertTrue(optionalArtist.isPresent());
+        return optionalArtist.get();
+    }
 
     @Override
     public String getEmail() {

@@ -13,6 +13,7 @@ import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
@@ -43,7 +44,7 @@ public class Song extends CatalogItem implements Queueable {
 
     @ManyToOne
     @NotNull
-    @JsonIgnore
+    @JsonIgnoreProperties("songs")
     private Album album;
 
     @ManyToMany

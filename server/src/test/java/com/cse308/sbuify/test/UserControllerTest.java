@@ -114,7 +114,7 @@ public class UserControllerTest {
         return restTemplate.postForEntity("http://localhost:" + port + "/api/users", user, User.class);
     }
 
-    /*
+    /**
      * Test send password reset request
      */
     @Test
@@ -135,9 +135,9 @@ public class UserControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-    /*
-    * Test send password reset request with token
-    */
+    /**
+     * Test send password reset request with token
+     */
     @Test
     public void changePasswordWithToken() {
         // send reset request
@@ -162,5 +162,9 @@ public class UserControllerTest {
         customer = (Customer) userOptional.get();
         assertEquals(null, customer.getToken());
         assertEquals(true,passwordEncoder.matches(pass, customer.getPassword()));
+
+        // reset password to old value
+        customer.setPassword(passwordEncoder.encode("a"));
+        userRepository.save(customer);
     }
 }
