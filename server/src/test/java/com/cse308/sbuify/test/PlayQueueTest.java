@@ -126,7 +126,7 @@ public class PlayQueueTest extends AuthenticatedTest {
 
         PlayQueue playQueue = response.getBody();
 
-        PlayQueue customerPlayQueue = playQueueRepository.findById(((Customer)userRepository.findByEmail(getEmail()).get()).getPlayQueue().getId()).get()));
+        PlayQueue customerPlayQueue = playQueueRepository.findById(((Customer)userRepository.findByEmail(getEmail()).get()).getPlayQueue().getId()).get();
 
         assert(customerPlayQueue.equals(playQueue));
 
