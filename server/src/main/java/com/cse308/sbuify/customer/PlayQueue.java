@@ -89,31 +89,28 @@ public class PlayQueue implements Serializable {
     }
 
     @Override
-    public boolean equals(Object that) {
-        if (!(that instanceof PlayQueue)){
-            return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PlayQueue playQueue = (PlayQueue) o;
+
+        if (!id.equals(playQueue.id)) return false;
+        if (songs.size() != playQueue.songs.size()) return false;
+
+        for (int i = 0; i < songs.size(); i++) {
+            Song thisSong = songs.get(i);
+            Song thatSong = playQueue.songs.get(i);
+
+            if (thisSong == null ? thatSong != null : !thisSong.equals(thatSong)) return false;
         }
-
-        PlayQueue thatPq = (PlayQueue) that;
-
-        if (!(this.getId().equals(thatPq.getId()))) {
-            return false;
-        }
-
-        ArrayList<Integer> idList = new ArrayList<>();
-
-        for (Song s : this.getSongs()){
-            idList.add(s.getId());
-        }
-
-        for (Song s : thatPq.getSongs()){
-            if(!idList.contains(s.getId())){
-                return false;
-            }
-        }
-
         return true;
+    }
 
-
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + songs.hashCode();
+        return result;
     }
 }

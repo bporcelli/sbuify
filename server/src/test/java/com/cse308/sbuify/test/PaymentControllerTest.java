@@ -7,29 +7,23 @@ import com.cse308.sbuify.label.payment.PaymentPeriod;
 import com.cse308.sbuify.label.payment.PaymentPeriodRepository;
 import com.cse308.sbuify.label.payment.PaymentRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
-import org.apache.http.protocol.HTTP;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PaymentControllerTest extends AuthenticatedTest {
 
     @Autowired
@@ -41,44 +35,34 @@ public class PaymentControllerTest extends AuthenticatedTest {
     @Autowired
     private LabelRepository labelRepository;
 
-
+    /**
+     * Test: marking a royalty payment as paid.
+     */
     @Test
-    public void markedPayed(){
-
+    public void markPaid(){
+        // create payment period
         PaymentPeriod paymentPeriod = new PaymentPeriod();
-        paymentPeriod.setName("Example Loan");
-        paymentPeriod.setStart(LocalDateTime.now());
-        paymentPeriod.setEnd(LocalDateTime.now());
 
-        paymentPeriodRepository.save(paymentPeriod);
+        paymentPeriod.setName("Q1 2017");
+        paymentPeriod.setStart(LocalDateTime.of(2017, 1, 1, 0, 0, 0));
+        paymentPeriod.setEnd(LocalDateTime.of(2017, 3, 31, 0, 0, 0));
 
-        Label label = labelRepository.findById(1).get();
+        paymentPeriod = paymentPeriodRepository.save(paymentPeriod);
 
-        BigDecimal bigDecimal = new BigDecimal(1000);
+        // create unpaid payment for period
+        Optional<Label> optionalLabel = labelRepository.findById(1);
+        assertTrue(optionalLabel.isPresent());
 
+        Label label = optionalLabel.get();
+        Payment payment = new Payment(new BigDecimal(1000), paymentPeriod, label);
+        payment = paymentRepository.save(payment);
 
-        Iterable<PaymentPeriod> allPeriodPayments = paymentPeriodRepository.findAll();
-
-        Iterator<PaymentPeriod> paymentPeriodIterator = allPeriodPayments.iterator();
-
-        paymentPeriod = paymentPeriodIterator.next();
-
-        Payment payment = new Payment(bigDecimal, paymentPeriod, label);
-
-        paymentRepository.save(payment);
-
-        Iterable<Payment> allPayments = paymentRepository.findAll();
-
-        Iterator<Payment> paymentIterator = allPayments.iterator();
-
-        payment = paymentIterator.next();
-
+        // mark payment as paid
         Map<String,String> params = new HashMap<>();
         params.put("id", payment.getId().toString());
-        ResponseEntity<Void> response = restTemplate.postForEntity("http://localhost:" + port + "/api/royalty-payments/{id}/pay", null, Void.class, params);
-
+        ResponseEntity<Void> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/royalty-payments/{id}/pay", null, Void.class, params);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
     }
 
     @Override
@@ -88,6 +72,6 @@ public class PaymentControllerTest extends AuthenticatedTest {
 
     @Override
     public String getPassword() {
-        return "b";
+        return "a";
     }
 }

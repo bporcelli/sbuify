@@ -13,36 +13,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.Optional;
 
 @Controller
+@RequestMapping(path = "/api/royalty-payments")
+@PreAuthorize("hasRole('ADMIN')")
 public class PaymentController {
 
     @Autowired
     private PaymentRepository paymentRepository;
 
-
     /**
+     * Mark an individual payment as paid.
      *
-     * @param paymentId
-     * @return HTTP.OK if successful, HTTP.NOTFOUND, if already paid or payment found is null
+     * @param id Payment ID.
      */
+    @PostMapping(path = "/{id}/pay")
+    public ResponseEntity<?> markPaid(@PathVariable Integer id){
+        // todo: expand to allow multiple payments to be paid simultaneously
+        Optional<Payment> optionalPayment = paymentRepository.findById(id);
 
-    @PostMapping(path = "/api/royalty-payments/{id}/pay")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> markedPayed(@PathVariable("id") String paymentId){
-
-        Optional<Payment> paymentFound = paymentRepository.findById(Integer.valueOf(paymentId));
-
-        if (!paymentFound.isPresent()){
+        if (!optionalPayment.isPresent()) {  // invalid payment ID
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Payment payment = paymentFound.get();
-
+        Payment payment = optionalPayment.get();
         payment.setStatus(PaymentStatus.PAID);
-
         paymentRepository.save(payment);
 
         return new ResponseEntity<>(HttpStatus.OK);
-
-
     }
 }
