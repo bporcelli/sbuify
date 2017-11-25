@@ -1,10 +1,20 @@
 package com.cse308.sbuify.common;
 
+import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.playlist.Playlist;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Interface implemented by objects that can be followed by customers.
+ * Interface implemented by entities that can be followed.
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Artist.class, name = "artist"),
+        @JsonSubTypes.Type(value = Playlist.class, name = "playlist"),
+        @JsonSubTypes.Type(value = Customer.class, name = "customer")
+})
 public interface Followable {
 
     /**
@@ -24,5 +34,5 @@ public interface Followable {
      * @param customer
      * @return Boolean indicating whether customer follows this followable.
      */
-    boolean isFollowedBy(Customer customer);
+    Boolean isFollowedBy(Customer customer);
 }

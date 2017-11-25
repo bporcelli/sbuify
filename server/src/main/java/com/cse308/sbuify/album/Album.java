@@ -1,20 +1,18 @@
 package com.cse308.sbuify.album;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.song.Song;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @JsonTypeName("album")
@@ -34,12 +32,11 @@ public class Album extends CatalogItem implements Queueable {
     @ManyToOne
     private Artist artist;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "song_id"))
-    @JsonDeserialize(as=HashSet.class)
     private Set<Song> songs = new HashSet<>();
 
-    @Enumerated(value=EnumType.STRING)
+    @Enumerated(value = EnumType.STRING)
     @NotNull
     private AlbumType type;
 

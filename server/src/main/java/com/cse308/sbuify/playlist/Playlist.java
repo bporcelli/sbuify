@@ -35,7 +35,7 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
 
     // Songs in playlist (zero or more)
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PlaylistSong> songs;
+    private List<PlaylistSong> songs = new ArrayList<>();
 
     /** Playlist followers */
     @ManyToMany
@@ -65,7 +65,7 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     }
 
     @Override
-    public boolean isFollowedBy(Customer customer) {
+    public Boolean isFollowedBy(Customer customer) {
         return this.followers.contains(customer);
     }
 

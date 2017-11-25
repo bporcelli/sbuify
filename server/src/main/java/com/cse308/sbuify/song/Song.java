@@ -13,6 +13,7 @@ import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
@@ -43,7 +44,7 @@ public class Song extends CatalogItem implements Queueable {
 
     @ManyToOne
     @NotNull
-    @JsonIgnore
+    @JsonIgnoreProperties("songs")
     private Album album;
 
     @ManyToMany
@@ -132,31 +133,5 @@ public class Song extends CatalogItem implements Queueable {
      */
     public void setLyrics(String lyrics) {
         this.lyrics = lyrics;
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        if (!(that instanceof Song))
-            return false;
-        
-        Song thatSong = (Song) that;
-        
-        // TODO: check equality of the catalogitem attributes
-//        System.out.println(super.getClass());
-//        if( !super.equals(thatSong) )
-//            return false;
-        if ( this.getLength() == null ? thatSong.getLength() != null : this.getLength().equals(thatSong.getLength()))
-            return false;
-        if ( this.getTrackNumber() == null ? thatSong.getTrackNumber() != null : this.getTrackNumber().equals(thatSong.getTrackNumber()))
-            return false;
-        if ( this.getPlayCount() == null ? thatSong.getPlayCount() != null : this.getPlayCount().equals(thatSong.getPlayCount()))
-            return false;
-        if ( this.getMBID() == null ? thatSong.getMBID() != null : this.getMBID().equals(thatSong.getMBID()))
-            return false;
-        if ( this.getPlayCount() == null ? thatSong.getPlayCount() != null : this.getPlayCount().equals(thatSong.getPlayCount()))
-            return false;
-        
-        // TODO Genres, albums, featuredArtists
-        return true;
     }
 }

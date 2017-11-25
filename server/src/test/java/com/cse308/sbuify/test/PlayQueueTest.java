@@ -8,103 +8,85 @@ import java.util.List;
 
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.customer.PlayQueueRepository;
+import com.cse308.sbuify.album.Album;
+import com.cse308.sbuify.album.AlbumRepository;
+import com.cse308.sbuify.common.Queueable;
+import com.cse308.sbuify.customer.PlayQueue;
+import com.cse308.sbuify.customer.PlayQueueRepository;
+import com.cse308.sbuify.song.Song;
+import com.cse308.sbuify.song.SongRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.cse308.sbuify.album.Album;
-import com.cse308.sbuify.common.Queueable;
-import com.cse308.sbuify.customer.PlayQueue;
-import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.user.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PlayQueueTest extends AuthenticatedTest {
 
-    @LocalServerPort
-    private int port;
+    @Autowired
+    private AlbumRepository albumRepository;
 
     @Autowired
-    private TestRestTemplate restTemplate;
-
-    @Autowired
-    private UserRepository userRepository;
+    private SongRepository songRepository;
 
     @Autowired
     private PlayQueueRepository playQueueRepository;
+
     @Test
     public void sedeSong() throws IOException {
-        Song song = new Song();
+        Song song = getSongById(1);
 
-        String result = new ObjectMapper().writeValueAsString(song);
+        String serializedSong = new ObjectMapper().writeValueAsString(song);
+        Queueable newSong = new ObjectMapper().readValue(serializedSong, Queueable.class);
 
-        System.out.println(result);
-
-        Song newSong = new ObjectMapper().readerFor(Queueable.class).readValue(result);
-
-//        assertEquals(song, newSong);  todo: write and use equals() method (this is failing with identical results)
+        assertEquals(song, newSong);
     }
 
+    /**
+     * Test serialization/deserialization of albums.
+     */
     @Test
     public void sedeAlbum() throws IOException {
-        Album album = new Album();
+        Album album = getAlbumById(1);
 
-        Song s1 = new Song();
-        s1.setName("hello");
-
-        Song s2 = new Song();
-        s1.setName("world");
-
-        Song s3 = new Song();
-        s1.setName("album");
-
-        album.addSong(s1);
-        album.addSong(s2);
-        album.addSong(s3);
-
-        String result = new ObjectMapper().writeValueAsString(album);
-
-        System.out.println(result);
-
-        Queueable newAlbum = new ObjectMapper().readerFor(Queueable.class).readValue(result);
+        String serializedAlbum = new ObjectMapper().writeValueAsString(album);
+        Queueable newAlbum = new ObjectMapper().readValue(serializedAlbum, Queueable.class);
 
         assertEquals(album, newAlbum);
     }
 
+    /**
+     * Test serialization/deserialization of PlayQueue.
+     */
     @Test
     public void sedePlayQueue() throws IOException {
+        Album album = getAlbumById(1);
 
         PlayQueue pq = new PlayQueue();
+        pq.addAll(album.getItems());
 
-        List<Queueable> lq = new ArrayList<>();
+        ObjectMapper om = new ObjectMapper();
+        String serializedPQ = om.writeValueAsString(pq);
+        PlayQueue newPq = om.readValue(serializedPQ, PlayQueue.class);
 
-        Song s1 = new Song();
-        s1.setName("Hello!");
-        lq.add(s1);
-
-        Album toAdd = new Album();
-        toAdd.addSong(new Song());
-        toAdd.addSong(new Song());
-        lq.add(toAdd);
-
-        pq.addAll(toAdd);
-
-        String result = new ObjectMapper().writeValueAsString(pq);
-
-        System.out.println(result);
-
-        PlayQueue newPq = new ObjectMapper().readValue(result, PlayQueue.class);
-
-        /// assertEquals(pq, newPq); todo: write/use equals() method (this is failing for me with identical results)
+        assertEquals(pq, newPq);
     }
 
     /**
@@ -112,31 +94,27 @@ public class PlayQueueTest extends AuthenticatedTest {
      */
     @Test
     public void putPlayQueue() {
-        // todo: update to use demo data
-//        // create PlayQueue to send
-//        PlayQueue toSend = new PlayQueue();
-//
-//        Song s1 = new Song();
-//        s1.setName("hello");
-//
-//        Song s2 = new Song();
-//        s2.setName("world");
-//
-//        Song s3 = new Song();
-//        s3.setName("album");
-//
-//        toSend.getSongs().add(s1);
-//        toSend.getSongs().add(s2);
-//        toSend.getSongs().add(s3);
-//
-//        // create request object
-//        HttpEntity<PlayQueue> request = new HttpEntity<>(toSend);
-//
-//        // send the request
-//        ResponseEntity<Void> response = restTemplate.exchange("http://localhost:" + port + "/api/customer/play-queue",
-//                HttpMethod.PUT, request, Void.class);
-//
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
+        // get original play queue
+        PlayQueue playQueue = getPlayQueueById(1);
+
+        // add some new songs
+        playQueue.update(Arrays.asList(getSongById(1), getSongById(2)));
+
+        // send the request
+        HttpEntity<PlayQueue> request = new HttpEntity<>(playQueue);
+        ResponseEntity<Void> response = restTemplate.exchange("http://localhost:" + port + "/api/customer/play-queue",
+                HttpMethod.PUT, request, Void.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void addToPlayQueue() {
+        Song s1 = getSongById(1);
+
+        // send the request
+        ResponseEntity<Void> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/customer/play-queue/add", s1, Void.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
@@ -148,35 +126,43 @@ public class PlayQueueTest extends AuthenticatedTest {
 
         PlayQueue playQueue = response.getBody();
 
-        PlayQueue customerPlayQueue = playQueueRepository.findById(((Customer)userRepository.findByEmail(getEmail()).get()).getPlayQueue().getId()).get();
+        PlayQueue customerPlayQueue = playQueueRepository.findById(((Customer)userRepository.findByEmail(getEmail()).get()).getPlayQueue().getId()).get()));
 
         assert(customerPlayQueue.equals(playQueue));
-
-
 
 
     }
 
     @Test
     public void rmFromPlayQueue() {
-        // todo: update to abide by db constraints (song must have album, mbid, length, etc.)
-//        Song s1 = new Song();
-//        s1.setName("iWannaAddThis");
-//
-//        // create request object
-//        HttpEntity<Queueable> request = new HttpEntity<>(s1);
-//
-//        // send the request
-//        ResponseEntity<Void> response = restTemplate.exchange(
-//                "http://localhost:" + port + "/api/customer/play-queue/add", HttpMethod.POST, request, Void.class);
-//
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//
-//        // now request to remove
-//        response = restTemplate.exchange("http://localhost:" + port + "/api/customer/play-queue/remove",
-//                HttpMethod.DELETE, request, Void.class);
-//
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
+        // add song to queue
+        Song s1 = getSongById(1);
+        ResponseEntity<Void> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/customer/play-queue/add", s1, Void.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // remove song from queue
+        response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/customer/play-queue/remove", s1, Void.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    private Album getAlbumById(Integer id) {
+        Optional<Album> optionalAlbum = albumRepository.findById(id);
+        assertTrue(optionalAlbum.isPresent());
+        return optionalAlbum.get();
+    }
+
+    private Song getSongById(Integer id) {
+        Optional<Song> optionalSong = songRepository.findById(id);
+        assertTrue(optionalSong.isPresent());
+        return optionalSong.get();
+    }
+
+    private PlayQueue getPlayQueueById(Integer id) {
+        Optional<PlayQueue> optionalPlayQueue = playQueueRepository.findById(id);
+        assertTrue(optionalPlayQueue.isPresent());
+        return optionalPlayQueue.get();
     }
 
     @Override

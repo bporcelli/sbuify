@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -77,23 +78,27 @@ public class Customer extends User implements Followable {
 	private Image profileImage;
 
 	/** Customers that follow this customer. */
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
+    @JsonIgnore
 	private Set<Customer> followers = new HashSet<>();
 
 	/** Playlists followed by this customer. */
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "playlist_id"))
+    @JsonIgnore
     private Set<Playlist> playlists = new HashSet<>();
 
 	/** Customers followed by this customer. */
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "friend_id"))
-	private Set<Customer> friends = new HashSet<>();
+    @JsonIgnore
+    private Set<Customer> friends = new HashSet<>();
 
     /** Artists followed by this customer. */
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "artist_id"))
+    @JsonIgnore
     private Set<Artist> artists = new HashSet<>();
 
 	public Customer() {
@@ -129,7 +134,7 @@ public class Customer extends User implements Followable {
     }
 
     @Override
-    public boolean isFollowedBy(Customer customer) {
+    public Boolean isFollowedBy(Customer customer) {
         return this.followers.contains(customer);
     }
 
@@ -139,12 +144,15 @@ public class Customer extends User implements Followable {
      * @param followable
      * @return boolean indicating whether the customer follows the followable.
      */
-    public boolean isFollowing(Followable followable) {
+    public Boolean isFollowing(Followable followable) {
         if (followable instanceof Playlist) {
             return this.playlists.contains(followable);
-        } else {
+        } else if (followable instanceof Customer) {
             return this.friends.contains(followable);
+        } else if (followable instanceof Artist) {
+            return this.artists.contains(followable);
         }
+        return false;
     }
 
     /**
@@ -159,7 +167,9 @@ public class Customer extends User implements Followable {
             this.friends.add((Customer) followable);
         } else if (followable instanceof Playlist) {
             this.playlists.add((Playlist) followable);
-        }
+        } else if (followable instanceof Artist) {
+        	this.artists.add((Artist) followable);
+		}
     }
 
     /**
@@ -174,6 +184,39 @@ public class Customer extends User implements Followable {
             this.friends.remove(followable);
         } else if (followable instanceof Playlist) {
             this.playlists.remove(followable);
+        } else if (followable instanceof Artist) {
+            this.artists.remove(followable);
+        }
+    }
+
+    /**
+     * Get a preference with the given name and type.
+     */
+    public <T> T getPreference(String prefKey, Class<T> clazz) {
+        String prefVal = preferences.get(prefKey);
+
+        if (prefVal == null) { // use default value
+            prefVal = DEFAULT_PREFS.get(prefKey);
+        }
+
+        try {
+            ObjectReader objectMapper = new ObjectMapper().readerFor(clazz);
+            return objectMapper.readValue(prefVal);
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Set a preference with the given name and type.
+     */
+    public <T> void setPreference(String prefKey, T prefVal, Class<T> clazz) {
+        ObjectWriter objectMapper = new ObjectMapper().writerFor(clazz);
+
+        try {
+            preferences.put(prefKey, objectMapper.writeValueAsString(prefVal));
+        } catch (JsonProcessingException ex) {
+            // better way to handle?
         }
     }
 
@@ -259,34 +302,19 @@ public class Customer extends User implements Followable {
 		return subscription != null;
 	}
 
-	/**
-     * Get a preference with the given name and type.
-     */
-    public <T> T getPreference(String prefKey, Class<T> clazz) {
-        String prefVal = preferences.get(prefKey);
-
-        if (prefVal == null) { // use default value
-            prefVal = DEFAULT_PREFS.get(prefKey);
-        }
-
-        try {
-            ObjectReader objectMapper = new ObjectMapper().readerFor(clazz);
-            return objectMapper.readValue(prefVal);
-        } catch (IOException ex) {
-            return null;
-        }
+    public Set<Customer> getFollowers() {
+        return followers;
     }
 
-    /**
-     * Set a preference with the given name and type.
-     */
-    public <T> void setPreference(String prefKey, T prefVal, Class<T> clazz) {
-        ObjectWriter objectMapper = new ObjectMapper().writerFor(clazz);
+    public Set<Playlist> getPlaylists() {
+        return playlists;
+    }
 
-        try {
-            preferences.put(prefKey, objectMapper.writeValueAsString(prefVal));
-        } catch (JsonProcessingException ex) {
-            // better way to handle?
-        }
+    public Set<Customer> getFriends() {
+        return friends;
+    }
+
+    public Set<Artist> getArtists() {
+        return artists;
     }
 }

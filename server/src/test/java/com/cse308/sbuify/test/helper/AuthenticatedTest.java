@@ -27,6 +27,8 @@ public abstract class AuthenticatedTest {
 
     protected TestRestTemplate restTemplate;
 
+    protected User user;
+
     /**
      * Register the JWTAuthInterceptor and authenticate the user when the TestRestTemplate is injected.
      */
@@ -37,10 +39,12 @@ public abstract class AuthenticatedTest {
 
         Optional<User> userOptional = userRepository.findByEmail(getEmail());
         assert(userOptional.isPresent());
-        User user = userOptional.get();
-        user.setPassword(getPassword());
+        user = userOptional.get();
 
+        String encryptedPass = user.getPassword();
+        user.setPassword(getPassword());
         AuthUtils.sendLoginRequest(port, restTemplate, user);
+        user.setPassword(encryptedPass);
     }
 
     /**

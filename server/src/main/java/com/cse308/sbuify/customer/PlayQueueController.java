@@ -1,5 +1,8 @@
 package com.cse308.sbuify.customer;
 
+import com.cse308.sbuify.common.Queueable;
+import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.user.User;
 import java.util.Collection;
 import java.util.List;
 
@@ -8,13 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import com.cse308.sbuify.common.Queueable;
-import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.user.User;
 
 @Controller
 @RequestMapping(path = "/api/customer/play-queue")
@@ -22,9 +20,6 @@ public class PlayQueueController {
 
     @Autowired
     private PlayQueueRepository pqRepo;
-
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     private AuthFacade authFacade;
