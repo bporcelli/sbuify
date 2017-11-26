@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.ws.Response;
 import java.util.Optional;
 
 @Controller
@@ -22,6 +21,7 @@ public class PlaylistController {
 
     @Autowired
     private AuthFacade authFacade;
+
     /**
      * Update a playlist.
      */
@@ -31,36 +31,28 @@ public class PlaylistController {
     }
 
     /**
+     * Get information about a Playlist.
      *
-     * @param playlistId
-     * @return HTTP.OK, user is owner or admin, playlist is public. HTTP.Not_Found, Id does not exist or playlist is hidden
+     * @param id The ID of the playlist.
+     * @return The playlist if it exists and can be accessed by the authenticated user, otherwise void.
      */
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
-    public ResponseEntity<?> getPlaylist(@PathVariable("id") String playlistId) {
+    public ResponseEntity<?> getPlaylist(@PathVariable Integer id) {
+        Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
+
+        if (!optionalPlaylist.isPresent()) {  // playlist not found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Playlist playlist = optionalPlaylist.get();
 
         User user = authFacade.getCurrentUser();
-
-        Optional<Playlist> dbPlaylist = playlistRepository.findById(Integer.valueOf(playlistId));
-
-        // playlist not found
-        if (!dbPlaylist.isPresent()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        Playlist playlist = dbPlaylist.get();
-        // if user is owner they have access
-        if(playlist.getOwner().equals(user) || user instanceof Admin){
+        boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
+        if (!playlist.isHidden() || isOwnerOrAdmin) {  // current user can access playlist
             return new ResponseEntity<>(playlist, HttpStatus.OK);
         }
-        // if playlist is hidden, playlist cannot be viewed
-        if (playlist.isHidden()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
 
-        return new ResponseEntity<>(playlist, HttpStatus.OK);
-
+        // if we reach this point, the user doesn't have access
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
-
-
 }

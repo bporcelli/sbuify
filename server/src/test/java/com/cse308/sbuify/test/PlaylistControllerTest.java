@@ -1,5 +1,6 @@
 package com.cse308.sbuify.test;
 
+import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
@@ -15,11 +16,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-
 public class PlaylistControllerTest extends AuthenticatedTest {
-
-    @Autowired
-    private PlaylistRepository playlistRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -28,23 +25,18 @@ public class PlaylistControllerTest extends AuthenticatedTest {
      * Test to get playlist by ID
      */
     @Test
-    public void getPlaylistById(){
+    public void getPlaylistById() {
+        Customer customer = (Customer) userRepository.findByEmail(getEmail()).get();
 
-        User user = userRepository.findByEmail(getEmail()).get();
+        Playlist playlist = customer.getLibrary();
 
-        Playlist playlist = playlistRepository.findByOwner_Id(user.getId()).get();
-
-        Map<String,String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         params.put("id", playlist.getId().toString());
         ResponseEntity<Playlist> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/api/playlists/{id}", Playlist.class, params);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Playlist playlistResponse = response.getBody();
-
-        assert(playlist.equals(playlistResponse));
-
+        assertEquals(playlist, response.getBody());
     }
 
     @Override
