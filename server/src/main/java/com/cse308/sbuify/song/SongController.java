@@ -8,12 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/api/songs")
@@ -41,6 +40,32 @@ public class SongController {
         }
 
         return new TypedCollection(songs, Song.class);
+
+    }
+
+    /**
+     *
+     * @param songId
+     * @return HTTP.OK when song is successfully activated/deactivated, HTTP.NOT_FOUND - id not found
+     */
+    @PatchMapping(path = "/{id}")
+    public ResponseEntity<?> activateDeactivateSong(@PathVariable("id") String songId){
+
+        Optional<Song> foundSong = songRepository.findById(Integer.valueOf(songId));
+
+        if ( !foundSong.isPresent()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Song song = foundSong.get();
+
+        boolean newActiveStatus = !song.isActive();
+
+        song.setActive(newActiveStatus);
+
+        songRepository.save(song);
+
+        return new ResponseEntity<>(song,HttpStatus.OK);
 
     }
 }
