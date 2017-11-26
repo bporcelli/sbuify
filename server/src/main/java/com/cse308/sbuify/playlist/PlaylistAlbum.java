@@ -45,7 +45,7 @@ public class PlaylistAlbum {
     /**
      * Primary key for PlaylistAlbum.
      */
-    public class PlaylistAlbumPK implements Serializable {
+    public static class PlaylistAlbumPK implements Serializable {
         private int playlist;
         private int album;
 

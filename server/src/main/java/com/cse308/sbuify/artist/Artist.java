@@ -1,29 +1,25 @@
 package com.cse308.sbuify.artist;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Followable;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.search.OwnerFilter;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.search.annotations.FullTextFilterDef;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Indexed
-@FullTextFilterDef(name = "ownerFilter", impl = OwnerFilter.class)
 public class Artist extends CatalogItem implements Followable {
 
     // todo: popular songs (not appropriate to maintain in a separate table unless

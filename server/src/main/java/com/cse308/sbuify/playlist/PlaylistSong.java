@@ -69,7 +69,7 @@ public class PlaylistSong implements Serializable {
     /**
      * Primary key for PlaylistSong.
      */
-    public class PlaylistSongPK implements Serializable {
+    public static class PlaylistSongPK implements Serializable {
         private int playlist;
         private int song;
 
