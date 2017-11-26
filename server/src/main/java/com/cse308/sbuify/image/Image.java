@@ -1,33 +1,39 @@
 package com.cse308.sbuify.image;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.persistence.*;
+import javax.validation.constraints.Positive;
 import java.io.Serializable;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 public class Image implements Serializable {
 
-    private static final String IMAGE_DIR = "/content/images/";  // todo: decide where to put static content & update
-    private static final String SIZE_DELIM = "-";
-
-    @Id
     @GeneratedValue
+    @Id
     private Integer id;
 
-    @NotNull
-    @NotEmpty
-    private String path;
+    @Positive
+    private Integer width;
+
+    @Positive
+    private Integer height;
+
+    @ElementCollection(fetch = FetchType.EAGER)  // need all sizes when image is retrieved
+    @MapKeyEnumerated(value = EnumType.STRING)
+    @MapKeyColumn(name = "size")
+    @Column(name = "path")
+    @JsonIgnore
+    private Map<ImageSize, String> sizes = new HashMap<>();
 
     public Image() {}
 
-    public Image(@NotEmpty String path) {
-        this.path = path;
+    public Image(@Positive Integer width, @Positive Integer height) {
+        this.width = width;
+        this.height = height;
     }
 
     /**
@@ -45,31 +51,70 @@ public class Image implements Serializable {
     }
 
     /**
-     * Full size image path.
+     * Image width in pixels.
      */
-    public String getPath() {
-        return path;
+    public Integer getWidth() {
+        return width;
     }
 
     /**
-     * {@link #getPath()}
+     * {@link #getWidth()}
      */
-    public void setPath(String path) {
-        this.path = path;
+    public void setWidth(Integer width) {
+        this.width = width;
     }
 
     /**
-     * Gets the path to this image in a particular size. If necessary, creates a version of the image with
-     * the target size.
+     * Image height in pixels.
+     */
+    public Integer getHeight() {
+        return height;
+    }
+
+    /**
+     * {@link #getHeight()}
+     */
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
+    /**
+     * Get the path of this image in a particular size.
      *
      * @param size Desired image size.
-     * @return Path to image in desired size or null if such image can't be found/generated.
+     * @return The path to the image, or null if no such image exists.
      */
-    public String getPathForSize(ImageSize size) {
-        if (size == ImageSize.FULL) {
-            return path;
-        }
-        // todo: search image directory for resized image; if it doesn't exist, create it
-        return null;
+    @JsonIgnore
+    public String getPath(ImageSize size) {
+        return sizes.get(size);
+    }
+
+    /**
+     * Set the path to this image in a particular size.
+     *
+     * @param size Image size.
+     * @param path Image path.
+     */
+    public void setPath(ImageSize size, String path) {
+        sizes.put(size, path);
+    }
+
+    /**
+     * Convenience method to return the path to the full sized image.
+     *
+     * @return Path to full sized image.
+     */
+    @JsonProperty(value = "path")
+    public String getPath() {
+        return getPath(ImageSize.FULL);
+    }
+
+    /**
+     * Convenience method to set the path to the full sized image.
+     *
+     * @param path Full sized image path.
+     */
+    public void setPath(String path) {
+        setPath(ImageSize.FULL, path);
     }
 }
