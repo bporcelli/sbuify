@@ -45,7 +45,7 @@ public abstract class CatalogItem implements Serializable {
 
     @JsonIgnore
     @OneToOne
-    @IndexedEmbedded(indexNullAs = DEFAULT_NULL_TOKEN)
+    @IndexedEmbedded(includeEmbeddedObjectId = true, indexNullAs = DEFAULT_NULL_TOKEN)
     private User owner;
 
     @JsonIgnore

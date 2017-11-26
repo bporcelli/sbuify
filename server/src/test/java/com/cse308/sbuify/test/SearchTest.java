@@ -18,11 +18,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import static com.cse308.sbuify.search.HibernateSearchService.FILTER_SEPARATOR;
+import static com.cse308.sbuify.search.HibernateSearchService.TERM_SEPARATOR;
 import static org.junit.Assert.*;
 
 public class SearchTest extends AuthenticatedTest {
@@ -54,9 +53,10 @@ public class SearchTest extends AuthenticatedTest {
 
         // execute the search
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("keyword", keyword);
+        queryParams.put("query", keyword);
+        queryParams.put("type", "song");
         ResponseEntity<List<Song>> response =
-                restTemplate.exchange("http://localhost:" + port + "/api/search/songs?keyword={keyword}",
+                restTemplate.exchange("http://localhost:" + port + "/api/search/?query={query}&type={type}",
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<Song>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -78,9 +78,10 @@ public class SearchTest extends AuthenticatedTest {
 
         // execute the search
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("keyword", keyword);
+        queryParams.put("query", keyword);
+        queryParams.put("type", "artist");
         ResponseEntity<List<Artist>> response =
-                restTemplate.exchange("http://localhost:" + port + "/api/search/artists?keyword={keyword}",
+                restTemplate.exchange("http://localhost:" + port + "/api/search/?query={query}&type={type}",
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<Artist>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -100,19 +101,18 @@ public class SearchTest extends AuthenticatedTest {
         // use the name of the artist as the search keyword
         String keyword = testArtist.getName();
 
-        // search for OWNED entities matching the keyword
+        // search for UNOWNED entities matching the keyword
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("kw", keyword);
-        queryParams.put("owned", "true");
-
+        queryParams.put("query", keyword + TERM_SEPARATOR + "owner" + FILTER_SEPARATOR + "null");
+        queryParams.put("type", "artist");
         ResponseEntity<List<Artist>> response =
-                restTemplate.exchange("http://localhost:" + port + "/api/search/artists?keyword={kw}&owned={owned}",
+                restTemplate.exchange("http://localhost:" + port + "/api/search/?query={query}&type={type}",
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<Artist>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        // expect an empty result set (in test data, no artists are owned)
-        List<Artist> managedArtists = response.getBody();
-        assertTrue(managedArtists.isEmpty());
+        // expect a non-empty result set (in test data, no artists are owned)
+        List<Artist> unownedArtists = response.getBody();
+        assertFalse(unownedArtists.isEmpty());
     }
     
     /**
@@ -127,9 +127,10 @@ public class SearchTest extends AuthenticatedTest {
 
         // execute the search
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("keyword", keyword);
+        queryParams.put("query", keyword);
+        queryParams.put("type", "album");
         ResponseEntity<List<Album>> response =
-                restTemplate.exchange("http://localhost:" + port + "/api/search/albums?keyword={keyword}",
+                restTemplate.exchange("http://localhost:" + port + "/api/search/?query={query}&type={type}",
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<Album>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -151,9 +152,10 @@ public class SearchTest extends AuthenticatedTest {
 
         // execute the search
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("keyword", keyword);
+        queryParams.put("query", keyword);
+        queryParams.put("type", "playlist");
         ResponseEntity<List<Playlist>> response =
-                restTemplate.exchange("http://localhost:" + port + "/api/search/playlists?keyword={keyword}",
+                restTemplate.exchange("http://localhost:" + port + "/api/search/?query={query}&type={type}",
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<Playlist>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -176,9 +178,10 @@ public class SearchTest extends AuthenticatedTest {
 
         // execute the search
         Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("keyword", keyword);
+        queryParams.put("query", keyword);
+        queryParams.put("type", "label");
         ResponseEntity<List<Label>> response =
-                restTemplate.exchange("http://localhost:" + port + "/api/search/labels?keyword={keyword}",
+                restTemplate.exchange("http://localhost:" + port + "/api/search/?query={query}&type={type}",
                         HttpMethod.GET, null, new ParameterizedTypeReference<List<Label>>() {}, queryParams);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 

@@ -1,9 +1,14 @@
 package com.cse308.sbuify.search;
 
+import com.cse308.sbuify.admin.Admin;
+import com.cse308.sbuify.playlist.Playlist;
+import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.user.User;
 import org.apache.lucene.search.Query;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +21,12 @@ import java.util.List;
 
 @Service
 public class HibernateSearchService {
+
+    public final static String TERM_SEPARATOR = "$#!";
+    public final static String FILTER_SEPARATOR = ":";
+
+    @Autowired
+    private AuthFacade authFacade;
 
     private FullTextEntityManager entityManager;
 
@@ -39,49 +50,76 @@ public class HibernateSearchService {
     }
 
     /**
-     * Search for entities matching the given query criteria.
+     * Get a list of entities matching the given query criteria.
      *
-     * @param keyword Search keyword.
+     * @param query Search query, including keywords & optional filters.
      * @param clazz Entity class.
+     * @param limit Maximum number of results to return.
+     * @param offset Offset to first result.
      */
     @Transactional
-    public <T> List<T> fuzzySearch(String keyword, Class<T> clazz) {
-        return fuzzySearch(keyword, null, clazz);
-    }
-
-    /**
-     * Search for entities matching the given query criteria.
-     *
-     * @param keyword Search keyword.
-     * @param owned Boolean indicating whether only owned entities should be returned.
-     * @param clazz Entity class.
-     */
-    public <T> List<T> fuzzySearch(String keyword, Boolean owned, Class<T> clazz) {
-        // build Lucene query
+    public <T> List<T> search(String query, Class<T> clazz, Integer limit, Integer offset) {
         QueryBuilder qb = entityManager.getSearchFactory().buildQueryBuilder().forEntity(clazz).get();
 
-        Query query = qb
+        // parse the query string into search terms
+        String[] terms = query.split(TERM_SEPARATOR);
+
+        // construct a query to find all results matching the search keyword (first term)
+        Query keywordQuery = qb
                 .keyword()
                 .fuzzy()
                 .withPrefixLength(1)
                 .onFields("name")
-                .matching(keyword)
+                .matching(terms[0])
                 .createQuery();
 
-        // wrap Lucene query in persistenceQuery
-        FullTextQuery persistenceQuery = entityManager.createFullTextQuery(query, clazz);
+        // add a boolean AND query for each optional filter (terms 2..N)
+        BooleanJunction<?> junction = qb
+                .bool()
+                    .must(keywordQuery);
 
-        // todo: filter out hidden playlists unless they are owned by the current user
-        if (owned != null) {  // filter entities by ownership
-            persistenceQuery.enableFullTextFilter("ownerFilter").setParameter("owned", owned);
+        for (int i = 1; i < terms.length; i++) {
+            String[] filter = terms[i].split(FILTER_SEPARATOR);  // pieces[0] is field name, pieces[1] is value
+            Query filterQuery = qb
+                    .keyword()
+                    .onField(filter[0])
+                    .matching(filter[1])
+                    .createQuery();
+            junction.must(filterQuery);
         }
+
+        // filter out playlists the user shouldn't see
+        User user = authFacade.getCurrentUser();
+
+        if (clazz.equals(Playlist.class) && !(user instanceof Admin)) {
+            Query playlistFilter = qb
+                    .bool()
+                        .should(qb
+                                .keyword()
+                                .onField("hidden")
+                                .matching("false")
+                                .createQuery())
+                        .should(qb
+                                .keyword()
+                                .onField("owner.id")
+                                .matching(Integer.toString(user.getId()))
+                                .createQuery())
+                    .createQuery();
+            junction.must(playlistFilter);
+        }
+
+        // build & wrap final query
+        FullTextQuery jpaQuery = entityManager.createFullTextQuery(junction.createQuery(), clazz);
+
+        jpaQuery.setFirstResult(offset);
+        jpaQuery.setMaxResults(limit);
 
         // execute search
         List<T> result = null;
         try {
-            result = persistenceQuery.getResultList();
+            result = jpaQuery.getResultList();
         } catch (NoResultException nre) {
-            // todo: log
+            // ignore
         }
         return result;
     }
