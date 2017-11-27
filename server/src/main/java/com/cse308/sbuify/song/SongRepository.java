@@ -6,6 +6,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface SongRepository  extends CrudRepository<Song, Integer> {
 
-    @Query("Update Song S Set S.play_count = S.play_count + :newStreams WHERE S.id = :songId ;")
-    void incrementPlayCountById(@Param("songId") int songId, int newStreams);
+    @Query("Update Song S Set S.playCount = S.playCount + :newStreams WHERE S.id = :songId")
+    void incrementPlayCountById(@Param("songId") int songId, @Param("newStreams") int newStreams);
 }
