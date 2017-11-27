@@ -26,8 +26,8 @@ public class ImageController {
      * @param id ID of image.
      * @param size Image size (default: 'FULL')
      */
-    @GetMapping(path = "/static/i/{id}/{size}")
-    public ResponseEntity<Resource> serveImage(@PathVariable Integer id, @PathVariable(required = false) String size) {
+    @GetMapping(path = {"/static/i/{id}", "/static/i/{id}/{size}"})
+    public ResponseEntity<Resource> serveImage(@PathVariable Integer id, @PathVariable Optional<String> size) {
         Optional<Image> optionalImage = imageRepository.findById(id);
 
         if (!optionalImage.isPresent()) {  // invalid image ID
@@ -35,15 +35,16 @@ public class ImageController {
         }
         Image image = optionalImage.get();
 
-        if (size == null) {
-            size = "FULL";
+        String sizeName;
+        if (!size.isPresent()) {
+            sizeName = "FULL";
         } else {
-            size = size.toUpperCase();
+            sizeName = size.get().toUpperCase();
         }
 
         ImageSize imgSize;
         try {
-            imgSize = ImageSize.valueOf(size);
+            imgSize = ImageSize.valueOf(sizeName);
         } catch (IllegalArgumentException e) {  // invalid image size
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
