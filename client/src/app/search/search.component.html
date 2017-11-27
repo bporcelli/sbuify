@@ -80,12 +80,29 @@
     </ngb-tab>
     <ngb-tab id="playlist" title="Playlists">
       <ng-template ngbTabContent>
-        <p>Playlists</p>
+        <div class="row page-section">
+          <div *ngFor="let playlist of results | async" class="col-sm-6 col-lg-4 col-xl-3 playlist">
+            <a class="playlist-image" href="#">
+              <img class="img-fluid" src="/static/i/{{ playlist.image ? playlist.image.id : 1 }}/catalog" alt="{{ playlist.name }}">
+            </a>
+            <h3 class="h6">
+              <a href="#">{{ playlist.name }}</a>
+            </h3>
+            <p>{{ playlist.description }}</p>
+          </div>
+        </div>
       </ng-template>
     </ngb-tab>
     <ngb-tab id="profile" title="Profiles">
       <ng-template ngbTabContent>
-        <p>Profiles</p>
+        <div class="row page-section">
+          <div *ngFor="let artist of results | async" class="col-md-2 artist-list-item">
+            <a class="d-block" href="#">
+              <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}">
+            </a>
+            <a class="artist-name" [routerLink]="['artist', artist.id]" title="{{ artist.name }}">{{ artist.name }}</a>
+          </div>
+        </div>
       </ng-template>
     </ngb-tab>
   </ngb-tabset>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { PlaylistService } from '../playlist.service';
+import { PlaylistService } from '../playlist/playlist.service';
 
 @Component({
     selector: 'left-sidebar',
