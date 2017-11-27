@@ -25,38 +25,38 @@ public class PlayCountController {
     @Autowired
     private StreamRepository streamRepo;
 
-    /**
-     * Update the play counts for all songs.
-     */
-    @GetMapping(path = "/update-play-counts")
-    @PreAuthorize("hasAnyRole('CRON')")
-    public ResponseEntity<?> updatePlayCounts() {
-
-        LocalDateTime start = getStartTime();
-        LocalDateTime end = getEndTime();
-
-        List<StreamCountDTO> dtos = streamRepo.findPlayCounts(start, end);
-
-        while (!dtos.isEmpty()) {
-            StreamCountDTO dto = dtos.remove(0);
-
-            int songId = dto.getSongId();
-
-            int newStreams = dto.getNewStreams();
-
-            songRepo.incrementPlayCountById(songId, newStreams);
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private LocalDateTime getStartTime() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private LocalDateTime getEndTime() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//    /**
+//     * Update the play counts for all songs.
+//     */
+//    @GetMapping(path = "/update-play-counts")
+//    @PreAuthorize("hasAnyRole('CRON')")
+//    public ResponseEntity<?> updatePlayCounts() {
+//
+//        LocalDateTime start = getStartTime();
+//        LocalDateTime end = getEndTime();
+//
+//        List<StreamCountDTO> dtos = streamRepo.findPlayCounts(start, end);
+//
+//        while (!dtos.isEmpty()) {
+//            StreamCountDTO dto = dtos.remove(0);
+//
+//            int songId = dto.getSongId();
+//
+//            int newStreams = dto.getNewStreams();
+//
+//            songRepo.incrementPlayCountById(songId, newStreams);
+//        }
+//
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
+//
+//    private LocalDateTime getStartTime() {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
+//
+//    private LocalDateTime getEndTime() {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
 }

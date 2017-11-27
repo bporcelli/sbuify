@@ -60,26 +60,5 @@ public class PlaylistFolderController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
     
-    @DeleteMapping
-    public ResponseEntity<?> deletePlaylistFolder(@PathVariable Integer plfId){
-        Optional<PlaylistFolder> optPlf = fRepo.findById(plfId);
-        
-        if (!optPlf.isPresent()) {
-            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
-        }
-        
-        PlaylistFolder tgt = optPlf.get();
-        
-        List<PlaylistFolder> toDelete = Arrays.asList(tgt);
-        
-        while(!toDelete.isEmpty()) {
-            plRepo.deleteByParent(toDelete.remove(0));
-            
-            List<PlaylistFolder> nested = fRepo.removeByParent(tgt);
-            
-            toDelete.addAll(nested);
-        }
-        
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
+
 }

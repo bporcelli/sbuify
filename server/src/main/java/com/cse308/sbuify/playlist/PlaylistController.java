@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +28,7 @@ import com.cse308.sbuify.user.User;
 
 @Controller
 @RequestMapping(path = "/api/playlists")
+@ConfigurationProperties("playlist")
 public class PlaylistController {
 
     @Autowired
@@ -34,7 +36,17 @@ public class PlaylistController {
 
     @Autowired
     private AuthFacade authFacade;
-    
+
+    @Autowired
+    private  PlaylistSongRepository playlistSongRepository;
+
+    private static Integer MAX_SONGS = null;
+
+    @Autowired
+    public PlaylistController(PlaylistProperties playlistProperties){
+        MAX_SONGS = playlistProperties.getMaxSongs();
+    }
+
     @PostMapping
     public ResponseEntity<?> createPlaylist(@RequestBody Playlist playlist) {
         Playlist saved = playlistRepository.save(playlist);
@@ -66,16 +78,17 @@ public class PlaylistController {
         // if we reach this point, the user doesn't have access
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
-    
+
     /**
-     * Update a playlist.
+     *  Update playlist
+     * @param playlistId
+     * @param newPl
+     * @return Return HTTP.OK when successful. HTTP.NOT_FOUND when playlist not found. else HTTP.FORBIDDEN
      */
     @PatchMapping(path = "/{id}")
-    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     // Overriding sequence diagram
-    public ResponseEntity<?> update(@PathVariable Integer playlistId, @RequestBody Playlist newPl) {
-        Customer cust = (Customer) authFacade.getCurrentUser();
-
+    public ResponseEntity<?> updatePlaylist(@PathVariable Integer playlistId, @RequestBody Playlist newPl) {
         Optional<Playlist> dbPlaylist = playlistRepository.findById(Integer.valueOf(playlistId));
 
         if (!dbPlaylist.isPresent()) {
@@ -84,46 +97,61 @@ public class PlaylistController {
 
         Playlist playlist = dbPlaylist.get();
 
-        if (!playlist.getOwner().equals(cust)) {
-            return new ResponseEntity<>(playlist, HttpStatus.FORBIDDEN);
+        User user =  authFacade.getCurrentUser();
+        boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
+        // owner or admin can edit
+        if (isOwnerOrAdmin) {
+
+            playlist.setName(newPl.getName());
+
+            playlist.setDescription(newPl.getDescription());
+
+            playlistRepository.save(playlist);
+
+            return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        playlist.setName(newPl.getName());
-        playlist.setDescription(newPl.getDescription());
-        
-        playlistRepository.save(playlist);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
-    
+
 
     /**
-     * Delete a playlist.
+     *
+     * @param id
+     * @return HTTP.OK when successful, HTTP.NOT_FOUND when playlist cannot be found, HTTP.FORBIDDEN otherwise
      */
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id, @RequestBody Playlist playlist) {
-        Customer cust = (Customer) authFacade.getCurrentUser();
-
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    public ResponseEntity<?> deletePlaylist(@PathVariable Integer id) {
         Optional<Playlist> optPl = playlistRepository.findById(id);
+
         if (!optPl.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Playlist p = optPl.get();
+        User user = authFacade.getCurrentUser();
 
-        User owner = p.getOwner();
+        Playlist playlist = optPl.get();
+
+
+        boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
         
-        if(!cust.equals(owner)) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if(isOwnerOrAdmin) {
+
+            playlistRepository.deleteById(id);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+
         }
-        
-        playlistRepository.deleteById(id);;
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
-    
+
     /**
-     * Add a song or album to a playlist
+     *
+     * @param playlistId
+     * @param toAdd
+     * @return HTTP.OK with how many songs added in body for return when successful, HTTP.NOT_FOUND when playlist cannot be found, HTTP.FORBIDDEN otherwise
      */
     @PostMapping(path = "/{id}/add")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
@@ -138,45 +166,92 @@ public class PlaylistController {
         Playlist playlist = dbPlaylist.get();
 
         Collection<Song> songs = toAdd.getItems();
-        Iterator<Song> iterator = songs.iterator();
 
-        // Seq. diagram: playlist.getSavedSongList();
-        // Equivalent: playlist.getSongs();
         List<PlaylistSong> listPls = playlist.getSongs();
 
-        int MAX_NUM_SONGS = getMaxSongs();
-
-        if (listPls.size() + songs.size() > MAX_NUM_SONGS) {
+        if (listPls.size() + songs.size() > MAX_SONGS) {
             return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
         }
 
-        while (iterator.hasNext()) {
-            Song song = iterator.next();
 
-            PlaylistSong pls = new PlaylistSong(playlist, song);
+        User user = authFacade.getCurrentUser();
+        boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
 
-            listPls.add(pls);
+        if(isOwnerOrAdmin) {
+
+            Iterator<Song> iterator = songs.iterator();
+
+            while (iterator.hasNext()) {
+                Song song = iterator.next();
+
+                PlaylistSong pls = new PlaylistSong(playlist, song);
+                // save playlist song to our repo
+
+                playlistSongRepository.save(pls);
+
+                listPls.add(pls);
+            }
+
+            playlistRepository.save(playlist);
+            // return the amt of songs added
+            return new ResponseEntity<>(songs.size(),HttpStatus.OK);
+
         }
 
-        playlistRepository.save(playlist);
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-        return new ResponseEntity<>(songs.size(), HttpStatus.OK);
     }
 
     /**
-     * Remove a song or album from a playlist
+     *
+     * @param playlistId
+     * @param toDelete
+     * @return HTTP.OK when successful, HTTP.NOT_FOUND when playlist cannot be found, HTTP.FORBIDDEN otherwise
      */
     @PostMapping(path = "/{id}/remove")
-    public ResponseEntity<?> rmQueueableFromPlaylist(@PathVariable Integer id, @RequestBody Queueable toAdd) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> rmQueueableFromPlaylist(@PathVariable String playlistId, @RequestBody Queueable toDelete) {
+        Optional<Playlist> dbPlaylist = playlistRepository.findById(Integer.valueOf(playlistId));
+
+        if (!dbPlaylist.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Playlist playlist = dbPlaylist.get();
+
+        Collection<Song> songs = toDelete.getItems();
+
+        List<PlaylistSong> listPls = playlist.getSongs();
+
+        if (listPls.size() - songs.size() < 0) {
+
+            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+        }
+
+
+        User user = authFacade.getCurrentUser();
+        boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
+
+        if(isOwnerOrAdmin) {
+            Iterator<Song> iterator = songs.iterator();
+            while (iterator.hasNext()) {
+                Song song = iterator.next();
+                PlaylistSong delete = playlist.remove(song);
+
+                if (delete == null) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                playlistSongRepository.delete(delete);
+            }
+
+            playlistRepository.save(playlist);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+
+        }
+
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
     }
 
-    /**
-     * Helper method to get the max songs in a playlist
-     */
-
-    private int getMaxSongs() {
-        // TODO
-        return 100;
-    }
 }

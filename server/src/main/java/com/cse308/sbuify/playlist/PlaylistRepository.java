@@ -8,5 +8,4 @@ public interface PlaylistRepository extends CrudRepository<Playlist, Integer> {
     // Obsolete?
     Optional<Playlist> findByOwner_Id(Integer ownerId);
 
-    void deleteByParent(PlaylistFolder remove);
 }
