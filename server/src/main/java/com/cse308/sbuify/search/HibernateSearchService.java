@@ -5,6 +5,7 @@ import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.user.User;
 import org.apache.lucene.search.Query;
+import org.hibernate.search.exception.EmptyQueryException;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -65,13 +67,18 @@ public class HibernateSearchService {
         String[] terms = query.split(TERM_SEPARATOR);
 
         // construct a query to find all results matching the search keyword (first term)
-        Query keywordQuery = qb
-                .keyword()
-                .fuzzy()
-                .withPrefixLength(1)
-                .onFields("name")
-                .matching(terms[0])
-                .createQuery();
+        Query keywordQuery;
+        try {
+             keywordQuery = qb
+                    .keyword()
+                    .fuzzy()
+                    .withPrefixLength(1)
+                    .onFields("name")
+                    .matching(terms[0])
+                    .createQuery();
+        } catch (EmptyQueryException nre) {
+            return Collections.emptyList(); // invalid query -- return empty resultset
+        }
 
         // add a boolean AND query for each optional filter (terms 2..N)
         BooleanJunction<?> junction = qb
