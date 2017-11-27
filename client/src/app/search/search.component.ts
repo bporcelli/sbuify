@@ -25,6 +25,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   // current subscription to observable data service
   private subscription: any = null;
 
+  // is a search request in flight?
+  private pending: boolean = false;
+
   constructor(private service: SearchService,
               private client: APIClient) {
   }
@@ -66,7 +69,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   private next(query?: string) {
     if (this.offset == -1) { // all results found
       return;
+    } else if (this.pending) { // request in flight
+      return;
     }
+
     if (query == null) {  // reuse old query
       query = this.query;
     }
@@ -77,6 +83,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     params = params.set('type', this.entityType);
     params = params.set('limit', this.limit.toString());
     params = params.set('offset', this.offset.toString());
+
+    this.pending = true;
 
     this.client.get<any[]>("/api/search", { params: params }).subscribe(
       response =>
@@ -94,6 +102,9 @@ export class SearchComponent implements OnInit, OnDestroy {
       {
         // todo: better error handling
         console.log('search error:', error);
+      },
+      () => {
+        this.pending = false;
       });
   }
 

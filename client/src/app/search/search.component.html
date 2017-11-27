@@ -56,7 +56,7 @@
         <div class="row">
           <div *ngFor="let album of results | async" class="col-sm-6 col-lg-4 col-xl-3 playlist">
             <a class="playlist-image" href="#">
-              <img class="img-fluid" src="/static/i/{{ album.image ? album.image.id : 1 }}/catalog" alt="{{ album.name }}">
+              <img class="img-fluid" src="/static/i/{{ album.image ? album.image.id : 1 }}/catalog" alt="{{ album.name }}" width="500" height="500">
             </a>
             <h3 class="h6">
               <a href="#">{{ album.name }}</a>
@@ -71,7 +71,7 @@
         <div class="row">
           <div *ngFor="let artist of results | async" class="col-md-2 artist-list-item">
             <a class="d-block" [routerLink]="['/artist', artist.id]">
-              <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}">
+              <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}" width="500" height="500">
             </a>
             <a class="artist-name" [routerLink]="['/artist', artist.id]" title="{{ artist.name }}">{{ artist.name }}</a>
           </div>
@@ -83,7 +83,7 @@
         <div class="row page-section">
           <div *ngFor="let playlist of results | async" class="col-sm-6 col-lg-4 col-xl-3 playlist">
             <a class="playlist-image" href="#">
-              <img class="img-fluid" src="/static/i/{{ playlist.image ? playlist.image.id : 1 }}/catalog" alt="{{ playlist.name }}">
+              <img class="img-fluid" src="/static/i/{{ playlist.image ? playlist.image.id : 1 }}/catalog" alt="{{ playlist.name }}" width="500" height="500">
             </a>
             <h3 class="h6">
               <a href="#">{{ playlist.name }}</a>
@@ -98,7 +98,7 @@
         <div class="row page-section">
           <div *ngFor="let artist of results | async" class="col-md-2 artist-list-item">
             <a class="d-block" href="#">
-              <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}">
+              <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}" width="500" height="500">
             </a>
             <a class="artist-name" [routerLink]="['artist', artist.id]" title="{{ artist.name }}">{{ artist.name }}</a>
           </div>
