@@ -20,7 +20,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private offset: number = 0;
 
   // current search results
-  private results: BehaviorSubject<any> = new BehaviorSubject([]);
+  private results: BehaviorSubject<Array<any>> = new BehaviorSubject([]);
 
   // current subscription to observable data service
   private subscription: any = null;
@@ -58,7 +58,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private reset() {
     this.offset = 0;
-    this.results = new BehaviorSubject([]);
+    this.results.next([]);
   }
 
   private start() {
@@ -97,13 +97,12 @@ export class SearchComponent implements OnInit, OnDestroy {
         } else {
           this.offset += this.limit;
         }
+        this.pending = false;
       },
       error =>
       {
         // todo: better error handling
         console.log('search error:', error);
-      },
-      () => {
         this.pending = false;
       });
   }
