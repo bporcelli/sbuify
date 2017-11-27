@@ -1,9 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
-import { Router } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
-
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
@@ -23,37 +20,40 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from "./auth/auth.module";
 
 import { PlaylistService } from './playlist.service';
+import { SearchService } from "./search/search.service";
+import { AuthInterceptor } from "./auth/auth-interceptor.";
 
 @NgModule({
-    declarations: [
-        AppComponent
-    ],
-    imports: [
-        NgbModule.forRoot(),
-        BrowserModule,
-        CommonModule,
-        HttpClientModule,
-        AuthModule,
-        BrowseModule,
-        ArtistDetailModule,
-        PlaylistDetailModule,
-        SongsModule,
-        PlayQueueModule,
-        SearchModule,
-        GuestModule,
-        ConcertsModule,
-        SettingsModule,
-        UserModule,
-        AppRoutingModule
-    ],
-    providers: [
-        PlaylistService
-    ],
-    bootstrap: [ AppComponent ]
-})
-export class AppModule {
-    // TODO: Remove
-    constructor(router: Router) {
-        console.log('Routes: ', JSON.stringify(router.config, undefined, 2));
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    NgbModule.forRoot(),
+    BrowserModule,
+    CommonModule,
+    HttpClientModule,
+    AuthModule,
+    BrowseModule,
+    ArtistDetailModule,
+    PlaylistDetailModule,
+    SongsModule,
+    PlayQueueModule,
+    SearchModule,
+    GuestModule,
+    ConcertsModule,
+    SettingsModule,
+    UserModule,
+    AppRoutingModule
+  ],
+  providers: [
+    PlaylistService,
+    SearchService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
     }
-}
+  ],
+  bootstrap: [ AppComponent ]
+})
+export class AppModule {}

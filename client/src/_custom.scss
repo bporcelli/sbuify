@@ -119,25 +119,27 @@ ul.button-list li {
     margin-bottom: map-get($spacers, 4);
 }
 
-.tab-nav {
+.nav-tabs {
     margin: $spacer 0 $spacer * 1.5 0;
+    border-bottom: none !important;
 }
 
-.tab-nav a.nav-link {
+.nav-tabs a.nav-link {
     color: $gray-600;
     position: relative;
     text-transform: uppercase;
+    border: none !important;
 }
 
-.tab-nav a.nav-link:first-child {
+.nav-tabs a.nav-link:first-child {
     margin-left: -1rem;
 }
 
-.tab-nav a.nav-link.active, .tab-nav a.nav-link:hover {
+.nav-tabs a.nav-link.active, .nav-tabs a.nav-link:hover {
     color: $black;
 }
 
-.tab-nav a.nav-link.active::after {
+.nav-tabs a.nav-link.active::after {
     border-top: 1px solid $sbu-red;
     bottom: 0;
     content: "";
@@ -458,7 +460,18 @@ legend {
     font-weight: 300;
 }
 
-// Search Results
+// Search
+#search-input {
+  position: relative;
+}
+
+a#search-clear {
+  position: absolute;
+  right: 15px;
+  top: 8px;
+  color: #4d4d4d !important;
+}
+
 #search-header {
     h1, a {
         display: inline-block;

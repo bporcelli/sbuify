@@ -1,0 +1,96 @@
+<section id="search-header" *ngIf="query; else emptyQueryHeader">
+  <h1 class="display-4">Search Results for <span class="search-query">"{{service.query | async}}"</span></h1>
+</section>
+<ng-template #emptyQueryHeader>
+  <h1 class="display-4">Search</h1>
+  <p class="lead mt-4">Find your favorite songs, artists, albums, playlists, and friends.</p>
+</ng-template>
+
+<section id="search-results" *ngIf="query" infiniteScroll [infiniteScrollContainer]="'main'"
+         [infiniteScrollDistance]="1"
+         [infiniteScrollThrottle]="50"
+         [fromRoot]="true"
+         (scrolled)="next()">
+  <ngb-tabset (tabChange)="onTabChange($event)">
+    <ngb-tab id="song" title="Songs">
+      <ng-template ngbTabContent>
+        <table class="table table-hover" id="songs_table">
+          <thead class="thead-inverse">
+          <tr>
+            <th class="actions"></th>
+            <th class="title">Title</th>
+            <th class="artist">Artist</th>
+            <th class="album">Album</th>
+            <th class="duration">
+              <i class="fa fa-lg fa-clock-o" title="Duration"></i>
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let song of results | async">
+              <td class="actions">
+                <button type="button" class="btn btn-link play-button" title="Play">
+                  <i class="fa fa-lg fa-fw fa-play-circle-o"></i>
+                </button>
+                <button type="button" class="btn btn-link remove-song" title="Remove">
+                  <i class="fa fa-lg fa-fw fa-check"></i>
+                </button>
+              </td>
+              <td class="title">{{ song.name }}</td>
+              <td class="artist">
+                <a [routerLink]="['/artist', song.album.artist.id]">{{ song.album.artist.name }}</a>
+              </td>
+              <td class="album">
+                <a href="#">{{ song.album.name }}</a>
+              </td>
+              <td class="duration">
+                {{ song.length | formatDuration }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="album" title="Albums">
+      <ng-template ngbTabContent>
+        <div class="row">
+          <div *ngFor="let album of results | async" class="col-sm-6 col-lg-4 col-xl-3 playlist">
+            <a class="playlist-image" href="#">
+              <img class="img-fluid" src="/static/i/{{ album.image ? album.image.id : 1 }}/catalog" alt="{{ album.name }}">
+            </a>
+            <h3 class="h6">
+              <a href="#">{{ album.name }}</a>
+            </h3>
+            <span class="text-muted">{{ album.releaseDate | date:"y" }}</span>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="artist" title="Artists">
+      <ng-template ngbTabContent>
+        <div class="row">
+          <div *ngFor="let artist of results | async" class="col-md-2 artist-list-item">
+            <a class="d-block" [routerLink]="['/artist', artist.id]">
+              <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}">
+            </a>
+            <a class="artist-name" [routerLink]="['/artist', artist.id]" title="{{ artist.name }}">{{ artist.name }}</a>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="playlist" title="Playlists">
+      <ng-template ngbTabContent>
+        <p>Playlists</p>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="profile" title="Profiles">
+      <ng-template ngbTabContent>
+        <p>Profiles</p>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+  <div class="results-spinner mt-3" [hidden]="offset == -1">
+    <i class="fa fa-spinner fa-spin"></i>
+    <span>Loading...</span>
+  </div>
+</section>

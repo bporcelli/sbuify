@@ -1,25 +1,23 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
-import { SearchResultsComponent } from './search-results.component';
+import { SearchComponent } from "./search.component";
 import { SearchRoutingModule } from './search-routing.module';
-
-import { SongResultsComponent } from './song-results.component';
-import { AlbumResultsComponent } from './album-results.component';
-import { ArtistResultsComponent } from './artist-results.component';
-import { PlaylistResultsComponent } from './playlist-results.component';
-import { ProfileResultsComponent } from './profile-results.component';
+import { FormatDurationPipe } from "../common/format-duration.pipe";
 
 @NgModule({
-    imports: [
-        SearchRoutingModule
-    ],
-    declarations: [
-        SearchResultsComponent,
-        SongResultsComponent,
-        AlbumResultsComponent,
-        ArtistResultsComponent,
-        PlaylistResultsComponent,
-        ProfileResultsComponent
-    ]
+  imports: [
+    NgbModule,
+    SearchRoutingModule,
+    CommonModule,
+    InfiniteScrollModule,
+  ],
+  declarations: [
+    SearchComponent,
+    FormatDurationPipe
+  ],
+  exports: [ FormatDurationPipe ]
 })
 export class SearchModule {}

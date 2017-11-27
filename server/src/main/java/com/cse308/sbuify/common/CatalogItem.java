@@ -48,7 +48,6 @@ public abstract class CatalogItem implements Serializable {
     @IndexedEmbedded(includeEmbeddedObjectId = true, indexNullAs = DEFAULT_NULL_TOKEN)
     private User owner;
 
-    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Image image;
 
