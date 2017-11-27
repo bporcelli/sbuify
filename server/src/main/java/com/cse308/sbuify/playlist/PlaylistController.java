@@ -90,6 +90,8 @@ public class PlaylistController {
 
         playlist.setName(newPl.getName());
         playlist.setDescription(newPl.getDescription());
+        
+        playlistRepository.save(playlist);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
