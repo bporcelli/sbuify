@@ -61,6 +61,7 @@ public class Artist extends CatalogItem implements Followable {
     /** Followers. */
     @ManyToMany
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
+    @JsonIgnore
     private Set<Customer> followers = new HashSet<>();
 
     public Artist() {

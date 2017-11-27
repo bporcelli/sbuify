@@ -1,7 +1,6 @@
 package com.cse308.sbuify.image;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.Positive;
@@ -104,7 +103,7 @@ public class Image implements Serializable {
      *
      * @return Path to full sized image.
      */
-    @JsonProperty(value = "path")
+    @JsonIgnore
     public String getPath() {
         return getPath(ImageSize.FULL);
     }

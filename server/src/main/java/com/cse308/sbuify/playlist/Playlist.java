@@ -12,6 +12,7 @@ import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
@@ -20,6 +21,8 @@ import org.hibernate.search.annotations.Indexed;
 @DiscriminatorColumn(name = "type")
 @Indexed
 public class Playlist extends CatalogItem implements PlaylistComponent, Followable {
+
+    // todo: clean up javadocs
 
     // Sort position
     @NotNull
@@ -92,22 +95,10 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
         this.hidden = hidden;
     }
 
-    // TODO: map to JSON property num_songs
-    public Integer getNumSongs() {
-        if (songs == null) {
-            return 0;
-        } else {
-            return songs.size();
-        }
-    }
-
     public List<PlaylistSong> getSongs() {
         return songs;
     }
 
-    /**
-     * Playlist component overrides.
-     */
     @Override
     public Integer getPosition() {
         return this.position;
