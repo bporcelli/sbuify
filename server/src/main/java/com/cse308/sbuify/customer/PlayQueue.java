@@ -49,21 +49,38 @@ public class PlayQueue implements Serializable {
         addAll(collection);
     }
 
+    /**
+     * Add a Queueable directly to our playqueue in the back
+     * @param qAble
+     */
     public void addAll(Queueable qAble) {
         Collection<Song> collection = qAble.getItems();
         addAll(collection);
     }
 
+    /**
+     *  Remove all songs in Queueable directly from our play queue
+     * @param qAble
+     */
     public void removeAll(Queueable qAble) {
         Collection<Song> collection = qAble.getItems();
         removeAll(collection);
     }
+
+    /**
+     * Add songs from collection in back of playqueue
+     * @param collection
+     */
 
     public void addAll(Collection<Song> collection) {
         for (Song toAdd : collection)
             songs.add(toAdd);
     }
 
+    /**
+     *  Add a collection of song to front of playqueue
+     * @param collection
+     */
     public void removeAll(Collection<Song> collection) {
         for (Song toAdd : collection)
             songs.remove(toAdd);
@@ -86,6 +103,10 @@ public class PlayQueue implements Serializable {
         }
 
         return jsonString;
+    }
+
+    public void addAllToFront(Collection<Song> collection){
+        songs.addAll(0, collection);
     }
 
     @Override

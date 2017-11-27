@@ -2,6 +2,7 @@ package com.cse308.sbuify;
 
 import com.cse308.sbuify.image.ImageProperties;
 import com.cse308.sbuify.image.StorageService;
+import com.cse308.sbuify.playlist.PlaylistProperties;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
-@EnableConfigurationProperties(ImageProperties.class)
+@EnableConfigurationProperties({ImageProperties.class, PlaylistProperties.class})
 public class SBUifyApplication {
 
 	public static void main(String[] args) {

@@ -16,7 +16,7 @@ public class RequestDeniedEmail extends Email {
 		this.subject = "Artist Request Denied";
 		this.body = "<h1>Hey, " + request.getLabel().getName() + "</h1>" +
 				"<p>" + request.getArtist().getName()+ " has denied your request" + "</p>" +
-				"<p>Your Truly, 49er's</p>";;
+				"<p>Your Truly, 49er's</p>";
 
 	}
 }
