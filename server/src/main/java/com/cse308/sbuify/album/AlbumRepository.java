@@ -1,11 +1,13 @@
 package com.cse308.sbuify.album;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 
-public interface AlbumRepository extends CrudRepository<Album, Integer> {
+public interface AlbumRepository extends PagingAndSortingRepository<Album, Integer> {
 
     @Query(value = "SELECT a.*" +
             "   FROM album a, album_songs sa, song_genres sg, song s" +
@@ -27,4 +29,11 @@ public interface AlbumRepository extends CrudRepository<Album, Integer> {
             "   ORDER BY a.release_date DESC" +
             "   LIMIT ?2", nativeQuery = true)
     List<Album> findRecentAlbumsByGenreId(Integer id, int numAlbums);
+
+    @Query(
+            value = "SELECT * FROM album a ORDER BY release_date DESC \n-- #pageable\n",
+            countQuery = "SELECT COUNT(*) FROM album a ORDER BY release_date DESC",
+            nativeQuery = true
+    )
+    Page<Album> findRecent(Pageable page);
 }

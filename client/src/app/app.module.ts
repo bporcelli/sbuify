@@ -24,6 +24,7 @@ import { SearchService } from "./search/search.service";
 import { AuthInterceptor } from "./auth/auth-interceptor.";
 import { APIModule } from "./api/api.module";
 import { GenreService } from "./browse/genres/genre.service";
+import { AlbumModule } from "./album/album.module";
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { GenreService } from "./browse/genres/genre.service";
     ArtistDetailModule,
     PlaylistDetailModule,
     SongsModule,
+    AlbumModule,
     PlayQueueModule,
     SearchModule,
     GuestModule,

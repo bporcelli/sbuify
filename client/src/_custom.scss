@@ -505,10 +505,19 @@ a#search-clear {
     }
 }
 
+// Grid
+.grid-item {
+  padding: 15px;
+}
+
+// Albums
+.playlist {
+  @extend .grid-item;
+}
+
 // Genres
 .genre {
-  padding-top: 15px;
-  padding-bottom: 15px;
+  @extend .grid-item;
 }
 
 .genre a {
