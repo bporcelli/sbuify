@@ -1,11 +1,9 @@
 package com.cse308.sbuify.playlist;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.Optional;
-
 public interface PlaylistRepository extends CrudRepository<Playlist, Integer> {
-    // Obsolete?
-    Optional<Playlist> findByOwner_Id(Integer ownerId);
-
+    List<Playlist> findAllByOwner_Id(Integer ownerId);
 }
