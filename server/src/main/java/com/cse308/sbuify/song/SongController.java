@@ -17,46 +17,33 @@ public class SongController {
     private SongRepository songRepository;
 
     /**
-     * Activate or deactivate a song.
+     * Update a song.
      *
-     * @param songId
-     * @return HTTP.OK when song is successfully updated with partial song, HTTP.NOT_FOUND - id not found
+     * @param id Song ID.
+     * @return a 200 response if the song is updated, otherwise a 404 if the song ID is invalid.
      */
     @PatchMapping(path = "/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateSong(@PathVariable Integer songId, @RequestBody Song partialSong) {
-        Optional<Song> foundSong = songRepository.findById(songId);
+    public ResponseEntity<?> updateSong(@PathVariable Integer id, @RequestBody Song updated) {
+        Optional<Song> foundSong = songRepository.findById(id);
+
         if (!foundSong.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
         Song song = foundSong.get();
 
-        if (partialSong.getAlbum() != null){
-            song.setAlbum(partialSong.getAlbum());
+        // active state, lyrics, and genres are editable
+        if (updated.isActive() != null) {
+            song.setActive(updated.isActive());
         }
-        if (partialSong.getFeaturedArtists() != null){
-            song.setFeaturedArtists(partialSong.getFeaturedArtists());
+        if (updated.getGenres() != null){
+            song.setGenres(updated.getGenres());
         }
-        if (partialSong.getGenres() != null){
-            song.setGenres(partialSong.getGenres());
+        if (updated.getLyrics() != null){
+            song.setLyrics(updated.getLyrics());
         }
-        if (partialSong.getLength() != null){
-            song.setLength(partialSong.getLength());
-        }
-        if (partialSong.getLyrics() != null){
-            song.setLyrics(partialSong.getLyrics());
-        }
-        if (partialSong.getMBID() != null){
-            song.setMbid(partialSong.getMbid());
-        }
-        if (partialSong.getPlayCount() != null){
-            song.setPlayCount(partialSong.getPlayCount());
-        }
-        if (partialSong.getTrackNumber() != null){
-            song.setTrackNumber(partialSong.getTrackNumber());
-        }
+
         songRepository.save(song);
-        return new ResponseEntity<>(song,HttpStatus.OK);
+        return new ResponseEntity<>(song, HttpStatus.OK);
     }
 }

@@ -133,28 +133,4 @@ public class Song extends CatalogItem implements Queueable {
     public void setLyrics(String lyrics) {
         this.lyrics = lyrics;
     }
-
-    public void setTrackNumber(Integer trackNumber) {
-        this.trackNumber = trackNumber;
-    }
-
-    public void setPlayCount(Integer playCount) {
-        this.playCount = playCount;
-    }
-
-    public String getMbid() {
-        return mbid;
-    }
-
-    public void setMbid(String mbid) {
-        this.mbid = mbid;
-    }
-
-    public void setAlbum(Album album) {
-        this.album = album;
-    }
-
-    public void setFeaturedArtists(Set<Artist> featuredArtists) {
-        this.featuredArtists = featuredArtists;
-    }
 }
