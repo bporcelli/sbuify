@@ -33,11 +33,10 @@ public class LibraryController {
      * @return a 200 response with a list of songs in the body.
      */
     @GetMapping
-    public @ResponseBody ResponseEntity<?> getSongs() {
+    public @ResponseBody TypedCollection getSongs() {
         Customer customer = (Customer) authFacade.getCurrentUser();
         Playlist library = customer.getLibrary();
-        TypedCollection playlistSongs = new TypedCollection(library.getSongs(), PlaylistSong.class);
-        return new ResponseEntity<>(playlistSongs, HttpStatus.OK);
+        return new TypedCollection(library.getSongs(), PlaylistSong.class);
     }
 
     /**
@@ -46,7 +45,7 @@ public class LibraryController {
      * @return a 201 response with the saved song in the body, otherwise a 404 if the song is not found.
      */
     @PostMapping(path = "/{id}")
-    public @ResponseBody ResponseEntity<?> saveToLibrary(@PathVariable Integer id) {
+    public ResponseEntity<?> saveToLibrary(@PathVariable Integer id) {
         Customer customer = (Customer) authFacade.getCurrentUser();
 
         Optional<Song> optionalSong = songRepo.findById(id);
@@ -69,7 +68,7 @@ public class LibraryController {
      * @return an empty 200 response on success, otherwise a 404.
      */
     @DeleteMapping(path = "/{id}")
-    public @ResponseBody ResponseEntity<?> removeFromLibrary(@PathVariable Integer id) {
+    public ResponseEntity<?> removeFromLibrary(@PathVariable Integer id) {
         Customer customer = (Customer) authFacade.getCurrentUser();
         Playlist library = customer.getLibrary();
 
