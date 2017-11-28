@@ -1,28 +1,18 @@
 package com.cse308.sbuify.user;
 
-import java.io.Serializable;
-import java.util.Collection;
-
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.customer.Customer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * Generic entity representing an application user.
@@ -51,6 +41,7 @@ public abstract class User implements Serializable, UserDetails {
 	private String password;
 
     // Token used for password reset requests
+    @JsonIgnore
 	private String token;
 
 	public User() {}

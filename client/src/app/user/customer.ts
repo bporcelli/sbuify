@@ -10,4 +10,8 @@ export class Customer extends User {
   ) {
     super(email, password, "customer");
   }
+
+  get name(): string {
+    return this.firstName + this.lastName;
+  }
 }

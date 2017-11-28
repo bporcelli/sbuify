@@ -2,7 +2,6 @@ package com.cse308.sbuify.common;
 
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.user.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -43,7 +42,6 @@ public abstract class CatalogItem implements Serializable {
 
     // TODO: set cascade actions
 
-    @JsonIgnore
     @OneToOne
     @IndexedEmbedded(includeEmbeddedObjectId = true, indexNullAs = DEFAULT_NULL_TOKEN)
     private User owner;

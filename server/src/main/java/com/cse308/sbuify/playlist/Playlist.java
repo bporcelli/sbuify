@@ -12,6 +12,7 @@ import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
@@ -20,6 +21,8 @@ import org.hibernate.search.annotations.Indexed;
 @DiscriminatorColumn(name = "type")
 @Indexed
 public class Playlist extends CatalogItem implements PlaylistComponent, Followable {
+
+    // todo: clean up javadocs
 
     // Sort position
     @NotNull
@@ -92,22 +95,10 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
         this.hidden = hidden;
     }
 
-    // TODO: map to JSON property num_songs
-    public Integer getNumSongs() {
-        if (songs == null) {
-            return 0;
-        } else {
-            return songs.size();
-        }
-    }
-
     public List<PlaylistSong> getSongs() {
         return songs;
     }
 
-    /**
-     * Playlist component overrides.
-     */
     @Override
     public Integer getPosition() {
         return this.position;
@@ -138,12 +129,10 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
      */
 
     /**
-     * 
-     * @param song:
-     *            Song to add to the playlist
-     * @return PlaylistSong object
+     * Add a song to this playlist.
+     * @param song Song to add to the playlist
+     * @return a PlaylistSong instance wrapping the song.
      */
-    // parameter type changed to song to remove confusion
     public PlaylistSong add(Song song) {
         PlaylistSong ss = new PlaylistSong(this, song);
         songs.add(ss);
@@ -151,13 +140,10 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     }
 
     /**
-     * 
-     * @param song:
-     *            Song to remove
-     * @return Return null if the song does not exists in the list, Return PlaylistSong
-     *         information if it exists
+     * Remove a song from this playlist.
+     * @param song Song to remove.
+     * @return null if the song does not exists in the list, otherwise a PlaylistSong instance.
      */
-    // parameter type changed to song to remove confusion
     public PlaylistSong remove(Song song) {
         for (PlaylistSong ss : songs) {
             if (ss.getSong().equals(song)) {

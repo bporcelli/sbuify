@@ -17,6 +17,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.cse308.sbuify.image.Image;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -31,6 +32,7 @@ public class Biography implements Serializable {
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")
+    @JsonIgnore
     private Artist artist;
 
     @NotNull
@@ -42,7 +44,6 @@ public class Biography implements Serializable {
     private List<Image> images = new ArrayList<>();
 
     public Biography() {
-
     }
 
     public Integer getId() {

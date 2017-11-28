@@ -7,7 +7,7 @@ import { AuthService } from './auth/auth.service';
     templateUrl: './app.component.html',
 })
 export class AppComponent {
-    constructor(private authService: AuthService) {}
+    constructor(public authService: AuthService) {}
 
     getWrapperClasses() {
         if ( ! this.authService.isAuthed() ) {
