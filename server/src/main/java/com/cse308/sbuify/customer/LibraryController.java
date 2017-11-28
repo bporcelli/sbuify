@@ -43,7 +43,7 @@ public class LibraryController {
     /**
      * Add a song to the customer's library.
      * @param id ID of the song to add.
-     * @return an empty 200 response on success, otherwise a 404 if the song is not found.
+     * @return a 201 response with the saved song in the body, otherwise a 404 if the song is not found.
      */
     @PostMapping(path = "/{id}")
     public @ResponseBody ResponseEntity<?> saveToLibrary(@PathVariable Integer id) {
@@ -57,10 +57,10 @@ public class LibraryController {
         Song song = optionalSong.get();
 
         Playlist lib = customer.getLibrary();
-        lib.add(song);
+        PlaylistSong saved = lib.add(song);
 
         playlistRepo.save(lib);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     /**
