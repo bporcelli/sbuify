@@ -73,19 +73,8 @@ public class PlaylistControllerTest extends AuthenticatedTest {
         // this more clearly captures what we're testing for
         assertEquals(ownedPlaylists.size(), previousSize + 1);
 
-        boolean found = false;
-        for (Playlist pl : ownedPlaylists) {
-            if (name.equals(pl.getName()) && description.equals(pl.getDescription())) {
-                found = true;
-                break;
-            }
-        }
-        assertEquals(true, found);
-
-        // I am aware of this test, but before we are sure that equals method works
-        // properly, we must manually check
-        // the saved playlist is included in the response -- use that to our advantage
-        // assertTrue(ownedPlaylists.contains(response.getBody()));
+        // if the saved playlist ID occurs in ownedPlaylists, the test succeeded -- this is enough for our purposes
+        assertTrue(ownedPlaylists.contains(response.getBody()));
     }
 
     // /**
