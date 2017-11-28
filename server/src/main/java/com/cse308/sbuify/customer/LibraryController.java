@@ -1,28 +1,24 @@
 package com.cse308.sbuify.customer;
 
-import java.util.Collection;
-import java.util.Optional;
-
-import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.common.TypedCollection;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistRepository;
 import com.cse308.sbuify.playlist.PlaylistSong;
-import org.apache.http.protocol.HTTP;
-import org.jboss.jdeparser.FormatPreferences;
+import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.song.Song;
+import com.cse308.sbuify.song.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.song.SongRepository;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/api/customer/songs")
 public class LibraryController {
+
     @Autowired
     private PlaylistRepository playlistRepo;
 
@@ -33,73 +29,63 @@ public class LibraryController {
     private AuthFacade authFacade;
 
     /**
-     * Get customer library songs
-     * @return HTTP.OK when successful
+     * Get the songs in the customer's library.
+     * @return a 200 response with a list of songs in the body.
      */
     @GetMapping
     public @ResponseBody ResponseEntity<?> getSongs() {
         Customer customer = (Customer) authFacade.getCurrentUser();
-
         Playlist library = customer.getLibrary();
-
         TypedCollection playlistSongs = new TypedCollection(library.getSongs(), PlaylistSong.class);
-
         return new ResponseEntity<>(playlistSongs, HttpStatus.OK);
     }
 
     /**
-     * Add a song to library
-     * @param songId
-     * @return HTTP.OK when successful, HTTP.NOT_FOUND when song not found
+     * Add a song to the customer's library.
+     * @param id ID of the song to add.
+     * @return an empty 200 response on success, otherwise a 404 if the song is not found.
      */
     @PostMapping(path = "/{id}")
-    public @ResponseBody ResponseEntity<?> saveToLibrary(@PathVariable(value = "id") Integer songId) {
+    public @ResponseBody ResponseEntity<?> saveToLibrary(@PathVariable Integer id) {
         Customer customer = (Customer) authFacade.getCurrentUser();
 
-        Optional<Song> dbSong = songRepo.findById(songId);
+        Optional<Song> optionalSong = songRepo.findById(id);
 
-        if (!dbSong.isPresent()){
+        if (!optionalSong.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        Song song = dbSong.get();
+        Song song = optionalSong.get();
 
         Playlist lib = customer.getLibrary();
-
         lib.add(song);
 
         playlistRepo.save(lib);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
-     * Delete a song from library
-     * @param songToRmId
-     * @return HTTP.CREATED when successful, HTTP.NOT_FOUND when song is not found
+     * Delete a song from the customer's library.
+     * @param id Song ID.
+     * @return an empty 200 response on success, otherwise a 404.
      */
     @DeleteMapping(path = "/{id}")
-    public @ResponseBody ResponseEntity<?> removeFromLibrary(@PathVariable(value = "id") Integer songToRmId) {
+    public @ResponseBody ResponseEntity<?> removeFromLibrary(@PathVariable Integer id) {
         Customer customer = (Customer) authFacade.getCurrentUser();
-
         Playlist library = customer.getLibrary();
 
-        Optional<Song> songToRm = songRepo.findById(songToRmId);
+        Optional<Song> optionalSong = songRepo.findById(id);
 
-        if (!songToRm.isPresent()) {
+        if (!optionalSong.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Song song = songToRm.get();
+        PlaylistSong deleted = library.remove(optionalSong.get());
 
-        PlaylistSong deleted = library.remove(song);
-
-        if (deleted == null){
+        if (deleted == null) {  // song wasn't in library
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         playlistRepo.save(library);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
