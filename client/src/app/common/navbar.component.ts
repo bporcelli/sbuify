@@ -11,7 +11,7 @@ import { SearchService } from "../search/search.service";
 })
 export class NavbarComponent {
 
-  constructor(private auth: AuthService,
+  constructor(public auth: AuthService,
               private router: Router,
               private service: SearchService) {}
 

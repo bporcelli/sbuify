@@ -8,12 +8,15 @@ public class StreamCountDTO {
     public int getSongId() {
         return songId;
     }
+
     public void setSongId(int songId) {
         this.songId = songId;
     }
+
     public int getNewStreams() {
         return newStreams;
     }
+
     public void setNewStreams(int newStreams) {
         this.newStreams = newStreams;
     }

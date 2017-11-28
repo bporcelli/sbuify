@@ -1,8 +1,12 @@
 package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -22,6 +26,7 @@ public class PlaylistFolder implements PlaylistComponent {
     // Folder owner
     @OneToOne
     @NotNull
+    @JsonIgnore
     private User owner;
 
     // Parent folder, if any

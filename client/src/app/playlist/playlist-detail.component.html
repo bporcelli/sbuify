@@ -6,7 +6,7 @@
         <div class="col-9 content-wrapper">
             <h1 class="display-4 page-heading">{{ playlist.name }}</h1>
             <p class="lead" *ngIf="playlist.description">{{ playlist.description }}</p>
-            <p>Created by: <a href="#">{{ playlist.author }}</a>. {{ playlist.songs.length }} songs, {{ playlist.duration | amDuration:'seconds' }}.
+            <p>Created by: <a href="#">{{ playlist.owner.name }}</a>. {{ playlist.songs.length }} songs, {{ playlist.length | amDuration:'milliseconds' }}.</p>
             <ul class="nav button-list">
                 <li class="nav-item">
                     <button type="button" class="btn btn-wide btn-primary play-playlist" title="Play Playlist" [disabled]="playlist.songs.length == 0">Play</button>

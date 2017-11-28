@@ -4,7 +4,6 @@ import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.security.AuthFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,79 +21,66 @@ public class PlayQueueController {
     private AuthFacade authFacade;
 
     /**
-     *  Update customer playqueue
+     * Update the customer's play queue.
      * @param newPlayQueue
-     * @return Http.OK when successful
+     * @return HTTP response.
      */
-
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping
     public ResponseEntity<?> updatePlayQueue(@RequestBody PlayQueue newPlayQueue) {
-
         Customer user = (Customer) authFacade.getCurrentUser();
 
         PlayQueue pq = user.getPlayQueue();
-
         pq.update(newPlayQueue.getSongs());
-
         pqRepo.save(pq);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
-     *  Add song/album in front or back of playqueue
-     * @param qAble
-     * @param first (Optional)
-     * @return Http.OP when successful
+     * Add a song/album to the front or back of the customer's play queue
+     * @param toAdd Song or album to add.
+     * @param first True if song should be added to the front of the queue, otherwise false.
+     * @return HTTP response.
      */
-
     @PostMapping(path = "/add")
-    public ResponseEntity<?> addToPlayQueue(@RequestBody Queueable qAble, @RequestParam(required= false) String first) {
+    public ResponseEntity<?> addToPlayQueue(@RequestBody Queueable toAdd,
+                                            @RequestParam(required = false, defaultValue = "false") Boolean first) {
         Customer cust = (Customer) authFacade.getCurrentUser();
-
         PlayQueue pq = cust.getPlayQueue();
-        // add to front
-        if (first == null){
-            pq.addAllToFront(qAble.getItems());
+
+        if (first) {
+            pq.addAllToFront(toAdd.getItems());
         } else {
-            pq.addAll(qAble.getItems());
+            pq.addAll(toAdd.getItems());
         }
 
         pqRepo.save(pq);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
-     * Remove songs from playqueue
-     * @param qAble
-     * @return Http.OK when successful
+     * Remove a song/album from the customer's play queue.
+     * @param toAdd The song or album to remove.
+     * @return HTTP response.
      */
     @PostMapping(path = "/remove")
-    public ResponseEntity<?> removeFromPlayQueue(@RequestBody Queueable qAble) {
-
+    public ResponseEntity<?> removeFromPlayQueue(@RequestBody Queueable toAdd) {
         Customer cust = (Customer) authFacade.getCurrentUser();
+
         PlayQueue pq = cust.getPlayQueue();
-
-        pq.removeAll(qAble.getItems());
-
+        pq.removeAll(toAdd.getItems());
         pqRepo.save(pq);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
-     * Get current Customer's playqueue
-     * @return Http.OK when successful
+     * Get the customer's play queue.
+     * @return HTTP response.
      */
-
     @GetMapping
     public ResponseEntity<?> getPlayQueue(){
-
         Customer customer = (Customer) authFacade.getCurrentUser();
-
-        PlayQueue pq = customer.getPlayQueue();
-        
-        return new ResponseEntity<>(pq, HttpStatus.OK);
+        return new ResponseEntity<>(customer.getPlayQueue(), HttpStatus.OK);
     }
 }

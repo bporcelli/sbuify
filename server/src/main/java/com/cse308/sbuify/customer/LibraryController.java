@@ -1,29 +1,24 @@
 package com.cse308.sbuify.customer;
 
-import java.util.Optional;
-
+import com.cse308.sbuify.common.TypedCollection;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistRepository;
 import com.cse308.sbuify.playlist.PlaylistSong;
+import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.song.Song;
+import com.cse308.sbuify.song.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.song.SongRepository;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/api/customer/songs")
 public class LibraryController {
+
     @Autowired
     private PlaylistRepository playlistRepo;
 
@@ -33,44 +28,63 @@ public class LibraryController {
     @Autowired
     private AuthFacade authFacade;
 
+    /**
+     * Get the songs in the customer's library.
+     * @return a 200 response with a list of songs in the body.
+     */
     @GetMapping
-    public @ResponseBody ResponseEntity<Playlist> getSongs() {
-        Customer cust = (Customer) authFacade.getCurrentUser();
-
-        Playlist lib = cust.getLibrary();
-
-        return new ResponseEntity<>(lib, HttpStatus.OK);
+    public @ResponseBody TypedCollection getSongs() {
+        Customer customer = (Customer) authFacade.getCurrentUser();
+        Playlist library = customer.getLibrary();
+        return new TypedCollection(library.getSongs(), PlaylistSong.class);
     }
 
-    @PostMapping
-    public @ResponseBody ResponseEntity<PlaylistSong> saveToLibrary(@RequestBody Song songToAdd) {
-        // todo: accept queuable, not song (albums can be saved as well...)
-        Customer cust = (Customer) authFacade.getCurrentUser();
+    /**
+     * Add a song to the customer's library.
+     * @param id ID of the song to add.
+     * @return a 201 response with the saved song in the body, otherwise a 404 if the song is not found.
+     */
+    @PostMapping(path = "/{id}")
+    public ResponseEntity<?> saveToLibrary(@PathVariable Integer id) {
+        Customer customer = (Customer) authFacade.getCurrentUser();
 
-        Playlist lib = cust.getLibrary();
+        Optional<Song> optionalSong = songRepo.findById(id);
 
-        PlaylistSong ss = lib.add(songToAdd);
-
-        playlistRepo.save(lib);
-
-        return new ResponseEntity<>(ss, HttpStatus.OK);
-    }
-
-    @DeleteMapping
-    public @ResponseBody ResponseEntity<?> removeFromLibrary(@RequestParam Integer songToRmId) {
-        Customer cust = (Customer) authFacade.getCurrentUser();
-
-        Playlist lib = cust.getLibrary();
-
-        Optional<Song> songToRm = songRepo.findById(songToRmId);
-
-        if (!songToRm.isPresent())
+        if (!optionalSong.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Song song = optionalSong.get();
 
-        lib.remove(songToRm.get()); // Returns PlaylistSong but not declaring it because we are not using it
+        Playlist lib = customer.getLibrary();
+        PlaylistSong saved = lib.add(song);
 
         playlistRepo.save(lib);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    }
 
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    /**
+     * Delete a song from the customer's library.
+     * @param id Song ID.
+     * @return an empty 200 response on success, otherwise a 404.
+     */
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<?> removeFromLibrary(@PathVariable Integer id) {
+        Customer customer = (Customer) authFacade.getCurrentUser();
+        Playlist library = customer.getLibrary();
+
+        Optional<Song> optionalSong = songRepo.findById(id);
+
+        if (!optionalSong.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        PlaylistSong deleted = library.remove(optionalSong.get());
+
+        if (deleted == null) {  // song wasn't in library
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        playlistRepo.save(library);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

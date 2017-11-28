@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router, Resolve, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
 
-import { PlaylistService } from '../playlist.service';
+import { PlaylistService } from './playlist.service';
 
 @Injectable()
 export class PlaylistDetailResolver implements Resolve<Object> {
