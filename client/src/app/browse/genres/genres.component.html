@@ -1,0 +1,10 @@
+<h2 class="h5 playlist-list-title">Genres &amp; Moods</h2>
+
+<div class="row">
+  <div *ngFor="let genre of genres" class="col-sm-6 col-lg-4 col-xl-2 genre">
+    <a [routerLink]="['/browse/genres', genre.id]">
+      <img class="img-fluid" src="/static/i/{{ genre.image.id }}/catalog" alt="{{ genre.name }}">
+      <span>{{ genre.name }}</span>
+    </a>
+  </div>
+</div>

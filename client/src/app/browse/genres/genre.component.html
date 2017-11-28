@@ -1,0 +1,30 @@
+<h2 class="h5 playlist-list-title">Genres &amp; Moods > {{ genre.name }}</h2>
+
+<div class="row playlist-list page-section">
+  <div class="col-12">
+    <h2 class="h5 playlist-list-title">Recent</h2>
+  </div>
+  <div *ngIf="(recent | async) && recent.value != null; else loading" class="col-12">
+    <div album-list *ngIf="recent.value.length; else noResults" [albums]="recent.value" class="row"></div>
+  </div>
+</div>
+
+<div class="row playlist-list page-section">
+  <div class="col-12">
+    <h2 class="h5 playlist-list-title">Popular</h2>
+  </div>
+  <div *ngIf="(popular | async) && popular.value != null; else loading" class="col-12">
+    <div album-list *ngIf="popular.value.length; else noResults" [albums]="popular.value" class="row"></div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="results-spinner mt-3 col-12">
+    <i class="fa fa-spinner fa-spin"></i>
+    <span>Loading...</span>
+  </div>
+</ng-template>
+
+<ng-template #noResults>
+  <p>No results found.</p>
+</ng-template>

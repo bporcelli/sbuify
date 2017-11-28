@@ -68,7 +68,6 @@ export class PlaylistService {
     }
 
     getPlaylist(id: number | string) {
-        console.log('getting playlist with id:', id);
         return this.getPlaylists()
             // (+) converts id to string
             .map(playlists => playlists.find(playlist => playlist.id == +id));

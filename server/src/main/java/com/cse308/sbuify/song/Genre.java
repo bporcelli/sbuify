@@ -55,4 +55,19 @@ public class Genre implements Serializable {
     public void setImage(Image image) {
         this.image = image;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Genre genre = (Genre) o;
+
+        return id.equals(genre.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

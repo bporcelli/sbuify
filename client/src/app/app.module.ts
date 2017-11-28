@@ -22,7 +22,8 @@ import { AuthModule } from "./auth/auth.module";
 import { PlaylistService } from './playlist/playlist.service';
 import { SearchService } from "./search/search.service";
 import { AuthInterceptor } from "./auth/auth-interceptor.";
-import {APIModule} from "./api/api.module";
+import { APIModule } from "./api/api.module";
+import { GenreService } from "./browse/genres/genre.service";
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import {APIModule} from "./api/api.module";
   providers: [
     PlaylistService,
     SearchService,
+    GenreService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
