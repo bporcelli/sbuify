@@ -20,7 +20,7 @@ import org.hibernate.search.annotations.Indexed;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type")
 @Indexed
-public class Playlist extends CatalogItem implements PlaylistComponent, Followable {
+public class Playlist extends CatalogItem implements PlaylistComponent, Followable { 
 
     // todo: clean up javadocs
 
@@ -41,7 +41,7 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     private Boolean hidden;
 
     // Songs in playlist (zero or more)
-    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.EAGER)
     private List<PlaylistSong> songs = new ArrayList<>();
 
     /** Playlist followers */
@@ -54,6 +54,8 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
 
     public Playlist(@NotEmpty String name, User owner, Image image, @NotNull Boolean hidden, @NotNull Integer pos) {
         super(name, owner, image);
+        
+        // parent is by default null
         this.hidden = hidden;
         this.position = pos;
     }

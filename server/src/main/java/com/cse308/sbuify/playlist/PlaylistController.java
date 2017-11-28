@@ -1,27 +1,34 @@
 package com.cse308.sbuify.playlist;
 
-import com.cse308.sbuify.admin.Admin;
-import com.cse308.sbuify.common.Queueable;
-import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.user.User;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import com.cse308.sbuify.admin.Admin;
+import com.cse308.sbuify.common.Queueable;
+import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.song.Song;
+import com.cse308.sbuify.user.User;
 
 @Controller
 @RequestMapping(path = "/api/playlists")
 @ConfigurationProperties("playlist")
 public class PlaylistController {
-
     @Autowired
     private PlaylistRepository playlistRepository;
 
@@ -31,7 +38,7 @@ public class PlaylistController {
     private static Integer MAX_SONGS = null;
 
     @Autowired
-    public PlaylistController(PlaylistProperties playlistProperties){
+    public PlaylistController(PlaylistProperties playlistProperties) {
         MAX_SONGS = playlistProperties.getMaxSongs();
     }
 
@@ -41,7 +48,8 @@ public class PlaylistController {
      * @return The playlist as saved in the database.
      */
     @PostMapping
-    public ResponseEntity<?> createPlaylist(@RequestBody Playlist playlist) {
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    public ResponseEntity<Playlist> createPlaylist(@RequestBody Playlist playlist) {
         Playlist saved = playlistRepository.save(playlist);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -53,21 +61,25 @@ public class PlaylistController {
      */
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
-    public ResponseEntity<?> getPlaylist(@PathVariable Integer id) {
+    public ResponseEntity<?> getPlaylistById(@PathVariable Integer id) {
         Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
 
-        if (!optionalPlaylist.isPresent()) {  // playlist not found
+        if (!optionalPlaylist.isPresent()) { // playlist not found
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Playlist playlist = optionalPlaylist.get();
 
         User user = authFacade.getCurrentUser();
         boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
-        if (playlist.isHidden() && !isOwnerOrAdmin) {  // user can't access playlist
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (!isOwnerOrAdmin) { // current user can access playlist
+            // if we reach this point, the user doesn't have private access
+            if (playlist.isHidden()) {
+                // if it is private playlist
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
         }
 
-        // if we reach this point, the user can access the playlist
+        // if code reaches here, isOwnerOrAdmin or playlist is public
         return new ResponseEntity<>(playlist, HttpStatus.OK);
     }
 
@@ -146,6 +158,9 @@ public class PlaylistController {
 
         User user = authFacade.getCurrentUser();
         boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
+        if (!isOwnerOrAdmin) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
 
         if (!isOwnerOrAdmin) {  // can't edit playlist
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
