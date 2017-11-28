@@ -44,50 +44,71 @@ public class PlayQueue implements Serializable {
         this.songs = songs;
     }
 
+    /**
+     * Replace the songs in the play queue with the songs in the given collection.
+     * @param collection
+     */
     public void update(Collection<Song> collection) {
         songs = new ArrayList<>();
         addAll(collection);
     }
 
     /**
-     * Add a Queueable directly to our playqueue in the back
-     * @param qAble
+     * Add all songs in a Queueable to the back of the play queue.
+     * @param queueable
      */
-    public void addAll(Queueable qAble) {
-        Collection<Song> collection = qAble.getItems();
-        addAll(collection);
+    public void addAll(Queueable queueable) {
+        Collection<Song> songs = queueable.getItems();
+        addAll(songs);
     }
 
     /**
-     *  Remove all songs in Queueable directly from our play queue
-     * @param qAble
+     * Remove all songs in a Queueable from the play queue.
+     * @param queueable
      */
-    public void removeAll(Queueable qAble) {
-        Collection<Song> collection = qAble.getItems();
-        removeAll(collection);
+    public void removeAll(Queueable queueable) {
+        Collection<Song> songs = queueable.getItems();
+        removeAll(songs);
     }
 
     /**
-     * Add songs from collection in back of playqueue
+     * Add all songs in a collection to the back of the play queue.
      * @param collection
      */
-
     public void addAll(Collection<Song> collection) {
-        for (Song toAdd : collection)
-            songs.add(toAdd);
+        songs.addAll(collection);
     }
 
     /**
-     *  Add a collection of song to front of playqueue
+     * Remove all songs in a collection from the play queue.
      * @param collection
      */
     public void removeAll(Collection<Song> collection) {
-        for (Song toAdd : collection)
-            songs.remove(toAdd);
+        songs.removeAll(collection);
     }
 
+    /**
+     * Add a song to the back of the play queue.
+     * @param song
+     */
     public void addSong(Song song){
         songs.add(song);
+    }
+
+    /**
+     * Add a song to the front of the play queue.
+     * @param song
+     */
+    public void addSongToFront(Song song) {
+        songs.add(0, song);
+    }
+
+    /**
+     * Add a collection of songs to the front of the play queue.
+     * @param collection
+     */
+    public void addAllToFront(Collection<Song> collection){
+        songs.addAll(0, collection);
     }
 
     @Override
@@ -103,10 +124,6 @@ public class PlayQueue implements Serializable {
         }
 
         return jsonString;
-    }
-
-    public void addAllToFront(Collection<Song> collection){
-        songs.addAll(0, collection);
     }
 
     @Override

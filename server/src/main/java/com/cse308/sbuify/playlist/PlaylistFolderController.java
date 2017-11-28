@@ -1,64 +1,62 @@
 package com.cse308.sbuify.playlist;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
+import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.user.User;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/api/playlist-folders")
 public class PlaylistFolderController {
+
     @Autowired
     private AuthFacade authFacade;
 
     @Autowired
-    private PlaylistFolderRepository fRepo;
+    private PlaylistFolderRepository folderRepo;
     
     @Autowired
-    private PlaylistRepository plRepo;
+    private PlaylistRepository playlistRepo;
 
+    /**
+     * Create a playlist folder.
+     * @param folder The folder to create.
+     * @return a 201 response containing the saved playlist folder in the body.
+     */
     @PostMapping
-    public ResponseEntity<?> createPlaylistFolder(@RequestBody PlaylistFolder pf) {
-        User user = authFacade.getCurrentUser();
-
-        pf.setOwner(user);
-
-        PlaylistFolder saved = fRepo.save(pf);
-
-        return new ResponseEntity<PlaylistFolder>(saved, HttpStatus.CREATED);
+    public ResponseEntity<?> createPlaylistFolder(@RequestBody PlaylistFolder folder) {
+        folder.setOwner(authFacade.getCurrentUser());
+        PlaylistFolder saved = folderRepo.save(folder);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
-    @PatchMapping
-    // No sequence diagram
-    public ResponseEntity<?> updatePlaylistFolder(@PathVariable Integer plfId, @RequestBody String parent_folder) {
+    /**
+     * Update a playlist folder.
+     * @param id Folder ID.
+     * @param updated Updated playlist folder.
+     * @return an empty 200 response if the folder is updated successfully, otherwise a 404.
+     */
+    @PatchMapping(path = "/{id}")
+    public ResponseEntity<?> updatePlaylistFolder(@PathVariable Integer id, @RequestBody PlaylistFolder updated) {
+        // changed to handle all playlist folder updates instead of just changes to the parent folder
+        Optional<PlaylistFolder> optionalFolder = folderRepo.findById(id);
 
-        Optional<PlaylistFolder> optPlf = fRepo.findById(Integer.parseInt(parent_folder));
-        Optional<PlaylistFolder> optPlfParent = fRepo.findById(Integer.parseInt(parent_folder));
-
-        if (!optPlf.isPresent() || !optPlfParent.isPresent()) {
+        if (!optionalFolder.isPresent()) {
             return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
         }
 
-        PlaylistFolder plf = optPlfParent.get();
-        plf.setParentFolder(optPlfParent.get());
+        PlaylistFolder folder = optionalFolder.get();
 
-        fRepo.save(plf);
+        folder.setName(updated.getName());
+        folder.setParentFolder(updated.getParentFolder());
+        folder.setPosition(updated.getPosition());
 
+        folderRepo.save(folder);  // if the parent folder ID is invalid, this should trigger a 500 response
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
-    
-
 }

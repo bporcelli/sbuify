@@ -129,12 +129,10 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
      */
 
     /**
-     * 
-     * @param song:
-     *            Song to add to the playlist
-     * @return PlaylistSong object
+     * Add a song to this playlist.
+     * @param song Song to add to the playlist
+     * @return a PlaylistSong instance wrapping the song.
      */
-    // parameter type changed to song to remove confusion
     public PlaylistSong add(Song song) {
         PlaylistSong ss = new PlaylistSong(this, song);
         songs.add(ss);
@@ -142,13 +140,10 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     }
 
     /**
-     * 
-     * @param song:
-     *            Song to remove
-     * @return Return null if the song does not exists in the list, Return PlaylistSong
-     *         information if it exists
+     * Remove a song from this playlist.
+     * @param song Song to remove.
+     * @return null if the song does not exists in the list, otherwise a PlaylistSong instance.
      */
-    // parameter type changed to song to remove confusion
     public PlaylistSong remove(Song song) {
         for (PlaylistSong ss : songs) {
             if (ss.getSong().equals(song)) {
