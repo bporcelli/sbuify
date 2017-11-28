@@ -73,8 +73,19 @@ public class PlaylistControllerTest extends AuthenticatedTest {
         // this more clearly captures what we're testing for
         assertEquals(ownedPlaylists.size(), previousSize + 1);
 
+        boolean found = false;
+        for (Playlist pl : ownedPlaylists) {
+            if (name.equals(pl.getName()) && description.equals(pl.getDescription())) {
+                found = true;
+                break;
+            }
+        }
+        assertEquals(true, found);
+
+        // I am aware of this test, but before we are sure that equals method works
+        // properly, we must manually check
         // the saved playlist is included in the response -- use that to our advantage
-        assertTrue(ownedPlaylists.contains(response.getBody()));
+        // assertTrue(ownedPlaylists.contains(response.getBody()));
     }
 
     // /**
@@ -88,23 +99,21 @@ public class PlaylistControllerTest extends AuthenticatedTest {
     // playlistRepository.findAllByOwner_Id(customer.getId());
     // assertEquals(true, owningPlaylists.size() > 0);
     // Playlist target = owningPlaylists.get(0);
-    // int previousSize = target.getNumSongs();
-    //
+    // int previousSize = target.getSongs().size();
     //
     // // adding song starts here
     // Optional<Song> newSong = songRepository.findById(3);
     // assertEquals(true, newSong.isPresent());
     //
-    // ResponseEntity<Void> response =
-    // restTemplate.postForEntity(String.format(ENDPOINT_FORMAT_STRING + "%d/add",
-    // port, target.getId()),
+    // ResponseEntity<Void> response = restTemplate.postForEntity(
+    // String.format(ENDPOINT_FORMAT_STRING + "%d/add", port, target.getId()),
     // newSong.get(), Void.class);
     // System.out.println(String.format(ENDPOINT_FORMAT_STRING + "/%d/add", port,
     // target.getId()));
     //
     // assertEquals(HttpStatus.OK, response.getStatusCode());
     //
-    // assertEquals(1, target.getNumSongs() - previousSize);
+    // assertEquals(1, target.getSongs().size() - previousSize);
     // }
 
     /**
