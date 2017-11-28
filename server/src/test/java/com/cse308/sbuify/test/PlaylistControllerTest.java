@@ -1,31 +1,25 @@
 package com.cse308.sbuify.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistRepository;
 import com.cse308.sbuify.song.SongRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import com.cse308.sbuify.user.UserRepository;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PlaylistControllerTest extends AuthenticatedTest {
-
-    private final static String ENDPOINT_FORMAT_STRING = "http://localhost:%d/api/playlists";
 
     @Autowired
     private UserRepository userRepository;
@@ -61,36 +55,26 @@ public class PlaylistControllerTest extends AuthenticatedTest {
     public void createPlaylistTest() {
         Customer customer = (Customer) user;
 
-        List<Playlist> owningPlaylists = playlistRepository.findAllByOwner_Id(customer.getId());
-        int previousSize = owningPlaylists.size();
+        List<Playlist> ownedPlaylists = playlistRepository.findAllByOwner_Id(customer.getId());
+        int previousSize = ownedPlaylists.size();
 
         String name = "New Playlist";
         String description = "This is for testing. Lets see if it works";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
         Playlist reqObj = new Playlist(name, customer, null, false, 0);
         reqObj.setDescription(description);
-        HttpEntity<Playlist> request = new HttpEntity<>(reqObj, headers);
 
-        ResponseEntity<Void> response = restTemplate.exchange(String.format(ENDPOINT_FORMAT_STRING, port),
-                HttpMethod.POST, request, Void.class);
-
+        HttpEntity<Playlist> request = new HttpEntity<>(reqObj);
+        ResponseEntity<Playlist> response = restTemplate.postForEntity("/api/playlists", request, Playlist.class);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
-        owningPlaylists = playlistRepository.findAllByOwner_Id(customer.getId());
-        assertEquals(1, owningPlaylists.size() - previousSize);
+        ownedPlaylists = playlistRepository.findAllByOwner_Id(customer.getId());
 
-        boolean found = false;
-        for (Playlist pl : owningPlaylists) {
-            if (name.equals(pl.getName()) && description.equals(pl.getDescription())) {
-                found = true;
-                break;
-            }
-        }
+        // this more clearly captures what we're testing for
+        assertEquals(ownedPlaylists.size(), previousSize + 1);
 
-        assertEquals(true, found);
+        // the saved playlist is included in the response -- use that to our advantage
+        assertTrue(ownedPlaylists.contains(response.getBody()));
     }
 
     // /**

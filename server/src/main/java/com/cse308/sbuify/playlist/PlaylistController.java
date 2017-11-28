@@ -29,6 +29,7 @@ import com.cse308.sbuify.user.User;
 @RequestMapping(path = "/api/playlists")
 @ConfigurationProperties("playlist")
 public class PlaylistController {
+
     @Autowired
     private PlaylistRepository playlistRepository;
 
@@ -50,6 +51,7 @@ public class PlaylistController {
     @PostMapping
     @PreAuthorize("hasAnyRole('CUSTOMER')")
     public ResponseEntity<Playlist> createPlaylist(@RequestBody Playlist playlist) {
+        // todo: handle image uploads (use image.StorageService)
         Playlist saved = playlistRepository.save(playlist);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
