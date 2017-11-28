@@ -5,16 +5,17 @@ import com.cse308.sbuify.song.SongRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class AdminControllerTest extends AuthenticatedTest {
 
@@ -33,16 +34,18 @@ public class AdminControllerTest extends AuthenticatedTest {
         Optional<Song> optionalSong = songRepository.findById(1);
         assertTrue(optionalSong.isPresent());
         Song original = optionalSong.get();
+        Boolean originalActive = original.isActive();
+        original.setActive(!originalActive);
 
+        HttpEntity<Song> req = new HttpEntity<>(original);
         ResponseEntity<Song> res = null;
-        res = restTemplate.exchange(
-                "http://localhost:" + port + "/api/songs/{id}",  HttpMethod.PATCH, null, Song.class, params);
+        res = restTemplate.exchange("/api/songs/{id}",  HttpMethod.PATCH, req, Song.class, params);
         assertEquals(HttpStatus.OK, res.getStatusCode());
 
         Song updated = res.getBody();
 
         // If original activated, request should deactivate and vise versa
-        assertEquals(!original.isActive(), updated.isActive());
+        assertEquals(!originalActive, updated.isActive());
     }
 
     @Override
