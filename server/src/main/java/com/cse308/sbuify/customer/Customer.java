@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hibernate.annotations.Fetch;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -66,7 +67,8 @@ public class Customer extends User implements Followable {
 	@JsonIgnore
 	private Playlist library;
 
-	@ElementCollection
+
+	@ElementCollection(fetch = FetchType.EAGER)
 	@MapKeyColumn(name = "PREF_KEY")
 	@Column(name = "PREF_VALUE")
 	@CollectionTable(name = "customer_preferences")

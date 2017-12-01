@@ -83,4 +83,23 @@ public class PlayQueueController {
         Customer customer = (Customer) authFacade.getCurrentUser();
         return new ResponseEntity<>(customer.getPlayQueue(), HttpStatus.OK);
     }
+
+    /**
+     *
+     * @param partial Entity type - Play Queue
+     * @return HTTP.OK update success, HTTP.NOT_FOUND, play queue not found
+     */
+    @PatchMapping(path = "play-queue")
+    public ResponseEntity<?> patchPlayQueue(@RequestBody PlayQueue partial){
+        Customer customer = (Customer)authFacade.getCurrentUser();
+        PlayQueue customerPlayQueue = customer.getPlayQueue();
+
+        if(partial.getSongs() != null){
+            customerPlayQueue.setSongs(partial.getSongs());
+            pqRepo.save(customerPlayQueue);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
 }
