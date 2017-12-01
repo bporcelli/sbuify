@@ -45,7 +45,7 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     private List<PlaylistSong> songs = new ArrayList<>();
 
     /** Playlist followers */
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
     private Set<Customer> followers = new HashSet<>();
 
@@ -124,6 +124,22 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     @Override
     public Boolean isFolder() {
         return false;
+    }
+
+    public Boolean getHidden() {
+        return hidden;
+    }
+
+    public void setSongs(List<PlaylistSong> songs) {
+        this.songs = songs;
+    }
+
+    public Set<Customer> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Set<Customer> followers) {
+        this.followers = followers;
     }
 
     /*
