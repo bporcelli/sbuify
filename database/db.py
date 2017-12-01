@@ -8,7 +8,7 @@ _SQL_DIR = './sql/'
 _DB_USER = 'root'
 _DB_PASS = '1234'
 _DB_HOST = 'localhost'
-_DB_NAME = 'test2'
+_DB_NAME = 'test'
 
 
 # globals

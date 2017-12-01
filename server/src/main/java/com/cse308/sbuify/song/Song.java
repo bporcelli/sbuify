@@ -10,10 +10,7 @@ import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a song on a particular album.
@@ -50,6 +47,13 @@ public class Song extends CatalogItem implements Queueable {
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "artist_id"))
     @JsonIgnore
     private Set<Artist> featuredArtists = new HashSet<>();
+
+    @ElementCollection
+    @MapKeyEnumerated(value = EnumType.STRING)
+    @MapKeyColumn(name = "quality")
+    @Column(name = "path")
+    @JsonIgnore
+    private Map<SongQuality, String> files;
 
     @JsonIgnore
     @Override
@@ -132,5 +136,14 @@ public class Song extends CatalogItem implements Queueable {
      */
     public void setLyrics(String lyrics) {
         this.lyrics = lyrics;
+    }
+
+    /**
+     * Get the path to the high or low quality copy of this song.
+     * @param quality Desired song quality.
+     * @return Path to audio file with specified quality.
+     */
+    public String getFilePath(SongQuality quality) {
+        return files.get(quality);
     }
 }

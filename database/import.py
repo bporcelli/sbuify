@@ -5,20 +5,21 @@ from musicbrainzngs.musicbrainz import NetworkError
 import genres
 import musicbrainzngs
 import lyrics
+import image
 import db
 import random
 import time
 import shutil
 import os
+import logging
 
 
 # CONFIG
-REL_PER_LABEL = 50  # releases per label
-REQ_PER_LABEL = 5   # requests per label
-REL_PER_REQ = ceil(REL_PER_LABEL / REQ_PER_LABEL)
+REL_PER_LABEL = 20
+REL_PER_PAGE = 50
 RETRY_SECS = 5
-CONTENT_DIR = '../content/'
-IMAGE_DIR = 'images/'
+CONTENT_DIR = '../server/static/'
+IMAGE_DIR = 'img/'
 
 
 # HELPERS
@@ -113,33 +114,27 @@ def save_genres(song_id, recording):
         db.save('song_genre', (song_id, genres.OTHER))
 
 
-def save_cover_art(release, max_retries=3):  # todo: discard low-res
+def save_cover_art(release, max_retries=3):
     """Save the front cover image for the release `release`. Return
     the saved image's ID, or None if the image isn't available."""
     if release['cover-art-archive']['front'] == 'false':
         return None
 
-    rel_path = IMAGE_DIR + "album/" + get_filename()
-    abs_path = CONTENT_DIR + rel_path
-
     for retry in range(max_retries):
         try:
             image_data = musicbrainzngs.get_image_front(release['id'],
                                                         size="500")
-            with open(abs_path, 'wb') as f:
-                f.write(image_data)
-            return db.save('image', {
-                'path': rel_path,
-            }, release['release-group']['id'])
+            return image.save(image_data, 'catalog')
         except ResponseError as err:
-            if err.cause.code == 404:    # image doesn't exist
+            if err.cause.code == 404:  # image doesn't exist
                 break
-            elif err.cause.code == 503:  # rate limit exceeded
+            elif err.cause.code == 503:
                 print('rate limit exceeded: retrying in {} seconds.'
                       .format(RETRY_SECS))
                 time.sleep(RETRY_SECS)
         except NetworkError:
             break
+    return None
 
 
 def save_track(track, album_id, image_id):
@@ -197,13 +192,23 @@ def save_album(release, label_id, artist_id):
           .format(release['id'], medium['track-count']), flush=True)
 
 
-def save_artist(artist):  # todo: cover image & bio
+def save_artist_image(artist, size):
+    """Save an image of size `size` for artist `artist`."""
+    return image.save_artist_image(artist['name'], size)
+
+
+def save_artist(artist):  # todo: bio
     """Save an artist `artist` and return the artist's ID."""
     saved_id = db.get_saved_id('artist', artist['id'])
     if saved_id:
         return saved_id
-    to_save = (artist['name'], artist['id'])
-    saved_id = db.save('artist', to_save, to_save[1])
+    to_save = {
+        'name': artist['name'],
+        'mbid': artist['id'],
+        'image_id': save_artist_image(artist, 'catalog'),
+        'cover_image_id': save_artist_image(artist, 'cover')
+    }
+    saved_id = db.save('artist', to_save, to_save['mbid'])
     if 'alias-list' in artist:
         for alias in artist['alias-list']:
             db.save('artist_alias', (saved_id, alias['alias']))
@@ -237,27 +242,32 @@ def import_label_releases(label_id, mbid):
     `label_id` and MB id `mbid`, including all associated songs
     and artists."""
     releases = get_label_releases(mbid, 0, 1)
-    sample_range = range(releases['release-count'] - REL_PER_REQ)
+    sample_range = range(releases['release-count'] - REL_PER_PAGE)
     imported = []
 
-    for req_i in range(REQ_PER_LABEL):  # todo: ensure exactly REL_PER
+    while len(imported) < REL_PER_LABEL:
         start = random.choice(sample_range)
         while start in imported:
             start = random.choice(sample_range)
-        batch = get_label_releases(mbid, start, REL_PER_REQ)
-        for release in batch['release-list']:
+        batch = get_label_releases(mbid, start, REL_PER_PAGE)
+        for ri, release in enumerate(batch['release-list']):
+            if release['quality'] not in ['high', 'normal']:
+                continue
             import_release(label_id, release)
-        imported += list(range(start, start + REL_PER_REQ + 1))
+            imported += [start + ri]
+            if len(imported) == REL_PER_LABEL:
+                break
 
 
 def do_import():
     musicbrainzngs.set_useragent("SBUIfy", "0.0.1", "sbuify@gmail.com")
+    logging.getLogger('musicbrainzngs').setLevel(logging.WARNING)
 
     db.init()
 
     # remove existing data
     print('deleting existing data...')
-    delete_images()
+    # delete_images() todo: only delete artist & album images; move to image module
     db.execute_script('truncate.sql')
     print('done.', flush=True)
 

@@ -2,11 +2,12 @@ import { CatalogItem } from "../common/catalog-item";
 import { Image } from "../common/image";
 import { Album } from "../album/album";
 import { User } from "../user/user";
+import { Queueable } from "../player/queueable";
 
 /**
  * Represents a song in the music catalog.
  */
-export class Song extends CatalogItem {
+export class Song extends CatalogItem implements Queueable {
   constructor(
     public id: number,
     public name: string,
@@ -22,5 +23,9 @@ export class Song extends CatalogItem {
     public album: Album
   ) {
     super(id, name, createdDate, active, image, owner);
+  }
+
+  getSongs(): Array<Song> {
+    return [this];
   }
 }

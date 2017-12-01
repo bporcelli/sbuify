@@ -11,7 +11,6 @@ import { BrowseModule } from './browse/browse.module';
 import { ArtistDetailModule } from './artist/artist-detail.module';
 import { PlaylistDetailModule } from './playlist/playlist-detail.module';
 import { SongsModule } from './songs/songs.module';
-import { PlayQueueModule } from './play-queue/play-queue.module';
 import { SearchModule } from './search/search.module';
 import { GuestModule } from './guest/guest.module';
 import { ConcertsModule } from './concerts/concerts.module';
@@ -25,6 +24,7 @@ import { AuthInterceptor } from "./auth/auth-interceptor.";
 import { APIModule } from "./api/api.module";
 import { GenreService } from "./browse/genres/genre.service";
 import { AlbumModule } from "./album/album.module";
+import { PlayerModule } from "./player/player.module";
 
 @NgModule({
   declarations: [
@@ -42,8 +42,8 @@ import { AlbumModule } from "./album/album.module";
     PlaylistDetailModule,
     SongsModule,
     AlbumModule,
-    PlayQueueModule,
     SearchModule,
+    PlayerModule,
     GuestModule,
     ConcertsModule,
     SettingsModule,

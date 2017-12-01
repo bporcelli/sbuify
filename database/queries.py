@@ -60,8 +60,20 @@ VALUES      (%s,
 
 insert_image = '''
 INSERT INTO image
-            (path)
-VALUES      (%(path)s);
+            (width,
+             height)
+VALUES      (%(width)s,
+             %(height)s);
+'''
+
+insert_image_size = '''
+INSERT INTO image_sizes
+            (`image_id`,
+             `size`,
+             `path`)
+VALUES      (%(image_id)s,
+             %(size)s,
+             %(path)s);
 '''
 
 insert_label = '''
@@ -81,9 +93,13 @@ VALUES      (%(name)s);
 insert_artist = '''
 INSERT INTO artist
             (name,
-             mbid)
-VALUES      (%s,
-             %s);
+             mbid,
+             image_id,
+             cover_image_id)
+VALUES      (%(name)s,
+             %(mbid)s,
+             %(image_id)s,
+             %(cover_image_id)s);
 '''
 
 insert_artist_album = '''

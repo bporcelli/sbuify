@@ -17,15 +17,15 @@
         <div *ngIf="results | async">
           <table class="table table-hover" id="songs_table">
             <thead class="thead-inverse">
-            <tr>
-              <th class="actions"></th>
-              <th class="title">Title</th>
-              <th class="artist">Artist</th>
-              <th class="album">Album</th>
-              <th class="duration">
-                <i class="fa fa-lg fa-clock-o" title="Duration"></i>
-              </th>
-            </tr>
+              <tr>
+                <th class="actions"></th>
+                <th class="title">Title</th>
+                <th class="artist">Artist</th>
+                <th class="album">Album</th>
+                <th class="duration">
+                  <i class="fa fa-lg fa-clock-o" title="Duration"></i>
+                </th>
+              </tr>
             </thead>
             <tbody *ngIf="results.value.length > 0 || pending; else emptyTableTemplate">
               <tr *ngFor="let song of results.value">

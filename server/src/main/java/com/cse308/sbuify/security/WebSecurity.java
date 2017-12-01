@@ -48,6 +48,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.POST, CHANGE_PASS_URL).permitAll()
                     // static images are publicly accessible
                     .antMatchers(HttpMethod.GET, IMAGE_PATTERN).permitAll()
+                    // the stream endpoint is publicly accessible (access controls in stream method)
+                    .antMatchers(HttpMethod.GET, STREAM_PATTERN).permitAll()
                     // admin endpoints are only accessible to admins
                     .antMatchers(ADMIN_PATTERN).hasRole("ADMIN")
                     // customer endpoints are only accessible to customers

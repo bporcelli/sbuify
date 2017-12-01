@@ -5,7 +5,7 @@ import { PlayQueueComponent } from './play-queue.component';
 
 import { AuthGuard } from '../auth/auth-guard.service';
 
-const playQueueRoutes: Routes = [
+const routes: Routes = [
     {
         path: 'play-queue',
         component: PlayQueueComponent,
@@ -15,10 +15,10 @@ const playQueueRoutes: Routes = [
 
 @NgModule({
     imports: [
-        RouterModule.forChild(playQueueRoutes)
+        RouterModule.forChild(routes)
     ],
     exports: [
         RouterModule
     ]
 })
-export class PlayQueueRoutingModule {}
+export class PlayerRoutingModule {}

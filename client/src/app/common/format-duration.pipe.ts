@@ -11,8 +11,12 @@ export class FormatDurationPipe implements PipeTransform {
   MINS_PER_HOUR: number = 60;
   SECS_PER_HOUR: number = this.SECS_PER_MIN * 60;
 
-  transform(millis: number): any {
-    let seconds = millis / 1000;
+  transform(time: number, unit = 'ms'): any {
+    let seconds = time;
+
+    if ('ms' == unit) {
+      seconds = time / 1000;
+    }
 
     let secs: number = Math.floor(seconds % this.SECS_PER_MIN);
     let mins: number = Math.floor((seconds / this.SECS_PER_MIN) % this.MINS_PER_HOUR);

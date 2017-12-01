@@ -8,18 +8,18 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonRoutingModule } from './common-routing.module';
 
 import { NavbarComponent } from './navbar.component';
-import { PlaybarComponent } from './playbar.component';
 import { LeftSidebarComponent } from './left-sidebar.component';
 import { UpgradeAccountComponent } from './upgrade-account.component';
 import { CreatePlaylistComponent } from './create-playlist.component';
+import { FormatDurationPipe } from "./format-duration.pipe";
 
 @NgModule({
   declarations: [
     NavbarComponent,
-    PlaybarComponent,
     LeftSidebarComponent,
     UpgradeAccountComponent,
-    CreatePlaylistComponent
+    CreatePlaylistComponent,
+    FormatDurationPipe
   ],
   imports: [
     CommonRoutingModule,
@@ -30,8 +30,8 @@ import { CreatePlaylistComponent } from './create-playlist.component';
   ],
   exports: [
     NavbarComponent,
-    PlaybarComponent,
-    LeftSidebarComponent
+    LeftSidebarComponent,
+    FormatDurationPipe
   ]
 })
 export class CommonModule {}
