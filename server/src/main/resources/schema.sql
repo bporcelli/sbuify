@@ -1067,10 +1067,11 @@ DROP TABLE IF EXISTS `playlist_songs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `playlist_songs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `playlist_id` int(11) NOT NULL,
   `song_id` int(11) NOT NULL,
   `date_saved` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`playlist_id`,`song_id`),
+  PRIMARY KEY (`id`),
   KEY `song_id` (`song_id`),
   CONSTRAINT `playlist_songs_ibfk_1` FOREIGN KEY (`playlist_id`) REFERENCES `playlist` (`id`),
   CONSTRAINT `playlist_songs_ibfk_2` FOREIGN KEY (`song_id`) REFERENCES `song` (`id`)
