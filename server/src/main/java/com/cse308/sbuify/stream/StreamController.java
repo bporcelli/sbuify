@@ -1,7 +1,7 @@
 package com.cse308.sbuify.stream;
 
 import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.customer.preferences.Preferences;
+import com.cse308.sbuify.customer.preferences.PreferenceService;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.song.SongQuality;
@@ -40,6 +40,9 @@ public class StreamController {
 
     @Autowired
 	private AuthFacade authFacade;
+
+    @Autowired
+    private PreferenceService prefService;
 
 	/**
 	 * Record a stream by the authenticated customer.
@@ -80,7 +83,7 @@ public class StreamController {
 		SongQuality quality = SongQuality.WORST;
 
         boolean premium = cust.isPremium();
-        boolean hq = cust.getPreference(Preferences.HQ_STREAMING, Boolean.class);
+        boolean hq = prefService.get(cust, "hq_streaming", Boolean.class);
 
         if (premium && hq) {
             quality = SongQuality.BEST;
@@ -97,7 +100,7 @@ public class StreamController {
         }
 
         // return file bytes
-        return ResponseEntity.ok().body(resource);  // todo: headers?
+        return ResponseEntity.ok().body(resource);
 	}
 
     private User getUserFromToken(String token) {

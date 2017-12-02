@@ -2,17 +2,12 @@ package com.cse308.sbuify.customer.preferences;
 
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.user.UserRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -23,46 +18,50 @@ public class PreferenceController {
     private AuthFacade authFacade;
 
     @Autowired
-    private UserRepository userRepository;
-	// todo: handlers for all customer preference endpoints (get preferences from customer object)
+    private PreferenceService prefService;
 
     /**
-     * Get user preferences
-     * @return HTTP.OK with preferences in JSON body, HTTP.BAD_REQUEST, cannot process map<String,String>
+     * Get user preferences.
+     * @return an OK response with the user's preferences in the body on success.
      */
     @GetMapping
-    public @ResponseBody Map<String,String> getPreferences(){
+    public @ResponseBody Map<String, String> getPreferences() {
         Customer customer = (Customer) authFacade.getCurrentUser();
-        Map<String, String> preferences = new HashMap<>();
-        return preferences;
-
+        return prefService.getAll(customer);
     }
 
     /**
-     * Replace user preference with new preferences
-     * @param newPreferences
-     * @return HTTP.OK when successful
+     * Bulk update user preferences.
+     * @param newPreferences Map from preference keys to new preference values.
+     * @return an empty 200 response on success.
      */
     @PutMapping
-    public ResponseEntity<?> replacePreference(@RequestBody Map<String,String> newPreferences){
+    public ResponseEntity<?> updatePreferences(@RequestBody Map<String, String> newPreferences) {
         Customer customer = (Customer) authFacade.getCurrentUser();
-        customer.setPreferences(newPreferences);
-        userRepository.save(customer);
+        for (String key: newPreferences.keySet()) {
+            try {
+                prefService.set(customer, key, newPreferences.get(key));
+            } catch (PreferenceException ex) {  // invalid preference key/val
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
-     * Replace a specific key with a specified value
-     * @param key
-     * @param value
-     * @return HTTP.OK when successful
+     * Update an individual user preference.
+     * @param key Preference key.
+     * @param value Preference value.
+     * @return an empty 200 response on success.
      */
     @PutMapping(path = "/{key}")
-    public ResponseEntity<?> replacePreference(@PathVariable String key, @RequestBody String value){
+    public ResponseEntity<?> updatePreference(@PathVariable String key, @RequestBody String value) {
         Customer customer = (Customer) authFacade.getCurrentUser();
-        Map<String, String> preferences = customer.getPreferences();
-        preferences.replace(key, value);
-        userRepository.save(customer);
+        try {
+            prefService.set(customer, key, value);
+        } catch (PreferenceException ex) {  // bad preference key
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

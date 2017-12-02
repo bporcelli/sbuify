@@ -2,38 +2,20 @@ package com.cse308.sbuify.customer;
 
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.Followable;
-import com.cse308.sbuify.customer.preferences.Language;
-import com.cse308.sbuify.customer.preferences.Preferences;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hibernate.annotations.Fetch;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.util.*;
 
 @Entity
 public class Customer extends User implements Followable {
-
-	// Default preferences
-	// todo: better way to handle this?
-	private final static Map<String, String> DEFAULT_PREFS = new HashMap<>();
-
-	static {
-		DEFAULT_PREFS.put(Preferences.HQ_STREAMING, "false");
-		DEFAULT_PREFS.put(Preferences.LANGUAGE, Language.ENGLISH.name());
-	}
 
 	// Authorities granted to customers
 	private final static Collection<GrantedAuthority> AUTHORITIES = new ArrayList<>();
@@ -66,14 +48,6 @@ public class Customer extends User implements Followable {
 	@NotNull
 	@JsonIgnore
 	private Playlist library;
-
-
-	@ElementCollection(fetch = FetchType.EAGER)
-	@MapKeyColumn(name = "PREF_KEY")
-	@Column(name = "PREF_VALUE")
-	@CollectionTable(name = "customer_preferences")
-	@JsonIgnore
-	private Map<String, String> preferences = DEFAULT_PREFS;
 
 	// Profile image for customer. When customer is updated/deleted, cascade.
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -192,37 +166,6 @@ public class Customer extends User implements Followable {
     }
 
     /**
-     * Get a preference with the given name and type.
-     */
-    public <T> T getPreference(String prefKey, Class<T> clazz) {
-        String prefVal = preferences.get(prefKey);
-
-        if (prefVal == null) { // use default value
-            prefVal = DEFAULT_PREFS.get(prefKey);
-        }
-
-        try {
-            ObjectReader objectMapper = new ObjectMapper().readerFor(clazz);
-            return objectMapper.readValue(prefVal);
-        } catch (IOException ex) {
-            return null;
-        }
-    }
-
-    /**
-     * Set a preference with the given name and type.
-     */
-    public <T> void setPreference(String prefKey, T prefVal, Class<T> clazz) {
-        ObjectWriter objectMapper = new ObjectMapper().writerFor(clazz);
-
-        try {
-            preferences.put(prefKey, objectMapper.writeValueAsString(prefVal));
-        } catch (JsonProcessingException ex) {
-            // better way to handle?
-        }
-    }
-
-    /**
 	 * Getters and setters.
 	 */
 	public String getFirstName() {
@@ -282,11 +225,7 @@ public class Customer extends User implements Followable {
 	}
 
 	public Map<String, String> getPreferences() {
-		return preferences;
-	}
-
-	public void setPreferences(Map<String, String> preferences) {
-		this.preferences = preferences;
+		return new HashMap<>();
 	}
 
 	@Override

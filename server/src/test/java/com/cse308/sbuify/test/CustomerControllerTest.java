@@ -5,7 +5,7 @@ import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.common.Followable;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.customer.preferences.Language;
-import com.cse308.sbuify.customer.preferences.Preferences;
+import com.cse308.sbuify.customer.preferences.PreferenceService;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistSong;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
@@ -28,6 +28,9 @@ public class CustomerControllerTest extends AuthenticatedTest {
 
     @Autowired
     private ArtistRepository artistRepository;
+
+    @Autowired
+    private PreferenceService prefService;
 
     @Test
     public void follow() {
@@ -169,8 +172,8 @@ public class CustomerControllerTest extends AuthenticatedTest {
      *  Get Customer Library test
      */
     @Test
-    public void getLibrary(){
-        Customer customer = (Customer) userRepository.findByEmail(getEmail()).get();
+    public void getLibrary() {
+        Customer customer = (Customer) user;
 
         ResponseEntity<List<PlaylistSong>> response =
                 restTemplate.exchange("http://localhost:" + port + "/api/customer/songs", HttpMethod.GET, null, new ParameterizedTypeReference<List<PlaylistSong>>() {});
@@ -189,89 +192,82 @@ public class CustomerControllerTest extends AuthenticatedTest {
     }
 
     /**
-     *
-     *  Get Customer Preferences
+     * Get Customer preferences.
      */
     @Test
-    public void getPreferences(){
-        Customer customer = (Customer) userRepository.findByEmail(getEmail()).get();
+    public void getPreferences() {
+        Customer customer = (Customer) user;
 
-        ResponseEntity<Map> response =
-                restTemplate.exchange("/api/customer/preferences", HttpMethod.GET, null, Map.class);
+        ResponseEntity<Map<String, String>> response =
+                restTemplate.exchange("/api/customer/preferences", HttpMethod.GET, null,
+                                      new ParameterizedTypeReference<Map<String, String>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Map<String,String> responseMap = (Map<String,String>)response.getBody();
-
-        Map<String,String> customerMap = customer.getPreferences();
+        Map<String, String> responseMap = response.getBody();
+        Map<String, String> customerMap = prefService.getAll(customer);
 
         assertEquals(customerMap, responseMap);
     }
 
     /**
-     *  Update customer preference given a new Preference Map
+     * Bulk update customer preferences.
      */
     @Test
-    public void updateAllPreferences(){
-        Map<String,String> newPref = new HashMap<>();
-        newPref.put(Preferences.HQ_STREAMING, "true");
-        newPref.put(Preferences.LANGUAGE, Language.SPANISH.name());
+    public void updateAllPreferences() {
+        Map<String, String> newPref = new HashMap<>();
+
+        // preference values must be valid JSON -- quote them
+        newPref.put("hq_streaming", "\"true\"");
+        newPref.put("language", "\"SPANISH\"");
+
         // send the request
-        HttpEntity<Map<String,String>> request = new HttpEntity<>(newPref);
-        ResponseEntity<?> response =
-                restTemplate.exchange("/api/customer/preferences", HttpMethod.PUT, request, Void.class );
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(newPref);
+        ResponseEntity<Void> response =
+                restTemplate.exchange("/api/customer/preferences", HttpMethod.PUT, request, Void.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Customer customer = (Customer)userRepository.findByEmail(getEmail()).get();
-
-        Map<String,String> customerPref = customer.getPreferences();
+        Customer customer = (Customer) user;
+        Map<String, String> customerPref = prefService.getAll(customer);
 
         assertEquals(newPref, customerPref);
     }
 
     /**
-     *  Update customer preference given a specified key and replacing it with a value
+     * Update an individual customer preference.
      */
     @Test
-    public void updatePreferenceKey(){
+    public void updatePreferenceKey() {
         Map<String, String> params = new HashMap<>();
-        params.put("key", Preferences.LANGUAGE);
+        params.put("key", "language");
 
-        Customer customer = getCurrentCustomer();
+        Customer customer = (Customer) user;
 
-        Map<String,String> customerPref = customer.getPreferences();
+        Language current = prefService.get(customer, "language", Language.class);
+        assertNotNull(current);
 
-        String customerPrefValue = customerPref.get(Preferences.LANGUAGE);
-
-        String updateValue = "";
-        if (customerPrefValue.equals(Language.ENGLISH.name())){
-            updateValue = Language.SPANISH.name();
+        Language newLang;
+        if (current.equals(Language.ENGLISH)) {
+            newLang = Language.SPANISH;
         } else{
-            updateValue = Language.ENGLISH.name();
+            newLang = Language.ENGLISH;
         }
-        HttpEntity<String> request = new HttpEntity<>(updateValue);
+        HttpEntity<Language> request = new HttpEntity<>(newLang);
         ResponseEntity<?> response =
-                restTemplate.exchange("/api/customer/preferences/{key}", HttpMethod.PUT, request, Void.class, params );
+                restTemplate.exchange("/api/customer/preferences/{key}", HttpMethod.PUT, request, Void.class, params);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        customer = getCurrentCustomer();
-
-        String language = customer.getPreferences().get(Preferences.LANGUAGE);
-
-        assertEquals(updateValue, language);
-    }
-
-    private Customer getCurrentCustomer(){
-        return  (Customer)userRepository.findByEmail(getEmail()).get();
+        Language language = prefService.get(customer, "language", Language.class);
+        assertEquals(newLang, language);
     }
 
     private Artist getArtistById(Integer id) {
-        Optional<Artist> optionalArtist = artistRepository.findById(FOLLOWED_ARTIST_ID);
+        Optional<Artist> optionalArtist = artistRepository.findById(id);
         assertTrue(optionalArtist.isPresent());
         return optionalArtist.get();
     }
 
     private Customer getCustomerById(Integer id) {
-        Optional<User> optionalUser = userRepository.findById(FOLLOWED_CUSTOMER_ID);
+        Optional<User> optionalUser = userRepository.findById(id);
         assertTrue(optionalUser.isPresent());
         return (Customer) optionalUser.get();
     }
