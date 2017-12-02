@@ -3,16 +3,12 @@ package com.cse308.sbuify.customer;
 import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.security.AuthFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping(path = "/api/customer/play-queue")
 public class PlayQueueController {
-
-    // todo: use ResponseBody unless control over HTTP status code is required
 
     @Autowired
     private PlayQueueRepository pqRepo;
@@ -26,7 +22,7 @@ public class PlayQueueController {
      * @return HTTP response.
      */
     @PutMapping
-    public void updatePlayQueue(@RequestBody PlayQueue newPlayQueue) {
+    public @ResponseBody void updatePlayQueue(@RequestBody PlayQueue newPlayQueue) {
         Customer user = (Customer) authFacade.getCurrentUser();
 
         PlayQueue pq = user.getPlayQueue();
@@ -41,8 +37,8 @@ public class PlayQueueController {
      * @return HTTP response.
      */
     @PostMapping(path = "/add")
-    public void addToPlayQueue(@RequestBody Queueable toAdd,
-                               @RequestParam(required = false, defaultValue = "false") Boolean first) {
+    public @ResponseBody void addToPlayQueue(@RequestBody Queueable toAdd,
+                                             @RequestParam(required = false, defaultValue = "false") Boolean first) {
         Customer cust = (Customer) authFacade.getCurrentUser();
         PlayQueue pq = cust.getPlayQueue();
 
@@ -51,7 +47,6 @@ public class PlayQueueController {
         } else {
             pq.addAll(toAdd.getItems());
         }
-
         pqRepo.save(pq);
     }
 
@@ -61,7 +56,7 @@ public class PlayQueueController {
      * @return HTTP response.
      */
     @PostMapping(path = "/remove")
-    public void removeFromPlayQueue(@RequestBody Queueable toAdd) {
+    public @ResponseBody void removeFromPlayQueue(@RequestBody Queueable toAdd) {
         Customer cust = (Customer) authFacade.getCurrentUser();
 
         PlayQueue pq = cust.getPlayQueue();
