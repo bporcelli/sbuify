@@ -7,4 +7,5 @@ import { Album } from "./album";
 })
 export class AlbumListComponent {
   @Input() albums: Array<Album>;
+  @Input() pending: boolean;
 }

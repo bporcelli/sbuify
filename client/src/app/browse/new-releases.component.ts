@@ -11,7 +11,7 @@ export class NewReleasesComponent implements OnInit {
   page: number = 0;
   more: boolean = true;
   pending: boolean = false;
-  albums: BehaviorSubject<Array<Album>> = new BehaviorSubject(null);
+  albums: BehaviorSubject<Array<Album>> = new BehaviorSubject([]);
 
   constructor(private as: AlbumService) {}
 

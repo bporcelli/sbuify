@@ -1,0 +1,40 @@
+<table class="table table-hover" id="songs_table">
+  <thead class="thead-inverse">
+  <tr>
+    <th class="actions"></th>
+    <th class="title">Title</th>
+    <th class="artist">Artist</th>
+    <th class="album">Album</th>
+    <th class="duration">
+      <i class="fa fa-lg fa-clock-o" title="Duration"></i>
+    </th>
+  </tr>
+  </thead>
+  <tbody *ngIf="songs.length > 0 || pending; else emptyTableTemplate">
+  <tr *ngFor="let song of songs">
+    <td class="actions">
+      <button type="button" class="btn btn-link play-button" title="Play">
+        <i class="fa fa-lg fa-fw fa-play-circle-o"></i>
+      </button>
+      <button type="button" class="btn btn-link remove-song" title="Remove">
+        <i class="fa fa-lg fa-fw fa-check"></i>
+      </button>
+    </td>
+    <td class="title">{{ song.name }}</td>
+    <td class="artist">
+      <a [routerLink]="['/artist', song.album.artist.id]">{{ song.album.artist.name }}</a>
+    </td>
+    <td class="album">
+      <a href="#">{{ song.album.name }}</a>
+    </td>
+    <td class="duration">
+      {{ song.length | formatDuration }}
+    </td>
+  </tr>
+  </tbody>
+  <ng-template #emptyTableTemplate>
+    <tr>
+      <td colspan="5">No results found.</td>
+    </tr>
+  </ng-template>
+</table>

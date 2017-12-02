@@ -5,6 +5,8 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SearchComponent } from "./search.component";
 import { SearchRoutingModule } from './search-routing.module';
 import { CommonModule as ACommonModule } from "../common/common.module";
+import { SongsModule } from "../songs/songs.module";
+import { AlbumModule } from "../album/album.module";
 
 @NgModule({
   imports: [
@@ -12,6 +14,8 @@ import { CommonModule as ACommonModule } from "../common/common.module";
     SearchRoutingModule,
     CommonModule,
     ACommonModule,
+    SongsModule,
+    AlbumModule,
     InfiniteScrollModule
   ],
   declarations: [

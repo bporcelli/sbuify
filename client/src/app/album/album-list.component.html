@@ -1,9 +1,15 @@
-<div *ngFor="let album of albums" class="col-sm-6 col-lg-4 col-xl-2 playlist">
-  <a class="playlist-image" href="#">
-    <img class="img-fluid" src="/static/i/{{ album.image ? album.image.id : 1 }}/catalog" alt="{{ album.name }}" width="500" height="500">
-  </a>
-  <h3 class="h6">
-    <a href="#">{{ album.name | truncate:27 }}</a>
-  </h3>
-  <span class="text-muted">{{ album.releaseDate | date:"y" }}</span>
+<div class="row" *ngIf="albums.length > 0 || pending; else noResults">
+  <div *ngFor="let album of albums" class="col-sm-6 col-lg-4 col-xl-2 playlist">
+    <a class="playlist-image" href="#">
+      <img class="img-fluid" src="/static/i/{{ album.image ? album.image.id : 1 }}/catalog" alt="{{ album.name }}" width="500" height="500">
+    </a>
+    <h3 class="h6">
+        <a href="#" title="{{ album.name }}">{{ album.name | truncate:25 }}</a>
+    </h3>
+    <span class="text-muted">{{ album.releaseDate | date:"y" }}</span>
+  </div>
 </div>
+
+<ng-template #noResults>
+  <p>No results found.</p>
+</ng-template>
