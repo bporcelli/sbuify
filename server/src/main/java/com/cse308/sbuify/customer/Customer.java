@@ -224,10 +224,6 @@ public class Customer extends User implements Followable {
 		this.profileImage = profileImage;
 	}
 
-	public Map<String, String> getPreferences() {
-		return new HashMap<>();
-	}
-
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
 		return AUTHORITIES;
