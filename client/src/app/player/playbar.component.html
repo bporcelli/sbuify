@@ -1,10 +1,10 @@
 <!-- BEGIN PLAYBAR -->
-<div class="navbar fixed-bottom navbar-dark bg-dark" id="play-bar">
-    <a class="navbar-brand" *ngIf="song | async as song">
+<div class="navbar fixed-bottom navbar-dark bg-dark" id="play-bar" *ngIf="song | async as song">
+    <a class="navbar-brand" *ngIf="song">
         <img width="55" height="55" src="/static/i/{{ song.image ? song.image.id : 1 }}/thumbnail" alt="{{ song.album.name }}" title="{{ song.album.name }}">
     </a>
 
-    <ul class="song-details" *ngIf="song | async as song">
+    <ul class="song-details" *ngIf="song">
         <li class="song-title">
             <a href="#">{{ song.name }}</a>
         </li>
@@ -26,8 +26,8 @@
                 </button>
             </li>
             <li>
-                <button class="btn btn-link" [ngClass]="player.paused ? 'paused' : 'playing'" title="Play/Pause" id="play" (click)="togglePlayback()" [disabled]="!song">
-                    <i class="fa fa-fw fa-2x"></i>
+                <button class="btn btn-link" title="Play/Pause" id="play" (click)="togglePlayback()" [disabled]="!song">
+                    <i class="fa fa-fw fa-2x" [ngClass]="getPlayButtonClass()"></i>
                 </button>
             </li>
             <li>
@@ -46,7 +46,7 @@
             <span id="current-time" [ngClass]="!song ? 'text-muted' : ''">{{ time | async | formatDuration:'s' }}</span>
 
             <div id="playback-track" (mousedown)="startSeek()" #progressbar>
-                <div id="playback-slider" [style.width]="sliderWidth | async"></div>
+                <div id="playback-slider" [style.width]="sliderWidth"></div>
             </div>
 
             <span id="total-time" *ngIf="song">{{ duration | async | formatDuration:'s' }}</span>
@@ -61,7 +61,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link pr-0 pl-2" href="#" id="mute-toggle" title="Mute" (click)="toggleMute($event)">
-                <i class="fa fa-lg fa-fw" [ngClass]="player.muted ? 'fa-volume-off' : 'fa-volume-up'"></i>
+                <i class="fa fa-lg fa-fw" [ngClass]="{ 'fa-volume-off': muted, 'fa-volume-up': !muted }"></i>
             </a>
         </li>
     </ul>
@@ -69,7 +69,7 @@
     <div class="form-inline">
         <input type="range" class="nav-link px-0 ml-2" id="volume-control" min="0" max="1" step="0.01"
                (input)="setVolume($event.target.value)"
-               [hidden]="player.muted">
+               [hidden]="muted">
     </div>
 </div>
 <!-- END PLAYBAR -->

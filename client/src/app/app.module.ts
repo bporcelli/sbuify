@@ -25,6 +25,7 @@ import { APIModule } from "./api/api.module";
 import { GenreService } from "./browse/genres/genre.service";
 import { AlbumModule } from "./album/album.module";
 import { PlayerModule } from "./player/player.module";
+import { PlayerService } from "./player/player.service";
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import { PlayerModule } from "./player/player.module";
     PlaylistService,
     SearchService,
     GenreService,
+    PlayerService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

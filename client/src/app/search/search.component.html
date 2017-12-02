@@ -17,12 +17,12 @@
   <ngb-tabset (tabChange)="onTabChange($event)">
     <ngb-tab id="song" title="Songs">
       <ng-template ngbTabContent>
-        <div song-table [songs]="results | async"></div>
+        <div song-table [songs]="results | async" [pending]="pending"></div>
       </ng-template>
     </ngb-tab>
     <ngb-tab id="album" title="Albums">
       <ng-template ngbTabContent>
-        <div album-list [albums]="results | async"></div>
+        <div album-list [albums]="results | async" [pending]="pending"></div>
       </ng-template>
     </ngb-tab>
     <ngb-tab id="artist" title="Artists">

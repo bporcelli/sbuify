@@ -315,10 +315,6 @@ tr.now-playing {
 
     .play-button {
         visibility: visible;
-
-        ::before {
-            content: "\f28c"; /* Pause */
-        }
     }
 }
 
