@@ -1,20 +1,21 @@
 package com.cse308.sbuify.playlist;
 
-import java.util.*;
+import com.cse308.sbuify.common.CatalogItem;
+import com.cse308.sbuify.common.Followable;
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.image.ImageI;
+import com.cse308.sbuify.song.Song;
+import com.cse308.sbuify.user.User;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import com.cse308.sbuify.common.CatalogItem;
-import com.cse308.sbuify.common.Followable;
-import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.user.User;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -22,37 +23,37 @@ import org.hibernate.search.annotations.Indexed;
 @Indexed
 public class Playlist extends CatalogItem implements PlaylistComponent, Followable { 
 
-    // todo: clean up javadocs
+    // todo: refactor to eliminate eager fetching of followers
 
-    // Sort position
+    /** Sort position. */
     @NotNull
     private Integer position;
 
-    // Parent folder, if any
+    /** Parent folder, if any. */
     @OneToOne
     private PlaylistFolder parentFolder;
 
-    // Description (nullable)
+    /** Playlist description. */
     private String description;
 
-    // Is the playlist hidden from public view?
+    /** Is the playlist hidden from public view? */
     @NotNull
     @Field
     private Boolean hidden;
 
-    // Songs in playlist (zero or more)
-    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.EAGER)
+    /** Songs in playlist (zero or more). */
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<PlaylistSong> songs = new ArrayList<>();
 
     /** Playlist followers */
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
     private Set<Customer> followers = new HashSet<>();
 
     public Playlist() {
     }
 
-    public Playlist(@NotEmpty String name, User owner, Image image, @NotNull Boolean hidden, @NotNull Integer pos) {
+    public Playlist(@NotEmpty String name, User owner, ImageI image, @NotNull Boolean hidden, @NotNull Integer pos) {
         super(name, owner, image);
         
         // parent is by default null
@@ -126,25 +127,9 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
         return false;
     }
 
-    public Boolean getHidden() {
-        return hidden;
-    }
-
     public void setSongs(List<PlaylistSong> songs) {
         this.songs = songs;
     }
-
-    public Set<Customer> getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(Set<Customer> followers) {
-        this.followers = followers;
-    }
-
-    /*
-     * Specific methods for playlist
-     */
 
     /**
      * Add a song to this playlist.
@@ -170,23 +155,5 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
             }
         }
         return null;
-    }
-
-    public List<PlaylistSong> addAll(Collection<Song> songs) {
-        List<PlaylistSong> ssCollection = new ArrayList<>();
-        for (Song s : songs) {
-            PlaylistSong ret = add(s);
-            ssCollection.add(ret);
-        }
-        return ssCollection;
-    }
-
-    public List<PlaylistSong> removeAll(Collection<Song> songs) {
-        List<PlaylistSong> ssCollection = new ArrayList<>();
-        for (Song s : songs) {
-            PlaylistSong ret = remove(s);
-            ssCollection.add(ret);
-        }
-        return ssCollection;
     }
 }

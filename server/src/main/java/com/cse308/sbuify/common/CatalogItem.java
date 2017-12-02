@@ -1,6 +1,7 @@
 package com.cse308.sbuify.common;
 
 import com.cse308.sbuify.image.Image;
+import com.cse308.sbuify.image.ImageI;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,19 +41,17 @@ public abstract class CatalogItem implements Serializable {
     @NotNull
     private Boolean active = true;
 
-    // TODO: set cascade actions
-
     @OneToOne
     @IndexedEmbedded(includeEmbeddedObjectId = true, indexNullAs = DEFAULT_NULL_TOKEN)
     private User owner;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Image image;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = Image.class)
+    private ImageI image;
 
     public CatalogItem() {
     }
 
-    public CatalogItem(@NotEmpty String name, User owner, Image image) {
+    public CatalogItem(@NotEmpty String name, User owner, ImageI image) {
         this.name = name;
         this.owner = owner;
         this.image = image;
@@ -106,11 +105,11 @@ public abstract class CatalogItem implements Serializable {
         this.owner = owner;
     }
 
-    public Image getImage() {
+    public ImageI getImage() {
         return image;
     }
 
-    public void setImage(Image image) {
+    public void setImage(ImageI image) {
         this.image = image;
     }
 

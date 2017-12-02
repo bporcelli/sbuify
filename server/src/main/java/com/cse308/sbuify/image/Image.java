@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-public class Image implements Serializable {
+public class Image implements Serializable, ImageI {
 
     @GeneratedValue
     @Id

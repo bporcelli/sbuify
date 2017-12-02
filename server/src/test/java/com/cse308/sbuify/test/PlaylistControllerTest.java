@@ -1,6 +1,8 @@
 package com.cse308.sbuify.test;
 
 import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.image.Base64Image;
+import com.cse308.sbuify.image.StorageService;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistRepository;
 import com.cse308.sbuify.song.SongRepository;
@@ -8,10 +10,15 @@ import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import com.cse308.sbuify.user.UserRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Base64Utils;
+import org.springframework.util.StreamUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +28,16 @@ import static org.junit.Assert.assertTrue;
 
 public class PlaylistControllerTest extends AuthenticatedTest {
 
+    private static final String TEST_IMAGE = "test-image.jpg";
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private SongRepository songRepository;
+
+    @Autowired
+    private StorageService storageService;
 
     @Autowired
     private PlaylistRepository playlistRepository;
@@ -52,28 +64,34 @@ public class PlaylistControllerTest extends AuthenticatedTest {
      * Create a playlist
      */
     @Test
-    public void createPlaylistTest() {
+    public void createPlaylistTest() throws IOException {
         Customer customer = (Customer) user;
 
+        // build playlist
+        Resource resource = storageService.loadAsResource(TEST_IMAGE);
+
+        InputStream stream = resource.getInputStream();
+        byte[] bytes = StreamUtils.copyToByteArray(stream);
+        stream.close();
+
+        Base64Image image = new Base64Image();
+        image.setDataURL("data:image/jpeg;base64," + Base64Utils.encodeToString(bytes));
+        Playlist reqObj = new Playlist( "New Playlist", customer, image, false, 0);
+        reqObj.setDescription("This is for testing. Lets see if it works");
+
+        // attempt to create playlist
         List<Playlist> ownedPlaylists = playlistRepository.findAllByOwner_Id(customer.getId());
         int previousSize = ownedPlaylists.size();
-
-        String name = "New Playlist";
-        String description = "This is for testing. Lets see if it works";
-
-        Playlist reqObj = new Playlist(name, customer, null, false, 0);
-        reqObj.setDescription(description);
 
         HttpEntity<Playlist> request = new HttpEntity<>(reqObj);
         ResponseEntity<Playlist> response = restTemplate.postForEntity("/api/playlists", request, Playlist.class);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
+        // check: does new playlist count equal old count + 1?
         ownedPlaylists = playlistRepository.findAllByOwner_Id(customer.getId());
-
-        // this more clearly captures what we're testing for
         assertEquals(ownedPlaylists.size(), previousSize + 1);
 
-        // if the saved playlist ID occurs in ownedPlaylists, the test succeeded -- this is enough for our purposes
+        // check: is saved playlist in ownedPlaylists?
         assertTrue(ownedPlaylists.contains(response.getBody()));
     }
 
