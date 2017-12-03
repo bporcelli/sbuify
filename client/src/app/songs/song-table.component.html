@@ -11,9 +11,9 @@
   </tr>
   </thead>
   <tbody *ngIf="songs.length > 0 || pending; else emptyTableTemplate">
-    <tr *ngFor="let song of songs" [ngClass]="{ 'now-playing': isPlaying(song, currentSong) }">
+    <tr *ngFor="let song of songs; index as i" [ngClass]="{ 'now-playing': isPlaying(song, currentSong) }">
       <td class="actions">
-        <button type="button" class="btn btn-link play-button" title="Play" (click)="togglePlayback(song, currentSong)">
+        <button type="button" class="btn btn-link play-button" title="Play" (click)="togglePlayback(i, currentSong)">
           <i class="fa fa-lg fa-fw" [ngClass]="getPlayButtonClass(song, currentSong)"></i>
         </button>
         <button type="button" class="btn btn-link remove-song" title="Remove">

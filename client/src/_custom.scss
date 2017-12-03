@@ -46,7 +46,7 @@ ul.button-list li {
     color: #990000;
 }
 
-.more-dropdown .dropdown-toggle::after {
+.dropdown-toggle.no-arrow::after {
     display: none;
 }
 
@@ -167,11 +167,36 @@ h2.playlist-list-title {
 }
 
 .playlist-image {
-    display: block;
+  display: block;
+  position: relative;
+  margin-bottom: $spacer / 1.25;
 }
 
-.playlist-image > img {
-    margin-bottom: $spacer / 1.25;
+.playlist-image .hover-actions {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6);
+
+  &::before {
+    content: ' ';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+  }
+
+  .btn-link, .btn-link:hover {
+    padding: 0;
+    color: #fff;
+  }
+}
+
+.playlist-image:hover .hover-actions {
+  display: block;
 }
 
 // Bottom Pane (Play Bar)
@@ -183,8 +208,17 @@ h2.playlist-list-title {
     color: $sbu-red;
 }
 
-#now-playing img, #now-playing ul {
-    float: left;
+#now-playing a, #now-playing ul {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#now-playing ul {
+  margin: 0;
+}
+
+#now-playing {
+  width: 250px;
 }
 
 ul.song-details {

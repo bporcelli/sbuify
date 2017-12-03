@@ -2,6 +2,23 @@
   <div *ngFor="let album of albums" class="col-sm-6 col-lg-4 col-xl-2 playlist">
     <a class="playlist-image" href="#">
       <img class="img-fluid" src="/static/i/{{ album.image ? album.image.id : 1 }}/catalog" alt="{{ album.name }}" width="500" height="500">
+      <div class="hover-actions">
+        <button type="button" class="btn btn-link remove-song" title="Remove" (click)="$event.preventDefault();">
+          <i class="fa fa-lg fa-fw fa-check"></i>
+        </button>
+        <button type="button" class="btn btn-link" title="Play" (click)="playAlbum($event, album)">
+          <i class="fa fa-3x fa-fw fa-play-circle-o"></i>
+        </button>
+        <ng-container ngbDropdown>
+          <button type="button" class="btn btn-link no-arrow" title="More" ngbDropdownToggle (click)="$event.preventDefault();">
+            <i class="fa fa-lg fa-ellipsis-h"></i>
+            <span class="sr-only">More</span>
+          </button>
+          <div ngbDropdownMenu>
+            <a class="dropdown-item" href="#">Add to Play Queue</a>
+          </div>
+        </ng-container>
+      </div>
     </a>
     <h3 class="h6">
         <a href="#" title="{{ album.name }}">{{ album.name | truncate:25 }}</a>

@@ -1,17 +1,19 @@
 <!-- BEGIN PLAYBAR -->
-<div class="navbar fixed-bottom navbar-dark bg-dark" id="play-bar" *ngIf="song | async as song">
-    <a class="navbar-brand" *ngIf="song">
-        <img width="55" height="55" src="/static/i/{{ song.image ? song.image.id : 1 }}/thumbnail" alt="{{ song.album.name }}" title="{{ song.album.name }}">
-    </a>
+<div class="navbar fixed-bottom navbar-dark bg-dark" id="play-bar">
+    <div id="now-playing" *ngIf="song | async as song">
+      <a class="navbar-brand"> <!-- todo: get thumbnail size image instead -->
+        <img width="55" height="55" src="/static/i/{{ song.image ? song.image.id : 1 }}/catalog" alt="{{ song.album.name }}" title="{{ song.album.name }}">
+      </a>
 
-    <ul class="song-details" *ngIf="song">
+      <ul class="song-details">
         <li class="song-title">
-            <a href="#">{{ song.name }}</a>
+          <a href="#" title="{{ song.name }}">{{ song.name | truncate:20 }}</a>
         </li>
         <li>
-            <a [routerLink]="['/artist', song.album.artist.id]">{{ song.album.artist.name }}</a>
+          <a [routerLink]="['/artist', song.album.artist.id]" title="{{ song.album.artist.name }}">{{ song.album.artist.name | truncate:20 }}</a>
         </li>
-    </ul>
+      </ul>
+    </div>
 
     <div class="mx-auto form-inline flex-column" id="playback-controls-wrap">
         <ul class="flex-row" id="playback-controls">
@@ -21,17 +23,17 @@
                 </button>
             </li>
             <li>
-                <button class="btn btn-link" title="Previous" id="prev-track" [disabled]="!hasPrev()">
+                <button class="btn btn-link" title="Previous" id="prev-track" [disabled]="!hasPrev()" (click)="previous()">
                     <i class="fa fa-fw fa-step-backward"></i>
                 </button>
             </li>
             <li>
-                <button class="btn btn-link" title="Play/Pause" id="play" (click)="togglePlayback()" [disabled]="!song">
+                <button class="btn btn-link" title="Play/Pause" id="play" (click)="togglePlayback()" [disabled]="!hasSong()">
                     <i class="fa fa-fw fa-2x" [ngClass]="getPlayButtonClass()"></i>
                 </button>
             </li>
             <li>
-                <button class="btn btn-link" title="Next" id="next-track" [disabled]="!hasNext()">
+                <button class="btn btn-link" title="Next" id="next-track" [disabled]="!hasNext()" (click)="next()">
                     <i class="fa fa-fw fa-step-forward"></i>
                 </button>
             </li>
@@ -43,13 +45,13 @@
         </ul>
 
         <div class="flex-row" id="playback-progress">
-            <span id="current-time" [ngClass]="!song ? 'text-muted' : ''">{{ time | async | formatDuration:'s' }}</span>
+            <span id="current-time" *ngIf="hasSong()">{{ time | async | formatDuration:'s' }}</span>
 
             <div id="playback-track" (mousedown)="startSeek()" #progressbar>
                 <div id="playback-slider" [style.width]="sliderWidth"></div>
             </div>
 
-            <span id="total-time" *ngIf="song">{{ duration | async | formatDuration:'s' }}</span>
+            <span id="total-time" *ngIf="hasSong()">{{ duration | async | formatDuration:'s' }}</span>
         </div>
     </div>
 

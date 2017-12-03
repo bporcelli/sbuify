@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { Song } from "../songs/song";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { PlayQueue } from "./play-queue";
-import { Queueable } from "./queueable";
 import { APIClient } from "../api/api-client.service";
 import { tokenGetter } from "../auth/helpers";
 import { Observable } from 'rxjs/Observable';
+import { SongList } from "app/player/song-list";
+import { PlayQueueService } from "./play-queue.service";
+import { Playable } from "./playable";
 
 @Injectable()
 export class PlayerService {
@@ -16,6 +18,9 @@ export class PlayerService {
   // current song
   song: BehaviorSubject<Song> = new BehaviorSubject(null);
 
+  // current song list
+  playlist: SongList = new SongList([]); // todo: get initial playlist from server?
+
   // current playback time (secs)
   _time: BehaviorSubject<number> = new BehaviorSubject(0);
 
@@ -25,25 +30,15 @@ export class PlayerService {
   // is the player playing?
   _playing: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  // songs up next
-  private queue: Array<Song> = [];
-
-  constructor(private client: APIClient) {
-    this.initPlayQueue();
+  constructor(private client: APIClient, private pqs: PlayQueueService) {
+    this.initSong();
     this.initObservers();
   }
 
-  initPlayQueue(): void {
-    this.client.get<PlayQueue>("/api/customer/play-queue").subscribe(
-      (resp: PlayQueue) => {
-        this.queue = resp.songs;
-        this.next();
-      },
-      (err) => {
-        // todo: display error message
-        console.log('error fetching play queue:', err);
-      }
-    );
+  initSong(): void {
+    this.pqs.get().subscribe(() => {
+      this.next(false);
+    });
   }
 
   initObservers(): void {
@@ -74,13 +69,22 @@ export class PlayerService {
     });
   }
 
-  play(item?: Queueable): void {
-    if (item != null) {  // new song or album is being played
-      this.enqueue(item, true);
+  play(playable?: Playable, index: number = -1): void {
+    // todo: record stream of previous song
+    if (playable != null) {
+      let songs = playable.songs ? playable.songs : [<Song>playable];
+
+      this.playlist = new SongList(songs, index);
       this.next();
+    } else {
+      this.player.play();
     }
+  }
+
+  playInList(list: Array<Song>, index: number) {
+    this.playlist = new SongList(list, index);
+    this.setSong(list[index]);
     this.player.play();
-    // todo: record stream
   }
 
   pause(): void {
@@ -95,34 +99,53 @@ export class PlayerService {
     }
   }
 
-  next(): void {
-    if (this.hasNext()) {
-      let song: Song = this.queue.shift();
+  next(play: boolean = true): void {
+    let queued: Song = this.pqs.next();
 
-      this.song.next(song);
-      this.player.src = '/api/stream/' + song.id + '/?token=' + tokenGetter()();
+    if (queued != null) {  // user has queued one or more songs to play next
+      this.setSong(queued);
+    } else {
+      this.navigate(true);
+    }
+
+    if (play) {
+      this.player.play();
+    }
+  }
+
+  prev(play: boolean = true): void {
+    this.navigate(false);
+
+    if (play) {
+      this.player.play();
+    }
+  }
+
+  setSong(song: Song): void {
+    this.song.next(song);
+    this.player.src = '/api/stream/' + song.id + '/?token=' + tokenGetter()();
+  }
+
+  navigate(next: boolean): void {
+    let song: Song = null;
+
+    if (next) {
+      song = this.playlist.next();
+    } else {
+      song = this.playlist.prev();
+    }
+
+    if (song != null) {
+      this.setSong(song);
     }
   }
 
   hasNext(): boolean {
-    return this.queue.length > 0;
-  }
-
-  prev(): void {
-    // todo
+    return this.playlist.hasNext();
   }
 
   hasPrev(): boolean {
-    return false;
-  }
-
-  enqueue(item: Queueable, front = false) {
-    if (front) {
-      this.queue = item.getSongs().concat(this.queue);
-    } else {
-      this.queue = this.queue.concat(item.getSongs());
-    }
-    // todo: sync with server side
+    return this.playlist.hasPrev();
   }
 
   get time(): BehaviorSubject<number> {

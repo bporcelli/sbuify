@@ -3,11 +3,13 @@ import { Image } from "../common/image";
 import { PlaylistFolder } from "./playlist-folder";
 import { PlaylistSong } from "./playlist-song";
 import { Customer } from "../user/customer";
+import { Playable } from "../player/playable";
+import { Song } from "../songs/song";
 
 /**
  * Playlist model.
  */
-export class Playlist extends CatalogItem {
+export class Playlist extends CatalogItem implements Playable {
   constructor(
     public id: number,
     public name: string,
@@ -19,12 +21,16 @@ export class Playlist extends CatalogItem {
     public parentFolder: PlaylistFolder,
     public description: string,
     public hidden: boolean,
-    public songs: Array<PlaylistSong>
+    private _songs: Array<PlaylistSong>  // todo: will this be an issue when decoding playlists?
   ) {
     super(id, name, createdDate, active, image, owner);
   }
 
   get length(): number {
-    return this.songs.map((x: PlaylistSong) => x.song.length).reduce((acc, curVal) => acc + curVal);
+    return this.songs.map(song => song.length).reduce((acc, curVal) => acc + curVal);
+  }
+
+  get songs(): Array<Song> {
+    return this._songs.map(ps => ps.song);
   }
 }

@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TruncateModule } from 'ng2-truncate';
 import { PlaybarComponent } from "./playbar.component";
 import { PlayerRoutingModule } from "./player-routing.module";
 import { PlayQueueComponent } from "./play-queue.component";
 import { CommonModule as ACommonModule } from "../common/common.module";
+import { SongsModule } from "../songs/songs.module";
 
 @NgModule({
   declarations: [
@@ -11,9 +13,11 @@ import { CommonModule as ACommonModule } from "../common/common.module";
     PlayQueueComponent
   ],
   imports: [
+    PlayerRoutingModule,
     CommonModule,
     ACommonModule,
-    PlayerRoutingModule
+    TruncateModule,
+    SongsModule
   ],
   exports: [
     PlaybarComponent

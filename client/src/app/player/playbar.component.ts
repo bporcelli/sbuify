@@ -9,6 +9,8 @@ import { BehaviorSubject } from "rxjs/BehaviorSubject";
 })
 export class PlaybarComponent {
 
+  // todo: can we avoid susbcribing to song multiple times in the template?
+
   // progress bar
   @ViewChild('progressbar') progress: ElementRef;
 
@@ -18,12 +20,24 @@ export class PlaybarComponent {
     this.ps.toggle();
   }
 
-  hasPrev(): boolean {
-    return this.ps.hasPrev();
+  next(): void {
+    return this.ps.next();
+  }
+
+  previous(): void {
+    return this.ps.prev();
   }
 
   hasNext(): boolean {
     return this.ps.hasNext();
+  }
+
+  hasPrev(): boolean {
+    return this.ps.hasPrev();
+  }
+
+  hasSong(): boolean {
+    return this.song.getValue() != null;
   }
 
   setVolume(volume: number): void {
@@ -63,7 +77,11 @@ export class PlaybarComponent {
   get sliderWidth(): string {
     let curTime = this.time.getValue();
     let duration = this.duration.getValue();
-    return (100 * curTime / duration) + '%';
+    if (!this.hasSong()) {
+      return '0%';
+    } else {
+      return (100 * curTime / duration) + '%';
+    }
   }
 
   /** Update the playback time as the user interacts with the progress bar */
