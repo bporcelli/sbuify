@@ -3,26 +3,25 @@
 <ng-container *ngIf="current | async as current; else playQueueEmpty">
   <div class="queue-section">
     <h2 class="h4">Now Playing</h2>
-
-    <div song-table [songs]="current"></div>
+    <div song-table [playlist]="current"></div>
   </div>
 
-  <div class="queue-section" *ngIf="(queued | async) && queued.length > 0">
-    <h2 class="h4">Queued</h2>
+  <ng-container *ngIf="queued | async as queued">
+    <div class="queue-section" *ngIf="queued.songs.length > 0">
+      <h2 class="h4">Queued</h2>
+      <div song-table [playlist]="queued"></div>
+    </div>
+  </ng-container>
 
-    <div song-table [songs]="queued"></div>
-  </div>
-
-  <div class="queue-section" *ngIf="playlist.upcoming.length > 0">
+  <div class="queue-section" *ngIf="hasNext()">
     <h2 class="h4">Up Next</h2>
-
-    <div song-table [songs]="playlist.songs" [offset]="playlist.index + 1"></div>
+    <div song-table [playlist]="playlist" [offset]="songIndex + 1"></div>
   </div>
 </ng-container>
 
 <ng-template #playQueueEmpty>
   <div class="text-center">
-    <p>Your Play Queue is empty.</p>
+    <h2>Your Play Queue is empty.</h2>
     <a routerLink="/browse/overview" class="btn btn-large btn-primary">Browse Music</a>
   </div>
 </ng-template>

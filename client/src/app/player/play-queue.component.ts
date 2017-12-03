@@ -4,7 +4,8 @@ import { PlayerService } from "./player.service";
 import { Song } from "../songs/song";
 import { Observable } from "rxjs/Observable";
 import { PlayQueue } from "./play-queue";
-import { SongList } from "./song-list";
+import { Playable } from "./playable";
+import { SongList } from "../songs/song-list";
 
 @Component({
     templateUrl: './play-queue.component.html',
@@ -13,19 +14,34 @@ export class PlayQueueComponent {
   constructor(private pqs: PlayQueueService,
               private ps: PlayerService) {}
 
-  get current(): Observable<Array<Song>> {
+  get current(): Observable<Playable> {
     return this.ps.song.switchMap((song: Song) => {
-      return Observable.of([song]);
+      if (song == null) {
+        return Observable.of(new SongList([]));
+      }
+      return Observable.of(new SongList([song]));
     });
   }
 
-  get queued(): Observable<Array<Song>> {
+  get queued(): Observable<Playable> {
     return this.pqs.get().switchMap((pq: PlayQueue) => {
-      return Observable.of(pq.songs);
+      return Observable.of(new SongList(pq.songs));
     });
   }
 
-  get playlist(): SongList {
+  hasNext(): boolean {
+    return this.ps.hasNext();
+  }
+
+  get playlist(): Playable {
     return this.ps.playlist;
+  }
+
+  get upcoming(): Array<Song> {
+    return this.ps.upcoming;
+  }
+
+  get songIndex(): number {
+    return this.ps.index;
   }
 }

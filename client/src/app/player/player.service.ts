@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Song } from "../songs/song";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { PlayQueue } from "./play-queue";
 import { APIClient } from "../api/api-client.service";
 import { tokenGetter } from "../auth/helpers";
 import { Observable } from 'rxjs/Observable';
-import { SongList } from "app/player/song-list";
 import { PlayQueueService } from "./play-queue.service";
 import { Playable } from "./playable";
+import {PlayQueue} from "./play-queue";
 
 @Injectable()
 export class PlayerService {
@@ -18,8 +17,11 @@ export class PlayerService {
   // current song
   song: BehaviorSubject<Song> = new BehaviorSubject(null);
 
-  // current song list
-  playlist: SongList = new SongList([]); // todo: get initial playlist from server?
+  // the song, album, or playlist being played
+  playlist: Playable = null; // todo: get initial playlist from server?
+
+  // index to current song in playlist
+  index: number = 0;
 
   // current playback time (secs)
   _time: BehaviorSubject<number> = new BehaviorSubject(0);
@@ -36,7 +38,7 @@ export class PlayerService {
   }
 
   initSong(): void {
-    this.pqs.get().subscribe(() => {
+    this.pqs.get().subscribe((pq: PlayQueue) => {
       this.next(false);
     });
   }
@@ -69,21 +71,12 @@ export class PlayerService {
     });
   }
 
-  play(playable?: Playable, index: number = -1): void {
-    // todo: record stream of previous song
+  play(playable?: Playable, index: number = 0): void {
     if (playable != null) {
-      let songs = playable.songs ? playable.songs : [<Song>playable];
-
-      this.playlist = new SongList(songs, index);
-      this.next();
-    } else {
-      this.player.play();
+      this.playlist = playable;
+      this.index = index;
+      this.setSong(this.playlist.songs[index]);
     }
-  }
-
-  playInList(list: Array<Song>, index: number) {
-    this.playlist = new SongList(list, index);
-    this.setSong(list[index]);
     this.player.play();
   }
 
@@ -122,30 +115,47 @@ export class PlayerService {
   }
 
   setSong(song: Song): void {
+    // todo: record stream of previous song
     this.song.next(song);
-    this.player.src = '/api/stream/' + song.id + '/?token=' + tokenGetter()();
+
+    if (song != null) {
+      this.player.src = '/api/stream/' + song.id + '/?token=' + tokenGetter()();
+    } else {
+      this.player.src = '';
+    }
   }
 
   navigate(next: boolean): void {
     let song: Song = null;
 
-    if (next) {
-      song = this.playlist.next();
-    } else {
-      song = this.playlist.prev();
+    if (next && this.hasNext()) {
+      song = this.playlist.songs[++this.index];
+    } else if (this.hasPrev()) {
+      song = this.playlist.songs[--this.index];
     }
-
-    if (song != null) {
-      this.setSong(song);
-    }
+    this.setSong(song);
   }
 
   hasNext(): boolean {
-    return this.playlist.hasNext();
+    if (this.playlist == null) {
+      return false;
+    }
+    return this.index < this.playlist.songs.length - 1;
   }
 
   hasPrev(): boolean {
-    return this.playlist.hasPrev();
+    if (this.playlist == null) {
+      return false;
+    }
+    return this.index > 0;
+  }
+
+  isPlaying(playable: Playable) {
+    let song = this.song.getValue();
+    let isSong = song != null && song.id == playable.id;
+    let isList = this.playlist != null && this.playlist.id == playable.id;
+
+    return isList || isSong;
   }
 
   get time(): BehaviorSubject<number> {
@@ -178,5 +188,9 @@ export class PlayerService {
 
   get playing(): BehaviorSubject<boolean> {
     return this._playing;
+  }
+
+  get upcoming(): Array<Song> {
+    return this.playlist.songs.slice(this.index + 1);
   }
 }

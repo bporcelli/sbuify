@@ -12,15 +12,27 @@ export class AlbumListComponent {
 
   constructor(private ps: PlayerService) {}
 
-  playAlbum(event: Event, album: Album) {
+  toggleAlbumPlayback(event: Event, album: Album) {
     event.stopPropagation();
     event.preventDefault();
 
-    this.ps.play(album);
+    if (!this.isPlaying(album)) {
+      this.ps.play(album);
+    } else {
+      this.ps.toggle();
+    }
+  }
+
+  getPlayButtonClass(album: Album): string {
+    let playing = this.ps.playing.getValue();
+
+    if (playing && this.isPlaying(album)) {
+      return 'fa-pause-circle-o';
+    }
+    return 'fa-play-circle-o';
   }
 
   isPlaying(album: Album) {
-    // todo
-    return false;
+    return this.ps.isPlaying(album);
   }
 }

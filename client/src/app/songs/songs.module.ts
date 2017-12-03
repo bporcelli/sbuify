@@ -5,6 +5,7 @@ import { CommonModule as ACommonModule } from "../common/common.module";
 import { SongsComponent } from './songs.component';
 import { SongsRoutingModule } from './songs-routing.module';
 import { SongTableComponent } from "./song-table.component";
+import {ToSongListPipe} from "./to-song-list.pipe";
 
 @NgModule({
   imports: [
@@ -14,10 +15,12 @@ import { SongTableComponent } from "./song-table.component";
   ],
   declarations: [
     SongsComponent,
-    SongTableComponent
+    SongTableComponent,
+    ToSongListPipe
   ],
   exports: [
-    SongTableComponent
+    SongTableComponent,
+    ToSongListPipe
   ]
 })
 export class SongsModule {}
