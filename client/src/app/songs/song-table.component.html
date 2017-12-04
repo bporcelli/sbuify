@@ -1,4 +1,4 @@
-<table class="table table-hover" id="songs_table" *ngIf="currentSong | async as currentSong">
+<table class="table table-hover" id="songs_table">
   <thead class="thead-inverse">
   <tr>
     <th class="actions"></th>
@@ -11,10 +11,10 @@
   </tr>
   </thead>
   <tbody *ngIf="songs.length > 0 || pending; else emptyTableTemplate">
-    <tr *ngFor="let song of songs; index as i" [ngClass]="{ 'now-playing': isPlaying(song, currentSong) }">
+    <tr *ngFor="let song of songs; index as i" [ngClass]="{ 'now-playing': isPlaying(song) }" [contextMenu]="songMenu" [contextMenuSubject]="song">
       <td class="actions">
-        <button type="button" class="btn btn-link play-button" title="Play" (click)="togglePlayback(i, currentSong)">
-          <i class="fa fa-lg fa-fw" [ngClass]="getPlayButtonClass(song, currentSong)"></i>
+        <button type="button" class="btn btn-link play-button" title="Play" (click)="togglePlayback(i)">
+          <i class="fa fa-lg fa-fw" [ngClass]="getPlayButtonClass(song)"></i>
         </button>
         <button type="button" class="btn btn-link remove-song" title="Remove">
           <i class="fa fa-lg fa-fw fa-check"></i>
@@ -25,7 +25,7 @@
         <a [routerLink]="['/artist', song.album.artist.id]">{{ song.album.artist.name }}</a>
       </td>
       <td class="album">
-        <a href="#">{{ song.album.name }}</a>
+        <a [routerLink]="['/album', song.album.id]">{{ song.album.name }}</a>
       </td>
       <td class="duration">
         {{ song.length | formatDuration }}
@@ -38,3 +38,20 @@
     </tr>
   </ng-template>
 </table>
+
+<context-menu #songMenu>
+  <ng-template contextMenuItem let-song (execute)="enqueue($event.item)">
+    Add to Play Queue
+  </ng-template>
+  <ng-template contextMenuItem [divider]="true"></ng-template>
+  <ng-template contextMenuItem let-song (execute)="openArtistPage($event.item)">
+    Go to Artist
+  </ng-template>
+  <ng-template contextMenuItem let-song (execute)="openAlbumPage($event.item)">
+    Go to Album
+  </ng-template>
+  <ng-template contextMenuItem [divider]="true" [visible]="isEnqueued"></ng-template>
+  <ng-template contextMenuItem let-song [visible]="isEnqueued" (execute)="remove($event.item)">
+    Remove from Play Queue
+  </ng-template>
+</context-menu>

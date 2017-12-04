@@ -6,7 +6,7 @@ import { tokenGetter } from "../auth/helpers";
 import { Observable } from 'rxjs/Observable';
 import { PlayQueueService } from "./play-queue.service";
 import { Playable } from "./playable";
-import {PlayQueue} from "./play-queue";
+import { PlayQueue } from "./play-queue";
 
 @Injectable()
 export class PlayerService {
@@ -33,20 +33,19 @@ export class PlayerService {
   _playing: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(private client: APIClient, private pqs: PlayQueueService) {
-    this.initSong();
-    this.initObservers();
-  }
-
-  initSong(): void {
-    this.pqs.get().subscribe((pq: PlayQueue) => {
-      this.next(false);
-    });
-  }
-
-  initObservers(): void {
+    this.initSongObserver();
     this.initPlayingObserver();
     this.initDurationObserver();
     this.initTimeObserver();
+  }
+
+  /** If we don't have anything to play, take the first song from the user's play queue. */
+  initSongObserver(): void {
+    this.pqs.get().subscribe((pq: PlayQueue) => {
+      if (pq != null && this.song.value == null && pq.songs.length > 0) {
+        this.next(false);
+      }
+    });
   }
 
   initPlayingObserver(): void {
@@ -93,13 +92,7 @@ export class PlayerService {
   }
 
   next(play: boolean = true): void {
-    let queued: Song = this.pqs.next();
-
-    if (queued != null) {  // user has queued one or more songs to play next
-      this.setSong(queued);
-    } else {
-      this.navigate(true);
-    }
+    this.setSong(this.getNext());
 
     if (play) {
       this.player.play();
@@ -107,11 +100,45 @@ export class PlayerService {
   }
 
   prev(play: boolean = true): void {
-    this.navigate(false);
+    this.setSong(this.getPrev());
 
     if (play) {
       this.player.play();
     }
+  }
+
+  hasNext(): boolean {
+    return this.playlistHasNext() || this.pqs.hasNext();
+  }
+
+  hasPrev(): boolean {
+    if (this.playlist == null) {
+      return false;
+    }
+    return this.index > 0;
+  }
+
+  playlistHasNext(): boolean {
+    if (this.playlist == null) {
+      return false;
+    }
+    return this.index < this.playlist.songs.length - 1;
+  }
+
+  getNext(): Song {
+    if (this.pqs.hasNext()) {
+      return this.pqs.next();
+    } else if (this.playlistHasNext()) {
+      return this.playlist.songs[++this.index];
+    }
+    return null;
+  }
+
+  getPrev(): Song {
+    if (this.hasPrev()) {
+      return this.playlist.songs[--this.index];
+    }
+    return null;
   }
 
   setSong(song: Song): void {
@@ -123,31 +150,6 @@ export class PlayerService {
     } else {
       this.player.src = '';
     }
-  }
-
-  navigate(next: boolean): void {
-    let song: Song = null;
-
-    if (next && this.hasNext()) {
-      song = this.playlist.songs[++this.index];
-    } else if (this.hasPrev()) {
-      song = this.playlist.songs[--this.index];
-    }
-    this.setSong(song);
-  }
-
-  hasNext(): boolean {
-    if (this.playlist == null) {
-      return false;
-    }
-    return this.index < this.playlist.songs.length - 1;
-  }
-
-  hasPrev(): boolean {
-    if (this.playlist == null) {
-      return false;
-    }
-    return this.index > 0;
   }
 
   isPlaying(playable: Playable) {

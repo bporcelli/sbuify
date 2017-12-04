@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { Album } from "./album";
 import { PlayerService } from "../player/player.service";
+import { PlayQueueService } from "../player/play-queue.service";
 
 @Component({
   selector: '[album-list]',
@@ -10,7 +12,9 @@ export class AlbumListComponent {
   @Input() albums: Array<Album>;
   @Input() pending: boolean;
 
-  constructor(private ps: PlayerService) {}
+  constructor(private ps: PlayerService,
+              private pqs: PlayQueueService,
+              private router: Router) {}
 
   toggleAlbumPlayback(event: Event, album: Album) {
     event.stopPropagation();
@@ -34,5 +38,20 @@ export class AlbumListComponent {
 
   isPlaying(album: Album) {
     return this.ps.isPlaying(album);
+  }
+
+  /** Add album to play queue */
+  enqueue(album: Album): void {
+    this.pqs.add(album);
+  }
+
+  /** Navigate to album page */
+  openAlbumPage(album: Album): void {
+    this.router.navigate(['/album', album.id]);
+  }
+
+  /** Navigate to album artist page */
+  openArtistPage(album: Album): void {
+    this.router.navigate(['/artist', album.artist.id]);
   }
 }

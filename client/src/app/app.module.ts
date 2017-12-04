@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
+import { ContextMenuModule } from 'ngx-contextmenu';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
@@ -50,7 +50,10 @@ import { PlayQueueService } from "./player/play-queue.service";
     ConcertsModule,
     SettingsModule,
     UserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ContextMenuModule.forRoot({
+      useBootstrap4: true
+    })
   ],
   providers: [
     PlaylistService,

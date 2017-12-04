@@ -1,17 +1,18 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { ContextMenuModule } from 'ngx-contextmenu';
 import { CommonModule as ACommonModule } from "../common/common.module";
 import { SongsComponent } from './songs.component';
 import { SongsRoutingModule } from './songs-routing.module';
 import { SongTableComponent } from "./song-table.component";
-import {ToSongListPipe} from "./to-song-list.pipe";
+import { ToSongListPipe } from "./to-song-list.pipe";
 
 @NgModule({
   imports: [
     SongsRoutingModule,
     CommonModule,
-    ACommonModule
+    ACommonModule,
+    ContextMenuModule
   ],
   declarations: [
     SongsComponent,

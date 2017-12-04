@@ -652,6 +652,11 @@ textarea#description {
   }
 }
 
+// Context menus
+.ngx-contextmenu ul li a {
+  color: #000;
+}
+
 // Responsive
 @media (min-width: 1700px) {
     .d-sxl-table-cell {

@@ -17,20 +17,21 @@ export class PlayQueueComponent {
   get current(): Observable<Playable> {
     return this.ps.song.switchMap((song: Song) => {
       if (song == null) {
-        return Observable.of(new SongList([]));
+        return Observable.of(null);
       }
       return Observable.of(new SongList([song]));
     });
   }
 
   get queued(): Observable<Playable> {
-    return this.pqs.get().switchMap((pq: PlayQueue) => {
-      return Observable.of(new SongList(pq.songs));
+    return this.pqs.get().map((pq: PlayQueue) => {
+      if (pq == null) return;
+      return new PlayQueue(pq.id, pq.songs);
     });
   }
 
   hasNext(): boolean {
-    return this.ps.hasNext();
+    return this.ps.playlistHasNext();
   }
 
   get playlist(): Playable {
