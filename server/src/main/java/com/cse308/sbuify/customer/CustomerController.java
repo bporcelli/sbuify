@@ -268,7 +268,7 @@ public class CustomerController {
 
         Collection<Song> albumSongs = album.getSongs();
         if (albumSongs == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Customer customer = getCurrentCustomer();
