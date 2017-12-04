@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { PlayQueueService } from "./play-queue.service";
 import { PlayerService } from "./player.service";
 import { Song } from "../songs/song";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs/Rx";
 import { PlayQueue } from "./play-queue";
 import { Playable } from "./playable";
 import { SongList } from "../songs/song-list";

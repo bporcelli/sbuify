@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Genre } from "./genre";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs/Rx";
 import { APIClient } from "../../api/api-client.service";
 import { Album } from "../../album/album";
 

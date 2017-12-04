@@ -1,8 +1,7 @@
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/map';
+import 'rxjs/operators/map';
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs/Rx';
 
 const PLAYLISTS = [
     {

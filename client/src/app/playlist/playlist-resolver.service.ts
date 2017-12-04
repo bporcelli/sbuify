@@ -1,8 +1,7 @@
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/take';
+import { map, take } from 'rxjs/operators';
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs/Rx';
 import { Router, Resolve, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
 
 import { PlaylistService } from './playlist.service';

@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { Router } from "@angular/router";
-import { Observable } from 'rxjs/Observable';
 import { Song } from "./song";
 import { PlayerService } from "../player/player.service";
 import { Playable } from "../player/playable";

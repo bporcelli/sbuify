@@ -3,7 +3,7 @@ import { PlayQueue } from "./play-queue";
 import { APIClient } from "../api/api-client.service";
 import { Queueable } from "./queueable";
 import { Song } from "../songs/song";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs/Rx";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
 
 // NOTE: responseType = 'text' is used when making requests so Angular treats empty 200 responses as

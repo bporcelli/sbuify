@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs/Rx';
 import { HttpParams } from '@angular/common/http';
 import { APIClient } from "../api/api-client.service";
 import { Album } from "./album";
