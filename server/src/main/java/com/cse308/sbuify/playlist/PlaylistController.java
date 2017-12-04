@@ -97,7 +97,7 @@ public class PlaylistController {
     @PatchMapping(path = "/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     public ResponseEntity<?> updatePlaylist(@PathVariable Integer id, @RequestBody Playlist updated) {
-        Optional<Playlist> optionalPlaylist = playlistRepository.findById(Integer.valueOf(id));
+        Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
 
         if (!optionalPlaylist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -15,7 +15,7 @@ public class PlaylistSong implements Serializable {
 
     @Id
     @GeneratedValue
-    private int id;
+    private Integer id;
 
     @ManyToOne
     @JsonIgnore

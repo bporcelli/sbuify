@@ -1,9 +1,9 @@
 package com.cse308.sbuify.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.playlist.PlaylistFolder;
+import com.cse308.sbuify.playlist.PlaylistFolderRepository;
+import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -11,26 +11,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.image.StorageService;
-import com.cse308.sbuify.playlist.PlaylistFolder;
-import com.cse308.sbuify.playlist.PlaylistFolderRepository;
-import com.cse308.sbuify.song.SongRepository;
-import com.cse308.sbuify.test.helper.AuthenticatedTest;
-import com.cse308.sbuify.user.UserRepository;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class PlaylistFolderControllerTest extends AuthenticatedTest {
-
-    private static final String TEST_IMAGE = "test-image.jpg";
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private SongRepository songRepository;
-
-    @Autowired
-    private StorageService storageService;
 
     @Autowired
     private PlaylistFolderRepository playlistFolderRepository;
