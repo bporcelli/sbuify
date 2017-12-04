@@ -62,7 +62,7 @@ ul.button-list li {
         color: $white;
     }
 
-    a.dropdown-item, a.dropdown-item:hover {
+    .dropdown-item, .dropdown-item:hover {
         color: inherit;
     }
 }
@@ -266,6 +266,24 @@ ul#playback-controls li {
   &.paused i:before {
     content: "\f01d";
   }
+}
+
+#toggle-shuffle.active, #toggle-repeat.active {
+  color: $sbu-red;
+}
+
+#toggle-repeat {
+  position: relative;
+}
+
+#toggle-repeat.active.repeat-one::before {
+  content: '1';
+  color: #fff;
+  font-size: 10px;
+  font-weight: 200;
+  position: absolute;
+  top: 6px;
+  left: 20px;
 }
 
 #playback-track {

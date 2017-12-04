@@ -1,78 +1,50 @@
 import { Injectable } from '@angular/core';
-
-import { APIClient } from '../api/api-client.service';
+import { BehaviorSubject, Observable } from "rxjs/Rx";
+import { JwtService } from "../auth/jwt.service";
 import { User } from "./user";
-import { UserEndpoints } from "./endpoints";
 
+/**
+ * Service to get
+ */
 @Injectable()
 export class UserService {
+  private currentUserSubject: BehaviorSubject<User> = new BehaviorSubject(null);
+  private isAuthenticatedSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  constructor(private http: APIClient) {}
-
-  /**
-   * Create (register) a new user.
-   */
-  public register(user: User, success: Function, error: Function) {
-    this.http.post(UserEndpoints.REGISTER, user, { observe: 'response' }).subscribe(
-      resp => {
-        if (resp.status == 201) {
-          success();
-        } else {
-          error();
-        }
-      },
-      err => {
-        error();
-      }
-    );
+  constructor(private jwtService: JwtService) {
+    this.populate();
   }
 
-  /**
-   * Authenticate a user.
-   */
-  public authenticate(user: User, success: Function, error: Function) {
-    this.http.post(UserEndpoints.LOGIN, user, {
-      observe: 'response',
-      responseType: 'text'  // workaround for Angular issue 18160
-    }).subscribe(
-      resp => {
-        success(resp.headers.get('Authorization'));
-      },
-      err => {
-        error();
-      }
-    );
+  /** Populate the current user based on the local JWT. */
+  private populate(): void {
+    if (this.jwtService.hasToken()) {
+      let token = this.jwtService.getDecodedToken();
+
+      this.currentUserSubject.next(new User(token['sub'], '', token['scopes'][0]));
+      this.isAuthenticatedSubject.next(true);
+    } else {
+      this.currentUserSubject.next(null);
+      this.isAuthenticatedSubject.next(false);
+    }
   }
 
-  /**
-   * Send a password reset link to the user with the given email.
-   */
-  public sendResetLink(email: string, success: Function, error: Function) {
-    let data = { 'email':  email };
-
-    this.http.postAsForm(UserEndpoints.RESET_PASSWORD, data).subscribe(
-      resp => {
-        success();
-      },
-      err => {
-        error(err.status);
-      }
-    );
+  /** Set the user's authentication token. */
+  setAuth(token: string, remember: boolean) {
+    this.jwtService.setToken(token, remember);
+    this.populate();
   }
 
-  /**
-   * Reset a user's password.
-   */
-  public resetPassword(token: string, password: string, success: Function, error: Function) {
-    let data = { 'token': token, 'password': password };
+  /** Clear the user's authentication token. */
+  clearAuth(): void {
+    this.jwtService.clearToken();
+    this.populate();
+  }
 
-    this.http.postAsForm(UserEndpoints.CHANGE_PASSWORD, data).subscribe(
-      resp => {
-        success();
-      },
-      err => {
-        error(err.status);
-      }
-    )
+  get isAuthenticated(): Observable<boolean> {
+    return this.isAuthenticatedSubject.asObservable();
+  }
+
+  get currentUser(): Observable<User> {
+    return this.currentUserSubject.asObservable().distinctUntilChanged();
   }
 }

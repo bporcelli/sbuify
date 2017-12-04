@@ -1,11 +1,14 @@
 import { Component, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpResponse } from '@angular/common/http';
 
 import { Config } from '../config';
 
 import { Customer } from "../user/customer";
-import { UserService } from "../user/user.service";
 import { FormComponent } from "../common/forms/form.component";
+import { APIClient } from "../api/api-client.service";
+import { UserEndpoints } from "../user/endpoints";
+import { Observable } from "rxjs/Rx";
 
 @Component({
     templateUrl: './register.component.html',
@@ -21,8 +24,8 @@ export class RegisterComponent extends FormComponent {
   /** Password confirmation */
   @Output('verifyPassword') verifyPassword: string = "";
 
-  constructor(private userService: UserService,
-              private router: Router) {
+  constructor(private router: Router,
+              private http: APIClient) {
     super();
   }
 
@@ -32,14 +35,24 @@ export class RegisterComponent extends FormComponent {
   onSubmit() {
     super.onSubmit();
 
-    let $this = this;
+    this.http.post(UserEndpoints.REGISTER, this.model, { observe: 'response' })
+      .catch(this.catchErrorResponse)
+      .finally(() => this.disabled = false)
+      .subscribe((resp: any) => this.handleSuccess(resp));
+  }
 
-    this.userService.register(this.model, function() {
-      $this.router.navigate(['/login', { message: 'register-success' }]);
-    }, function() {
-      $this.showFeedback("That email address is in use. Please try again.");
-      $this.disabled = false;
-    });
+  handleSuccess(resp: any) {
+    if (resp.status == 201) {
+      this.router.navigate(['/login', { message: 'register-success' }]);
+    } else {
+      this.showFeedback("That email address is in use. Please try again.");
+    }
+  }
+
+  catchErrorResponse(err: any, resp: Observable<HttpResponse<any>>): Observable<any> {
+    // todo: log and handle error
+    console.log('failed to register user:', err);
+    return Observable.throw(err);
   }
 
   /**

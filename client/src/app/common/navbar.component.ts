@@ -1,22 +1,30 @@
-import { Component } from '@angular/core';
-
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { AuthService } from '../auth/auth.service';
 import { SearchService } from "../search/search.service";
+import { UserService } from "../user/user.service";
 
 @Component({
     selector: 'navbar',
     templateUrl: './navbar.component.html'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
 
-  constructor(public auth: AuthService,
-              private router: Router,
-              private service: SearchService) {}
+  isAuthed: boolean = false;
+
+  constructor(
+    public userService: UserService,
+    private searchService: SearchService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.userService.isAuthenticated
+      .subscribe((authenticated) => this.isAuthed = authenticated);
+  }
 
   logout() {
-    this.auth.logout();
+    this.userService.clearAuth();
+    this.router.navigate(['/login']);
   }
 
   search() {
@@ -24,10 +32,10 @@ export class NavbarComponent {
   }
 
   get query(): string {
-    return this.service.getQuery().getValue();
+    return this.searchService.getQuery().getValue();
   }
 
   set query(value: string) {
-    this.service.setQuery(value.trim());
+    this.searchService.setQuery(value.trim());
   }
 }

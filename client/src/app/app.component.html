@@ -3,7 +3,7 @@
 <div class="container-fluid bg-light" [ngClass]="getWrapperClasses()">
     <div class="row">
         <!-- BEGIN LEFT SIDEBAR -->
-        <nav class="d-none d-md-block col-md-3 col-xl-2 sidebar content-wrapper" id="left-sidebar" *ngIf="authService.isAuthed()">
+        <nav class="d-none d-md-block col-md-3 col-xl-2 sidebar content-wrapper" id="left-sidebar" *ngIf="isAuthed">
             <left-sidebar></left-sidebar>
         </nav>
         <!-- END LEFT SIDEBAR -->
@@ -18,6 +18,6 @@
     </div>
 </div>
 
-<playbar *ngIf="authService.isAuthed()"></playbar>
+<playbar *ngIf="isAuthed"></playbar>
 
-<router-outlet name="modal" *ngIf="authService.isAuthed()"></router-outlet>
+<router-outlet name="modal" *ngIf="isAuthed"></router-outlet>

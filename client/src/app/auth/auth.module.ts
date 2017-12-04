@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Http, RequestOptions } from '@angular/http';
 import { AuthHttp, AuthConfig } from 'angular2-jwt';
-
-import { AuthService } from './auth.service';
 import { AuthGuard } from "./auth-guard.service";
 import { tokenGetter } from "./helpers";
+import { JwtService } from "./jwt.service";
+import { NoAuthGuard } from "./no-auth-guard";
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   let config = {
@@ -15,8 +15,9 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
 
 @NgModule({
   providers: [
-    AuthService,
     AuthGuard,
+    NoAuthGuard,
+    JwtService,
     {
       provide: AuthHttp,
       useFactory: authHttpServiceFactory,

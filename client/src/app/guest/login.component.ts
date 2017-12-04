@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
-import { UserService } from "../user/user.service";
 import { User } from "../user/user";
-import { AuthService } from "../auth/auth.service";
 import { FormComponent } from "../common/forms/form.component";
+import { APIClient } from "../api/api-client.service";
+import { UserEndpoints } from "../user/endpoints";
+import { UserService } from "../user/user.service";
+import { Config } from "../config";
 
 @Component({
     templateUrl: './login.component.html',
@@ -17,36 +19,57 @@ export class LoginComponent extends FormComponent implements OnInit {
   /** 'Remember me' flag */
   remember: boolean = false;
 
-  constructor(private userService: UserService,
-              private authService: AuthService,
-              private route: ActivatedRoute) {
+  /** URL to redirect to on success */
+  redirectURL: string = '';
+
+  constructor(
+    private userService: UserService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private http: APIClient
+  ) {
     super();
   }
 
-  /**
-   * Form submission handler.
-   */
-  onSubmit() {
-    var $this = this;
-
-    this.userService.authenticate(this.model, function (token: string) {
-      $this.authService.login(token, $this.remember);
-    }, function () {
-      $this.showFeedback("Username or password invalid. Please try again.");
-    });
-  }
-
-  /**
-   * Optionally show a success message when the component is initialized.
-   */
   ngOnInit(): void {
     let params = this.route.snapshot.paramMap;
     let message = params.get('message');
-    
+
+    // optionally show a message
     if ('reset-success' == message) {
       this.showFeedback("Password changed successfully.", "success");
     } else if ('register-success' == message) {
       this.showFeedback("Account created successfully.", "success");
     }
+
+    // set the redirect URL
+    this.redirectURL = params.get('redirect');
+  }
+
+  private handleSuccess(resp: any) {
+    this.userService.setAuth(resp.headers.get('Authorization'), this.remember);
+
+    if ( !this.redirectURL ) {
+      this.redirectURL = Config.DEFAULT_REDIRECT;
+    } else {
+      this.redirectURL = decodeURIComponent(this.redirectURL);
+    }
+
+    this.router.navigate([this.redirectURL]);
+  }
+
+  /** Handle form submissions */
+  onSubmit() {
+    this.http.post(UserEndpoints.LOGIN, this.model, {
+      observe: 'response',
+      responseType: 'text'  // workaround for Angular issue 18160
+    }).subscribe(
+      resp => this.handleSuccess(resp),
+      err => this.handleError(err)
+    );
+  }
+
+  private handleError(err: any) {
+    this.showFeedback("Username or password invalid. Please try again.");
   }
 }
