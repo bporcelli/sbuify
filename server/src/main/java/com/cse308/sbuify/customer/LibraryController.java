@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -42,7 +43,7 @@ public class LibraryController {
     /**
      * Add a song to the customer's library.
      * @param id ID of the song to add.
-     * @return a 201 response with the saved song in the body, otherwise a 404 if the song is not found.
+     * @return a 201 response with the saved song in the body, 400 if song is already in library,otherwise a 404 if the song is not found.
      */
     @PostMapping(path = "/{id}")
     public ResponseEntity<?> saveToLibrary(@PathVariable Integer id) {
@@ -56,6 +57,10 @@ public class LibraryController {
         Song song = optionalSong.get();
 
         Playlist lib = customer.getLibrary();
+        // song already in customer library
+        if(containsId(lib.getSongs(), id)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         PlaylistSong saved = lib.add(song);
 
         playlistRepo.save(lib);
@@ -86,5 +91,9 @@ public class LibraryController {
 
         playlistRepo.save(library);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    protected static boolean containsId(List<PlaylistSong> list, Integer id){
+        return list.stream().anyMatch(object -> object.getSong().getId().equals(id));
     }
 }
