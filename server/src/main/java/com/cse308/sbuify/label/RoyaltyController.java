@@ -1,4 +1,4 @@
-package com.cse308.sbuify.common;
+package com.cse308.sbuify.label;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
