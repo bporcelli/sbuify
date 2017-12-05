@@ -1,7 +1,5 @@
 package com.cse308.sbuify.customer;
 
-import com.cse308.sbuify.album.Album;
-import com.cse308.sbuify.album.AlbumRepository;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.common.Followable;
@@ -11,9 +9,7 @@ import com.cse308.sbuify.image.StorageException;
 import com.cse308.sbuify.image.StorageService;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistRepository;
-import com.cse308.sbuify.playlist.PlaylistSong;
 import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-
-import static com.cse308.sbuify.customer.LibraryController.containsId;
+import java.util.Optional;
+import java.util.Set;
 
 @Controller
 @RequestMapping(path = "/api/customer/")
@@ -41,9 +36,6 @@ public class CustomerController {
 
     @Autowired
     private ArtistRepository artistRepository;
-
-    @Autowired
-    private AlbumRepository albumRepository;
 
     @Autowired
     private StorageService storageService;
@@ -75,12 +67,12 @@ public class CustomerController {
     }
 
     /**
-     * Add the artist followed by the customer.
+     * Follow an artist.
      * @param artist
      * @return HTTP.OK successful, HTTP.BAD_REQUEST unsuccessful
      */
-    @PostMapping( path = "artists")
-    public ResponseEntity<?> addArtist(@RequestBody Artist artist){
+    @PostMapping(path = "artists")
+    public ResponseEntity<?> followArtist(@RequestBody Artist artist){
         Customer customer = getCurrentCustomer();
         Set<Artist> artists = customer.getArtists();
         if (!artists.add(artist)){
@@ -91,12 +83,12 @@ public class CustomerController {
     }
 
     /**
-     * delete the artist followed by the customer.
+     * Unfollow an artist.
      * @param artistId
      * @return HTTP.OK successful, HTTP.BAD_REQUEST unsuccessful
      */
-    @DeleteMapping( path = "artists/{artistId}")
-    public ResponseEntity<?> deleteArtist(@PathVariable Integer artistId) throws Exception{
+    @DeleteMapping(path = "artists/{artistId}")
+    public ResponseEntity<?> unfollowArtist(@PathVariable Integer artistId) {
         Customer customer = getCurrentCustomer();
         Set<Artist> artists = customer.getArtists();
 
@@ -186,108 +178,11 @@ public class CustomerController {
     }
 
     /**
-     * Return all unique artist from library
-     * @return HashSet of all artist from library playlist with HTTP.OK
-     */
-    @GetMapping( path = "library/artists")
-    public ResponseEntity<?> getArtists(){
-        Customer customer = getCurrentCustomer();
-        Playlist library = customer.getLibrary();
-
-        List<PlaylistSong> librarySongs = library.getSongs();
-        Set<Artist> libraryArtist = new HashSet<>();
-
-        for (PlaylistSong song: librarySongs){
-            Artist songArtist = song.getSong().getAlbum().getArtist();
-            libraryArtist.add(songArtist);
-        }
-
-        TypedCollection artist = new TypedCollection(libraryArtist, Artist.class);
-
-        return new ResponseEntity<>(artist, HttpStatus.OK);
-
-    }
-
-    /**
-     * Return all unique albumns from library
-     * @return
-     */
-    @GetMapping( path = "library/albums")
-    public ResponseEntity<?> getAlbums(){
-        Customer customer = getCurrentCustomer();
-        Playlist library = customer.getLibrary();
-
-        List<PlaylistSong> librarySongs = library.getSongs();
-        Set<Album> libraryAlbums = new HashSet<>();
-
-        for (PlaylistSong song: librarySongs){
-            Album album = song.getSong().getAlbum();
-            libraryAlbums.add(album);
-        }
-
-        TypedCollection artist = new TypedCollection(libraryAlbums, Album.class);
-
-        return new ResponseEntity<>(artist, HttpStatus.OK);
-
-    }
-
-    /**
-     * add an album to library
-     * @return Http.OK when successful
-     */
-    @PostMapping( path = "library/albums")
-    public ResponseEntity<?> addAlbum(@RequestBody Album album) {
-        Customer customer = getCurrentCustomer();
-
-        Playlist customerLibrary = customer.getLibrary();
-
-        List<PlaylistSong> playlistSongs = customerLibrary.getSongs();
-
-        Collection<Song> albumSongs = album.getItems();
-        // customer library only contains unique songs no duplicates
-        for( Song song : albumSongs){
-            // use containsId to see if library contains that song already
-            if (!containsId(playlistSongs, song.getId())){
-                customerLibrary.add(song);
-            }
-        }
-        userRepository.save(customer);
-        return new ResponseEntity<>(HttpStatus.OK);
-
-    }
-
-    /**
-     * remove an album to library
-     * @return Http.OK when successful, otherwise Http.BAD_REQUEST
-     */
-    @DeleteMapping( path = "library/albums/{albumId}")
-    public ResponseEntity<?> removeAlbum(@PathVariable Integer albumId) {
-
-
-        Album album = getAlbumById(albumId);
-
-        Collection<Song> albumSongs = album.getSongs();
-        if (albumSongs == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        Customer customer = getCurrentCustomer();
-        Playlist customerLibrary = customer.getLibrary();
-
-        for( Song song : albumSongs){
-            customerLibrary.remove(song);
-        }
-        userRepository.save(customer);
-        return new ResponseEntity<>(HttpStatus.OK);
-
-    }
-
-    /**
-     * Change user profile picture
+     * Change the user's profile picture.
      * @param imageData
      * @return Http.OK when successful, otherwise, Http.BAD_REQUEST
      */
-    @PutMapping( path = "profile-picture")
+    @PutMapping(path = "profile-picture")
     public ResponseEntity<?> updateProfilePicture(@RequestBody String imageData){
         Customer customer = getCurrentCustomer();
         Image image;
@@ -298,16 +193,7 @@ public class CustomerController {
         }
         customer.setProfileImage(image);
         userRepository.save(customer);
-
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private Album getAlbumById(Integer Id){
-        Optional<Album> optionalAlbum = albumRepository.findById(Id);
-        if (!optionalAlbum.isPresent()){
-            return null;
-        }
-        return optionalAlbum.get();
     }
 
     private Customer getCurrentCustomer(){

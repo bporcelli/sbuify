@@ -36,4 +36,12 @@ public interface AlbumRepository extends PagingAndSortingRepository<Album, Integ
             nativeQuery = true
     )
     Page<Album> findRecent(Pageable page);
+
+    @Query(value = "SELECT * FROM album WHERE id IN (" +
+            "   SELECT DISTINCT s.album_id" +
+            "   FROM song s, customer c, playlist_songs ps" +
+            "   WHERE ps.playlist_id = c.library_id" +
+            "       AND ps.song_id = s.id" +
+            "       AND c.id = ?1)", nativeQuery = true)
+    List<Album> getSavedByCustomerId(Integer customerId);
 }
