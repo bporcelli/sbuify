@@ -6,12 +6,13 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+import com.cse308.sbuify.common.api.Decorable;
 import com.cse308.sbuify.song.Song;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "playlist_songs")
-public class PlaylistSong implements Serializable {
+public class PlaylistSong implements Serializable, Decorable {
 
     @Id
     @GeneratedValue

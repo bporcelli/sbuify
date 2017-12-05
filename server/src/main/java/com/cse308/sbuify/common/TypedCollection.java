@@ -1,5 +1,6 @@
 package com.cse308.sbuify.common;
 
+import com.cse308.sbuify.common.api.Decorable;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializable;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -21,7 +22,7 @@ import java.util.Iterator;
  *     return new ResponseEntity<>(new TypedCollection(artists, Artist.class), HttpStatus.OK);
  * }
  */
-public class TypedCollection implements JsonSerializable {
+public class TypedCollection implements JsonSerializable, Decorable {
 
     /** Wrapped collection */
     private Collection collection;
@@ -32,6 +33,14 @@ public class TypedCollection implements JsonSerializable {
     public TypedCollection(Collection collection, Class<?> elementType) {
         this.collection = collection;
         this.elementType = elementType;
+    }
+
+    public Class<?> getElementType() {
+        return elementType;
+    }
+
+    public Collection getCollection() {
+        return collection;
     }
 
     @Override
