@@ -1,6 +1,7 @@
 package com.cse308.sbuify.customer;
 
 import com.cse308.sbuify.common.Queueable;
+import com.cse308.sbuify.common.api.DecorateResponse;
 import com.cse308.sbuify.security.AuthFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -69,6 +70,7 @@ public class PlayQueueController {
      * @return HTTP response.
      */
     @GetMapping
+    @DecorateResponse(type = PlayQueue.class)
     public @ResponseBody PlayQueue getPlayQueue(){
         Customer customer = (Customer) authFacade.getCurrentUser();
         return customer.getPlayQueue();

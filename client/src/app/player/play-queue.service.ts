@@ -6,9 +6,6 @@ import { Song } from "../songs/song";
 import { Observable } from "rxjs/Rx";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
 
-// NOTE: responseType = 'text' is used when making requests so Angular treats empty 200 responses as
-// successful
-
 @Injectable()
 export class PlayQueueService {
 
@@ -33,6 +30,10 @@ export class PlayQueueService {
     this.client.post("/api/customer/play-queue/add", item, { responseType: 'text' }).subscribe(
       () => {
         let songs = item['type'] == 'song' ? [<Song>item] : item.songs;
+
+        // set queued flag for all songs
+        songs.forEach((song: Song) => song['queued'] = true);
+
         this.queue.songs = this.queue.songs.concat(songs);
         this._queue.next(this.queue);
       },
@@ -47,6 +48,7 @@ export class PlayQueueService {
     this.client.post("/api/customer/play-queue/remove", song, { responseType: 'text' }).subscribe(
       () => {
         let index: number = -1;
+
         for (let i = 0; i < this.queue.songs.length; i++) {
           if (this.queue.songs[i].id == song.id) {
             index = i;
@@ -57,6 +59,9 @@ export class PlayQueueService {
         if (index != -1) {
           this.queue.songs.splice(index, 1);
           this._queue.next(this.queue);
+
+          // unset queued flag
+          song['queued'] = false;
         }
       },
       (err: any) => {
@@ -67,7 +72,11 @@ export class PlayQueueService {
 
   /** Skip all songs up to and including the song at the provided index. */
   skip(index: number) {
-    this.queue.songs.splice(0, index + 1);
+    let skipped = this.queue.songs.splice(0, index + 1);
+
+    // unset queued flag for skipped songs
+    skipped.forEach(song => song['queued'] = false);
+
     this.sync();
   }
 
@@ -80,22 +89,11 @@ export class PlayQueueService {
   next(): Song {
     if (this.hasNext()) {
       let next = this.queue.songs.shift();
+      next['queued'] = false;
       this.sync();
       return next;
     }
     return null;
-  }
-
-  contains(song: Song): boolean {
-    if (this.queue == null) {
-      return false;
-    }
-    for (let i = 0; i < this.queue.songs.length; i++) {
-      if (this.queue.songs[i].id == song.id) {
-        return true;
-      }
-    }
-    return false;
   }
 
   get queue(): PlayQueue {

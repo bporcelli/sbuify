@@ -12,5 +12,5 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DecorateResponse {
-    Class<TypedCollection> type();
+    Class<?> type();
 }

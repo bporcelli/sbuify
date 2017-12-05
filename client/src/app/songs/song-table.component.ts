@@ -78,7 +78,7 @@ export class SongTableComponent {
 
   /** Check whether a song is enqueued */
   isEnqueued(item: any): boolean {
-    return item != null && item['is_enqueued'];
+    return item != null && item['queued'];
   }
 
   /** Open the album page for a song */
@@ -92,9 +92,6 @@ export class SongTableComponent {
   }
 
   get songs(): Array<Song> {
-    return this.playlist.songs.slice(this.offset).map((s: Song) => {
-      s['is_enqueued'] = this.pqs.contains(s);
-      return s;
-    });
+    return this.playlist.songs.slice(this.offset);
   }
 }

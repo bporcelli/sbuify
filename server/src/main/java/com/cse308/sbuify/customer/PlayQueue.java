@@ -8,13 +8,14 @@ import java.util.List;
 import javax.persistence.*;
 
 import com.cse308.sbuify.common.Queueable;
+import com.cse308.sbuify.common.api.Decorable;
 import com.cse308.sbuify.song.Song;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Entity
-public class PlayQueue implements Serializable {
+public class PlayQueue implements Serializable, Decorable {
 
     @Id
     @GeneratedValue
