@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Song } from "../songs/song";
 import { PlayerService } from "./player.service";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import {RepeatMode} from "./repeat-mode";
 
 @Component({
     selector: 'playbar',
@@ -49,9 +50,30 @@ export class PlaybarComponent {
     this.ps.muted = !this.ps.muted;
   }
 
+  toggleShuffle(): void {
+    this.ps.toggleShuffle();
+  }
+
+  isShuffled(): boolean {
+    return this.ps.shuffled;
+  }
+
+  toggleRepeat(): void {
+    this.ps.toggleRepeat();
+  }
+
   getPlayButtonClass(): string {
     let playing = this.playing.getValue();
     return playing ? 'fa-pause-circle-o' : 'fa-play-circle-o';
+  }
+
+  getRepeatButtonClass(): string {
+    if (this.ps.repeat == RepeatMode.REPEAT) {
+      return 'active';
+    } else if (this.ps.repeat == RepeatMode.REPEAT_ONE) {
+      return 'active repeat-one';
+    }
+    return '';
   }
 
   get song(): BehaviorSubject<Song> {

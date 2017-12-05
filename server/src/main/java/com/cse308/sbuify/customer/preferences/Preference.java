@@ -2,6 +2,7 @@ package com.cse308.sbuify.customer.preferences;
 
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,6 +17,7 @@ public class Preference implements Serializable {
 
     @ManyToOne(targetEntity = Customer.class)
     @Id
+    @JsonIgnore
     private User customer;
 
     @Id

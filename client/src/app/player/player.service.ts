@@ -1,43 +1,55 @@
 import { Injectable } from '@angular/core';
-import { Song } from "../songs/song";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { APIClient } from "../api/api-client.service";
-import { tokenGetter } from "../auth/helpers";
 import { Observable } from 'rxjs/Rx';
 import 'rxjs/operators/merge';
+
+import { Song } from "../songs/song";
+import { tokenGetter } from "../auth/helpers";
 import { PlayQueueService } from "./play-queue.service";
 import { Playable } from "./playable";
 import { PlayQueue } from "./play-queue";
+import { RepeatMode } from "./repeat-mode";
+import { PreferencesService } from "../user/preferences.service";
 
 @Injectable()
 export class PlayerService {
 
-  // audio player
+  /** Audio player */
   player: any = new Audio();
 
-  // current song
+  /** Current song */
   song: BehaviorSubject<Song> = new BehaviorSubject(null);
 
-  // the song, album, or playlist being played
+  /** The song, album, or playlist being played */
   playlist: Playable = null; // todo: get initial playlist from server?
 
-  // index to current song in playlist
+  /** Index to current song in playlist */
   index: number = 0;
 
-  // current playback time (secs)
+  /** Current playback time (secs) */
   _time: BehaviorSubject<number> = new BehaviorSubject(0);
 
-  // duration of current song (secs)
+  /** Duration of the current song (secs) */
   _duration: BehaviorSubject<number> = new BehaviorSubject(0);
 
-  // is the player playing?
+  /** Is the player playing? */
   _playing: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  constructor(private client: APIClient, private pqs: PlayQueueService) {
+  /** Is playback shuffled? */
+  shuffled: boolean = false;
+
+  /** Current repeat mode */
+  repeat: RepeatMode = RepeatMode.NONE;
+
+  constructor(
+    private prefService: PreferencesService,
+    private pqs: PlayQueueService
+  ) {
     this.initSongObserver();
     this.initPlayingObserver();
     this.initDurationObserver();
     this.initTimeObserver();
+    this.initPrefsObserver();
   }
 
   /** If we don't have anything to play, take the first song from the user's play queue. */
@@ -54,8 +66,12 @@ export class PlayerService {
       Observable.fromEvent(this.player, 'play'),
       Observable.fromEvent(this.player, 'pause'),
       Observable.fromEvent(this.player, 'ended')
-    ).subscribe(() => {
-      this._playing.next(!this.player.paused);
+    ).subscribe((e: Event) => {
+      if (e.type == 'ended') {  // playback ended
+        this.onPlaybackEnded();
+      } else {
+        this._playing.next(!this.player.paused);
+      }
     });
   }
 
@@ -71,10 +87,25 @@ export class PlayerService {
     });
   }
 
+  initPrefsObserver(): void {
+    this.prefService.preferences
+      .subscribe((preferences: object) => {
+        if (preferences) {
+          this.shuffled = preferences['shuffle'] == 'true';
+          this.repeat = preferences['repeat'];
+        }
+      });
+  }
+
   play(playable?: Playable, index: number = 0): void {
     if (playable != null) {
       this.playlist = playable;
       this.index = index;
+
+      // shuffle playlist if necessary
+      if (this.shuffled && index == 0) {
+        this.shuffle();
+      }
       this.setSong(this.playlist.songs[index]);
     }
     this.player.play();
@@ -159,6 +190,109 @@ export class PlayerService {
     let isList = this.playlist != null && this.playlist.id == playable.id;
 
     return isList || isSong;
+  }
+
+  /** Toggle playback shuffling */
+  toggleShuffle(): void {
+    if (!this.shuffled) {
+      this.shuffle();
+      this.shuffled = true;
+    } else {
+      this.unshuffle();
+      this.shuffled = false;
+    }
+
+    // sync with server
+    this.prefService.setPreference('shuffle', this.shuffled);
+  }
+
+  /** Shuffle the songs in the current playlist, leaving the current song in place. */
+  private shuffle(): void {
+    let songs = this.playlist ? this.playlist.songs : [];
+
+    if (songs.length == 0) {  // nothing to shuffle
+      return;
+    }
+
+    for (let i = 0; i < songs.length; i++) {
+      songs[i]['order'] = i;  // save original ordering
+    }
+
+    if (this.song.value == null) {
+      // shuffle all songs
+      songs = this.shuffleArray(songs);
+    } else {
+      // leave current song in place
+      let previous = [];
+      if (this.index > 0) {
+        previous = <Song[]>this.shuffleArray(songs.slice(0, this.index));
+      }
+      let current = [this.song.value];
+      let upcoming = <Song[]>this.shuffleArray(this.upcoming);
+
+      songs =  previous.concat(current.concat(upcoming));
+    }
+
+    this.playlist.songs = songs;
+  }
+
+  /** Unshuffle the songs in the current playlist, leaving the current song in place. */
+  private unshuffle(): void {
+    let songs = this.playlist ? this.playlist.songs : [];
+
+    if (songs.length == 0) {  // nothing to unshuffle
+      return;
+    }
+
+    let current = songs[this.index];
+
+    songs.sort((a: Song, b: Song) => {
+      if (a['order'] < b['order']) {
+        return -1;
+      } else if (a['order'] > b['order']) {
+        return 1;
+      }
+      return 0;
+    });
+
+    this.index = current['order'];
+  }
+
+  /** Shuffle an array using the Durstenfeld shuffle algorithm. */
+  private shuffleArray(arr: any[]): any[] {
+    for (let i = arr.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  /** Toggle the repeat mode */
+  toggleRepeat(): void {
+    if (this.repeat == RepeatMode.NONE) {
+      this.repeat = RepeatMode.REPEAT;
+    } else if (this.repeat == RepeatMode.REPEAT) {
+      this.repeat = RepeatMode.REPEAT_ONE;
+    } else {
+      this.repeat = RepeatMode.NONE;
+    }
+
+    // sync with server
+    this.prefService.setPreference('repeat', this.repeat);
+  }
+
+  /** Advance to the next song when playback of the current song ends */
+  private onPlaybackEnded() {
+    if (!this.hasNext() && this.repeat == RepeatMode.NONE) {
+      return;
+    }
+
+    if (this.repeat == RepeatMode.REPEAT && !this.hasNext()) {
+      this.setSong(this.playlist.songs[this.index = 0]);
+    } else if (this.repeat != RepeatMode.REPEAT_ONE) {
+      this.setSong(this.getNext());
+    }
+    this.player.play();
   }
 
   get time(): BehaviorSubject<number> {

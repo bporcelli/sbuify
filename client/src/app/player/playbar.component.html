@@ -18,7 +18,7 @@
     <div class="mx-auto form-inline flex-column" id="playback-controls-wrap">
         <ul class="flex-row" id="playback-controls">
             <li>
-                <button class="btn btn-link" title="Shuffle" id="toggle-shuffle">
+                <button class="btn btn-link" title="Shuffle" id="toggle-shuffle" (click)="toggleShuffle()" [ngClass]="{ 'active': isShuffled() }">
                     <i class="fa fa-fw fa-random"></i>
                 </button>
             </li>
@@ -38,7 +38,7 @@
                 </button>
             </li>
             <li>
-                <button class="btn btn-link" title="Repeat" id="toggle-repeat">
+                <button class="btn btn-link" title="Repeat" id="toggle-repeat" (click)="toggleRepeat()" [ngClass]="getRepeatButtonClass()">
                     <i class="fa fa-fw fa-repeat"></i>
                 </button>
             </li>
