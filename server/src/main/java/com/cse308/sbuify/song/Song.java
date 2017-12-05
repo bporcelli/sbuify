@@ -4,6 +4,9 @@ import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
+import com.cse308.sbuify.common.api.Decorable;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.search.annotations.Indexed;
@@ -17,7 +20,8 @@ import java.util.*;
  */
 @Entity
 @Indexed
-public class Song extends CatalogItem implements Queueable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Song extends CatalogItem implements Queueable, Decorable {
 
     @NotNull
     private Integer length;
@@ -54,6 +58,9 @@ public class Song extends CatalogItem implements Queueable {
     @Column(name = "path")
     @JsonIgnore
     private Map<SongQuality, String> files;
+
+    @Transient
+    private Map<String, Object> properties = new HashMap<>();
 
     @JsonIgnore
     @Override
@@ -145,5 +152,29 @@ public class Song extends CatalogItem implements Queueable {
      */
     public String getFilePath(SongQuality quality) {
         return files.get(quality);
+    }
+
+    /**
+     * Get a transient property of this song.
+     */
+    public Object get(String key) {
+        return properties.get(key);
+    }
+
+    /**
+     * "Any getter" required for serialization.
+     * @see <a href="http://www.cowtowncoder.com/blog/archives/2011/07/entry_458.html.">CowTalk</a>
+     */
+    @JsonAnyGetter
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    /**
+     * Set a transient property of this song.
+     */
+    @JsonAnySetter
+    public void set(String key, Object value) {
+        properties.put(key, value);
     }
 }

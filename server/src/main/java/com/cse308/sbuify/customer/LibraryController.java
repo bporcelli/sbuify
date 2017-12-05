@@ -5,6 +5,7 @@ import com.cse308.sbuify.album.AlbumRepository;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.common.TypedCollection;
+import com.cse308.sbuify.common.api.DecorateResponse;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistRepository;
 import com.cse308.sbuify.playlist.PlaylistSong;
@@ -17,7 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/api/customer/library")
@@ -45,6 +48,7 @@ public class LibraryController {
      * @return a 200 response with a list of songs in the body.
      */
     @GetMapping("/songs")
+    @DecorateResponse(type = TypedCollection.class)
     public @ResponseBody TypedCollection getSongs() {
         Customer customer = getCurrentCustomer();
         Playlist library = customer.getLibrary();
@@ -176,7 +180,7 @@ public class LibraryController {
     }
 
     protected static boolean containsSong(List<PlaylistSong> list, Integer songId){
-        return list.stream().anyMatch(object -> object.getSong().getId().equals(songId));
+        return list.stream().anyMatch(object -> ((Song) object.getSong()).getId().equals(songId));
     }
 
     private Album getAlbumById(Integer Id){

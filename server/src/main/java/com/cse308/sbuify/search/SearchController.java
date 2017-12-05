@@ -3,6 +3,7 @@ package com.cse308.sbuify.search;
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.TypedCollection;
+import com.cse308.sbuify.common.api.DecorateResponse;
 import com.cse308.sbuify.label.Label;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.song.Song;
@@ -47,6 +48,7 @@ public class SearchController {
      * @return A list of items matching the search query.
      */
     @GetMapping
+    @DecorateResponse(type = TypedCollection.class)
     public ResponseEntity<?> search(@RequestParam String query,
                                     @RequestParam String type,
                                     @RequestParam(defaultValue = "20") Integer limit,
