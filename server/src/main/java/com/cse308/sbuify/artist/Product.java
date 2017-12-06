@@ -78,4 +78,28 @@ public class Product implements Serializable {
     public void setArtist(Artist artist) {
         this.artist = artist;
     }
+
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof Product)){
+            return false;
+        }
+        Product comp = (Product)obj;
+        if(!this.id.equals(comp.getId())){
+            return false;
+        }
+        if(!this.name.equals(comp.getName())){
+            return false;
+        }
+        if(!this.description.equals(comp.getDescription())){
+            return false;
+        }
+        if(!this.purchaseUrl.equals(comp.getPurchaseUrl())){
+            return false;
+        }
+        if(!this.artist.equals(comp.getArtist())){
+            return false;
+        }
+        return true;
+    }
 }

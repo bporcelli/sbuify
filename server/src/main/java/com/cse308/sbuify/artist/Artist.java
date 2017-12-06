@@ -42,7 +42,7 @@ public class Artist extends CatalogItem implements Followable {
     @NotNull
     private Integer monthlyListeners = 0;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "artist")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "artist", fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<Product> merchandise = new HashSet<>();
 
@@ -85,7 +85,11 @@ public class Artist extends CatalogItem implements Followable {
     }
 
     public void setRelatedArtists(Set<Artist> relatedArtists) {
-        this.relatedArtists = relatedArtists;
+        this.relatedArtists.clear();
+        if(relatedArtists != null){
+            this.relatedArtists.addAll(relatedArtists);
+        }
+
     }
 
     public Integer getMonthlyListeners() {
@@ -101,7 +105,10 @@ public class Artist extends CatalogItem implements Followable {
     }
 
     public void setMerchandise(Set<Product> merchandise) {
-        this.merchandise = merchandise;
+        this.merchandise.clear();
+        if (merchandise != null) {
+            this.merchandise.addAll(merchandise);
+        }
     }
 
     public Biography getBio() {
@@ -125,7 +132,10 @@ public class Artist extends CatalogItem implements Followable {
     }
 
     public void setAlbums(List<Album> albums) {
-        this.albums = albums;
+        this.albums.clear();
+        if(albums != null){
+            this.albums.addAll(albums);
+        }
     }
 
     public Set<String> getAliases() {
@@ -133,7 +143,10 @@ public class Artist extends CatalogItem implements Followable {
     }
 
     public void setAliases(Set<String> aliases) {
-        this.aliases = aliases;
+        this.aliases.clear();
+        if(aliases != null){
+            this.aliases.addAll(aliases);
+        }
     }
 
     @Override
