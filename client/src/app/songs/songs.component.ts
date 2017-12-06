@@ -1,18 +1,18 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { LibraryService } from "../user/library.service";
 import { SongList } from "./song-list";
 import { PlaylistSong } from "../playlist/playlist-song";
 import { Config } from "../config";
-import { Observable } from 'rxjs/Rx';
 import { Song } from "./song";
 import { PlayerService } from "../player/player.service";
 
 @Component({
   templateUrl: './songs.component.html',
 })
-export class SongsComponent implements OnInit, AfterViewInit {
+export class SongsComponent implements OnInit {
 
-  @ViewChild('filterInput') filterInput: ElementRef;
+  /** Current filter value */
+  private filter: string = '';
 
   /** Full list of songs. */
   private unfiltered: Song[] = [];
@@ -38,18 +38,10 @@ export class SongsComponent implements OnInit, AfterViewInit {
     this.nextPage();
   }
 
-  ngAfterViewInit(): void {
-    let filterElement = this.filterInput.nativeElement;
-
-    Observable.fromEvent(filterElement, 'input')
-      .map((event: Event) => event.target['value'].trim())
-      .subscribe((value: string) => this.onFilterChange(value));
-  }
-
   /** Update visible rows when filter changes */
   onFilterChange(value: string = null): void {
     if (value == null) {  // use existing filter value
-      value = this.filterInput.nativeElement.value;
+      value = this.filter;
     }
 
     value = value.toLowerCase();
@@ -59,15 +51,7 @@ export class SongsComponent implements OnInit, AfterViewInit {
     });
 
     this.songList.songs = temp;
-  }
-
-  /** Reset filter */
-  resetFilter(): void {
-    // reset filter input
-    this.filterInput.nativeElement.value = '';
-
-    // trigger update
-    this.onFilterChange();
+    this.filter = value;
   }
 
   /** Toggle playback of the song list */
@@ -113,7 +97,7 @@ export class SongsComponent implements OnInit, AfterViewInit {
     this.onFilterChange();
     this.page += 1;
 
-    if (songs.length < Config.SONGS_PER_PAGE) {
+    if (songs.length < Config.ITEMS_PER_PAGE) {
       this.more = false;
     }
   }
