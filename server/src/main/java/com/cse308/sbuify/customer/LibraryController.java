@@ -58,7 +58,7 @@ public class LibraryController {
      */
     @GetMapping("/songs")
     @DecorateResponse(type = TypedCollection.class)
-    public @ResponseBody TypedCollection getSongs(@RequestParam Integer page) {
+    public @ResponseBody TypedCollection getSongs(@RequestParam(defaultValue = "0") Integer page) {
         Customer customer = getCurrentCustomer();
 
         Page<PlaylistSong> result = playlistSongRepo.getLibrarySongs(customer.getId(),
@@ -132,7 +132,7 @@ public class LibraryController {
      */
     @GetMapping(path = "/albums")
     @DecorateResponse(type = TypedCollection.class)
-    public @ResponseBody TypedCollection getAlbums(@RequestParam Integer page) {
+    public @ResponseBody TypedCollection getAlbums(@RequestParam(defaultValue = "0") Integer page) {
         Customer customer = getCurrentCustomer();
 
         Page<Album> results = albumRepo.getSavedByCustomerId(customer.getId(), PageRequest.of(page, ITEMS_PER_PAGE));

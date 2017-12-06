@@ -71,7 +71,7 @@ public class SearchTest extends AuthenticatedTest {
      */
     @Test
     public void searchArtists() {
-        Artist testArtist = getArtistById(1);
+        Artist testArtist = getArtistById(2);
 
         // use the name of the artist as the search keyword
         String keyword = testArtist.getName();
@@ -96,7 +96,7 @@ public class SearchTest extends AuthenticatedTest {
      */
     @Test
     public void searchArtistsWithOwned() {
-        Artist testArtist = getArtistById(1);
+        Artist testArtist = getArtistById(2);
 
         // use the name of the artist as the search keyword
         String keyword = testArtist.getName();

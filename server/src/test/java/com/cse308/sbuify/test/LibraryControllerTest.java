@@ -7,6 +7,7 @@ import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistRepository;
 import com.cse308.sbuify.playlist.PlaylistSong;
+import com.cse308.sbuify.playlist.PlaylistSongRepository;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.song.SongRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
@@ -14,6 +15,8 @@ import com.cse308.sbuify.user.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +34,7 @@ public class LibraryControllerTest extends AuthenticatedTest {
 
     private static final Integer SAVED_ARTIST_ID = 1;
     private static final Integer SAVED_SONG_ID = 1;
+    private static final int ITEMS_PER_PAGE = 25;
 
     @Autowired
     private AlbumRepository albumRepository;
@@ -41,6 +45,9 @@ public class LibraryControllerTest extends AuthenticatedTest {
     @Autowired
     private PlaylistRepository playlistRepository;
 
+    @Autowired
+    private PlaylistSongRepository playlistSongRepo;
+
     /**
      * Get a customer's saved songs.
      */
@@ -49,20 +56,20 @@ public class LibraryControllerTest extends AuthenticatedTest {
         Customer customer = (Customer) user;
 
         ResponseEntity<List<PlaylistSong>> response =
-                restTemplate.exchange("http://localhost:" + port + "/api/customer/library/songs", HttpMethod.GET,
+                restTemplate.exchange("/api/customer/library/songs", HttpMethod.GET,
                         null, new ParameterizedTypeReference<List<PlaylistSong>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Playlist customerLibrary = customer.getLibrary();
-        // Returns a Persistent Bag
-        List<PlaylistSong> customerPlaylist = customerLibrary.getSongs();
-        // Convert response to arraylist
-        List<PlaylistSong> customerArrayList = new ArrayList<>();
-        customerArrayList.addAll(customerPlaylist);
+        Page<PlaylistSong> result = playlistSongRepo.getLibrarySongs(customer.getId(),
+                PageRequest.of(0, ITEMS_PER_PAGE));
+        List<PlaylistSong> savedSongs = new ArrayList<>();
 
-        List<PlaylistSong> responsePlaylist = response.getBody();
+        for (PlaylistSong ps: result) {
+            savedSongs.add(ps);
+        }
 
-        assertEquals(customerArrayList, responsePlaylist);
+        List<PlaylistSong> responseSongs = response.getBody();
+        assertEquals(savedSongs, responseSongs);
     }
 
     /**
@@ -111,23 +118,22 @@ public class LibraryControllerTest extends AuthenticatedTest {
      */
     @Test
     public void getSavedAlbums(){
-        Customer customer = (Customer)user;
-        Playlist library = customer.getLibrary();
+        Customer customer = (Customer) user;
 
-        List<PlaylistSong> librarySongs = library.getSongs();
-        Set<Album> libraryAlbums = new HashSet<>();
+        Page<Album> firstAlbumPage = albumRepository.getSavedByCustomerId(customer.getId(),
+                PageRequest.of(0, ITEMS_PER_PAGE));
+        List<Album> libraryAlbums = new ArrayList<>();
 
-        for (PlaylistSong song: librarySongs){
-            Album album = song.getSong().getAlbum();
+        for (Album album: firstAlbumPage) {
             libraryAlbums.add(album);
         }
 
-        ResponseEntity<Set<Album>> response =
+        ResponseEntity<List<Album>> response =
                 restTemplate.exchange("/api/customer/library/albums", HttpMethod.GET,null,
-                        new ParameterizedTypeReference<Set<Album>>() {});
+                        new ParameterizedTypeReference<List<Album>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Set<Album> responseAlbum = response.getBody();
+        List<Album> responseAlbum = response.getBody();
         assertEquals(libraryAlbums, responseAlbum);
     }
 

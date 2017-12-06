@@ -24,15 +24,7 @@ public class ArtistControllerTest extends AuthenticatedTest {
     @Autowired
     private ArtistRepository artistRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private BiographyRepository biographyRepository;
-
     private static final String NAME = "test";
-    private static final String DESCRIPTION = "description";
-    private static final String PRODUCT_URL = "www.example.com";
 
     /**
      * Test serialization/deserialization of artists.
@@ -73,8 +65,7 @@ public class ArtistControllerTest extends AuthenticatedTest {
 
     @Test
     public void getArtistInfoTest() {
-        ResponseEntity<Artist> response = restTemplate.getForEntity("http://localhost:" + port + "/api/artists/" + 1,
-                Artist.class);
+        ResponseEntity<Artist> response = restTemplate.getForEntity("/api/artists/" + 1, Artist.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         Artist actual = response.getBody();
@@ -82,6 +73,7 @@ public class ArtistControllerTest extends AuthenticatedTest {
 
         assertEquals(expected, actual);
     }
+
     //todo: change to paginable
     @Test
     public void getRelatedArtist(){
@@ -89,10 +81,10 @@ public class ArtistControllerTest extends AuthenticatedTest {
         params.put("artistId", "1");
 
         ResponseEntity<Set<Artist>> response =
-                restTemplate.exchange("/api/artists/{artistId}/related", HttpMethod.GET ,null , new ParameterizedTypeReference<Set<Artist>>() {}, params);
+                restTemplate.exchange("/api/artists/{artistId}/related", HttpMethod.GET,null,
+                        new ParameterizedTypeReference<Set<Artist>>() {}, params);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        System.out.println(response.getBody());
         assertNotNull(response.getBody());
     }
 
@@ -111,12 +103,10 @@ public class ArtistControllerTest extends AuthenticatedTest {
 
         HttpEntity<Artist> request = new HttpEntity<>(updatedArtist);
         ResponseEntity<Void> response =
-                restTemplate.exchange("/api/artists/{artistId}", HttpMethod.PATCH , request, Void.class, params );
-
+                restTemplate.exchange("/api/artists/{artistId}", HttpMethod.PATCH, request, Void.class, params );
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         Artist dbArtist = getArtistById(1);
-
         assertEquals(NAME, dbArtist.getName());
     }
 
@@ -132,7 +122,7 @@ public class ArtistControllerTest extends AuthenticatedTest {
 
         HttpEntity<Artist> request = new HttpEntity<>(updatedArtist);
         ResponseEntity<Void> response =
-                restTemplate.exchange("/api/artists/{artistId}", HttpMethod.PATCH , request, Void.class, params );
+                restTemplate.exchange("/api/artists/{artistId}", HttpMethod.PATCH, request, Void.class, params);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -166,13 +156,11 @@ public class ArtistControllerTest extends AuthenticatedTest {
         //todo
     }
 
-
     private Artist getArtistById(Integer id) {
         Optional<Artist> optionalArtist = artistRepository.findById(id);
         assertTrue(optionalArtist.isPresent());
         return optionalArtist.get();
     }
-
 
     @Override
     public String getEmail() {

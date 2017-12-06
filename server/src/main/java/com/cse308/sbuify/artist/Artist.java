@@ -76,28 +76,12 @@ public class Artist extends CatalogItem implements Followable {
         return mbid;
     }
 
-    public void setMBID(String MBID) {
-        this.mbid = MBID;
-    }
-
     public Set<Artist> getRelatedArtists() {
         return relatedArtists;
     }
 
-    public void setRelatedArtists(Set<Artist> relatedArtists) {
-        this.relatedArtists.clear();
-        if(relatedArtists != null){
-            this.relatedArtists.addAll(relatedArtists);
-        }
-
-    }
-
     public Integer getMonthlyListeners() {
         return monthlyListeners;
-    }
-
-    public void setMonthlyListeners(Integer monthlyListeners) {
-        this.monthlyListeners = monthlyListeners;
     }
 
     public Set<Product> getMerchandise() {
@@ -129,13 +113,6 @@ public class Artist extends CatalogItem implements Followable {
 
     public List<Album> getAlbums() {
         return albums;
-    }
-
-    public void setAlbums(List<Album> albums) {
-        this.albums.clear();
-        if(albums != null){
-            this.albums.addAll(albums);
-        }
     }
 
     public Set<String> getAliases() {

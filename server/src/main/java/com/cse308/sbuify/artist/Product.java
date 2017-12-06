@@ -79,27 +79,19 @@ public class Product implements Serializable {
         this.artist = artist;
     }
 
+    /** Products are DB entities -- if they have the same PK, they are 'equal' for our purposes */
     @Override
-    public boolean equals(Object obj){
-        if(!(obj instanceof Product)){
-            return false;
-        }
-        Product comp = (Product)obj;
-        if(!this.id.equals(comp.getId())){
-            return false;
-        }
-        if(!this.name.equals(comp.getName())){
-            return false;
-        }
-        if(!this.description.equals(comp.getDescription())){
-            return false;
-        }
-        if(!this.purchaseUrl.equals(comp.getPurchaseUrl())){
-            return false;
-        }
-        if(!this.artist.equals(comp.getArtist())){
-            return false;
-        }
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Product product = (Product) o;
+
+        return id != null ? id.equals(product.id) : product.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

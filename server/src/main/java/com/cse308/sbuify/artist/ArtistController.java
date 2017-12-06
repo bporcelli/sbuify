@@ -43,81 +43,88 @@ public class ArtistController {
     @Autowired
     private ProductRepository productRepository;
 
+    /**
+     * Get basic information about an artist.
+     * @param artistId ID of artist.
+     */
     @GetMapping(path = "/{artistId}")
     public ResponseEntity<?> getArtistInfo(@PathVariable Integer artistId) {
         Optional<Artist> artist = artistRepo.findById(artistId);
-        if (!artist.isPresent())
+        if (!artist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(artist.get(), HttpStatus.OK);
     }
 
+    /**
+     * Get an artist's biography.
+     * @param artistId Artist ID.
+     */
     @GetMapping(path = "/{artistId}/bio")
     public ResponseEntity<?> getArtistBio(@PathVariable Integer artistId) {
         Optional<Artist> artist = artistRepo.findById(artistId);
-        if (!artist.isPresent())
+        if (!artist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(artist.get().getBio(), HttpStatus.OK);
     }
 
+    /**
+     * Get other artists related to an artist.
+     * @param artistId ID of artist.
+     */
     @GetMapping(path = "{artistId}/related")
-    public ResponseEntity<?> getRelatedArtist(@PathVariable Integer artistId) {
+    public ResponseEntity<?> getRelatedArtists(@PathVariable Integer artistId) {
+        Optional<Artist> optionalArtist = artistRepo.findById(artistId);
+        if (!optionalArtist.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // todo: precompute related artists; return artist.getRelatedArtists or result of DB query here.
+        Artist artist = optionalArtist.get();
+        Set<Artist> relatedArtist = new HashSet<>();
+        List<Album> artistAlbum = artist.getAlbums();
+
+        for (Album album: artistAlbum){
+            Set<Song> songs = album.getSongs();
+            for (Song song: songs){
+                Set<Artist> artists = song.getFeaturedArtists();
+                for (Artist featured: artists){
+                    relatedArtist.add(featured);
+                }
+            }
+        }
+
+        TypedCollection featuredArtist = new TypedCollection(relatedArtist, Artist.class);
+        return new ResponseEntity<>(featuredArtist, HttpStatus.OK);
+    }
+
+    /**
+     * Update an artist.
+     * @param artistId ID of artist to update.
+     * @param updated Updated artist object with fields that shouldn't be updated set to null.
+     * @return an empty 200 response on success, otherwise a 404 if the artist is invalid or a 403 if the
+     *         artist can't be edited by the current user.
+     */
+    @PatchMapping(path = "{artistId}")
+    @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
+    public ResponseEntity<?> updateArtist(@PathVariable Integer artistId, @RequestBody Artist updated) {
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
         if (!optionalArtist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Artist artist = optionalArtist.get();
-        Set<Artist> relatedArtist = new HashSet<>();
-        List<Album> artistAlbum = artist.getAlbums();
-
-        for (Album album :artistAlbum){
-            Set<Song> songs = album.getSongs();
-            for (Song song: songs){
-                Set<Artist> artists = song.getFeaturedArtists();
-                for (Artist featureArtist: artists){
-                    if(!featureArtist.equals(artist)){
-                        relatedArtist.add(featureArtist);
-                    }
-                }
-            }
-        }
-
-        TypedCollection featuredArtist = new TypedCollection(relatedArtist, Artist.class);
-
-        return new ResponseEntity<>(featuredArtist, HttpStatus.OK);
-    }
-
-    /**
-     * Update an artist given a partial artist
-     * @param artistId
-     * @param partialArtist
-     * @return Http.OK, successful, Http.NOT_FOUND, cannot find artist, Http.Forbidden, artist not owned by label or not an admin
-     */
-    @PatchMapping(path = "{artistId}")
-    @PreAuthorize("hasAnyRole('ROLE_LABEL','ADMIN')")
-    public ResponseEntity<?> updateArtist(@PathVariable Integer artistId, @RequestBody Artist partialArtist){
-        Optional<Artist> optionalArtist = artistRepo.findById(artistId);
-        if(!optionalArtist.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        Artist artist = optionalArtist.get();
-        if(!underLabelorAdmin(artist)){
+        if (!userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        if(partialArtist.getName() != null){
-            artist.setName(partialArtist.getName());
+        if (updated.getName() != null) {
+            artist.setName(updated.getName());
         }
-        if(partialArtist.getAlbums() != null){
-            artist.setAlbums(partialArtist.getAlbums());
-        }
-        if(partialArtist.getAliases() != null){
-            artist.setAliases(partialArtist.getAliases());
-        }
-        if(partialArtist.getCoverImage() != null){
+        if (updated.getCoverImage() != null) {
             Image image;
-            Base64Image rawImage = (Base64Image) partialArtist.getImage();
+            Base64Image rawImage = (Base64Image) updated.getImage();
             try {
                 image = storageService.save(rawImage.getDataURL());
             } catch (StorageException ex) {
@@ -125,11 +132,8 @@ public class ArtistController {
             }
             artist.setImage(image);
         }
-        if(partialArtist.getMonthlyListeners() != null){
-            artist.setMonthlyListeners(partialArtist.getMonthlyListeners());
-        }
-        if(partialArtist.getRelatedArtists() != null){
-            artist.setRelatedArtists(partialArtist.getRelatedArtists());
+        if (updated.getAliases() != null) {
+            artist.setAliases(updated.getAliases());
         }
 
         artistRepo.save(artist);
@@ -137,83 +141,85 @@ public class ArtistController {
     }
 
     /**
-     * Update artist biography
-     * @param artistId
-     * @param bio
-     * @return Http.OK, successful, Http.NOT_FOUND, cannot find artist, Http.Forbidden, artist not owned by label or not an admin
+     * Update an artist's biography.
+     * @param artistId ID of artist.
+     * @param bio New biography.
+     * @return a 200 response on success, otherwise a 404 if the artist ID is invalid or a 403 if the
+     *         current user can't edit the artist.
      */
     @PutMapping(path = "{artistId}/bio")
-    @PreAuthorize("hasAnyRole('ROLE_LABEL','ADMIN')")
-    public ResponseEntity<?> updateBiography(@PathVariable Integer artistId, @RequestBody Biography bio){
+    @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
+    public ResponseEntity<?> updateBiography(@PathVariable Integer artistId, @RequestBody Biography bio) {
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
-        if(!optionalArtist.isPresent()) {
+        if (!optionalArtist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Artist artist = optionalArtist.get();
-        if(!underLabelorAdmin(artist)){
+        if (!userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
+        // todo: biographies have images; handle image uploads
         artist.setBio(bio);
         artistRepo.save(artist);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
-     * Create a merchandise of an artist
-     * @param artistId
-     * @param merch
-     * @return Http.CREATED, successful, Http.NOT_FOUND, cannot find artist, Http.Forbidden, artist not owned by label or not an admin
+     * Create a new merchandise item for an artist.
+     * @param artistId ID of artist.
+     * @param product New merchandise item.
+     * @return a 201 response containing the saved product on success, otherwise a 404 if the artist ID is
+     *         invalid or a 403 if the current user can't edit the artist.
      */
     @PostMapping(path = "{artistId}/merchandise")
-    @PreAuthorize("hasAnyRole('ROLE_LABEL','ADMIN')")
-    public ResponseEntity<?> addMerchandise(@PathVariable Integer artistId, @RequestBody Product merch){
+    @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
+    public ResponseEntity<?> addMerchandise(@PathVariable Integer artistId, @RequestBody Product product) {
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
-        if(!optionalArtist.isPresent()) {
+        if (!optionalArtist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Artist artist = optionalArtist.get();
-        if(!underLabelorAdmin(artist)){
+        if (!userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        Set<Product> artistMerch = artist.getMerchandise();
-        artistMerch.add(merch);
-        artistRepo.save(artist);
+        product.setArtist(artist);
+        Product saved = productRepository.save(product);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     /**
-     * Update a merchandise
-     * @param artistId
-     * @param itemId
-     * @param productUpdate
-     * @return Http.OK, successful, Http.NOT_FOUND, cannot find artist,
-     *         Http.Forbidden, artist not owned by label or not an admin,
-     *         Http.BAD_REQUEST, artist does not have that merchandise
+     * Update an artist's merchandise.
+     * @param artistId Artist ID.
+     * @param itemId ID of product to update.
+     * @param updated Updated product object, with fields that shouldn't be changed set to null.
+     * @return a 200 response on success, otherwise a 404 if the artist ID is invalid, or a 403 if the
+     *         current user can't edit the merchandise item.
      */
-    @PatchMapping(path = "{artistId]/merchandise/{itemId}")
-    @PreAuthorize("hasAnyRole('ROLE_LABEL','ADMIN')")
-    public ResponseEntity<?> updateMerchandise(@PathVariable(value = "artistId") Integer artistId,
-                                               @PathVariable(value = "idtemId")  Integer itemId,
-                                               @RequestBody Product productUpdate){
+    @PutMapping(path = "{artistId]/merchandise/{itemId}")
+    @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
+    public ResponseEntity<?> updateMerchandise(@PathVariable Integer artistId,
+                                               @PathVariable Integer itemId,
+                                               @RequestBody Product updated) {
+
+        // todo: should we have addProduct/removeProduct methods in artist?
 
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
-        if(!optionalArtist.isPresent()) {
+        if (!optionalArtist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Artist artist = optionalArtist.get();
-        if(!underLabelorAdmin(artist)){
+        if (!userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         Optional<Product> optionalProduct = productRepository.findById(itemId);
-        if(!optionalProduct.isPresent()){
+        if (!optionalProduct.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -223,46 +229,44 @@ public class ArtistController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        productRepository.save(productUpdate);
+        productRepository.save(updated);
 
-        artist.getMerchandise().add(productUpdate);
+        artist.getMerchandise().add(updated);
         artistRepo.save(artist);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
-     *
-     * @param artistId
-     * @param itemId
-     * @return Http.OK, successful, Http.NOT_FOUND, cannot find artist,
-     *         Http.Forbidden, artist not owned by label or not an admin,
-     *         Http.BAD_REQUEST, artist does not have that merchandise
+     * Delete a merchandise item.
+     * @param artistId Artist ID.
+     * @param itemId ID of item to delete.
+     * @return an empty 200 response on success, otherwise a 404 if the artist ID is invalid
+     *         or a 403 if the current user can't delete the specified item.
      */
     @DeleteMapping(path = "{artistId]/merchandise/{itemId}")
-    @PreAuthorize("hasAnyRole('ROLE_LABEL','ADMIN')")
-    public ResponseEntity<?> deleteMerchandise(@PathVariable(value = "artistId") Integer artistId,
-                                               @PathVariable(value = "idtemId")  Integer itemId){
+    @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
+    public ResponseEntity<?> deleteMerchandise(@PathVariable Integer artistId,
+                                               @PathVariable Integer itemId) {
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
-        if(!optionalArtist.isPresent()) {
+        if (!optionalArtist.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Optional<Product> optionalProduct = productRepository.findById(itemId);
+        if (!optionalProduct.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Artist artist = optionalArtist.get();
-        if(!underLabelorAdmin(artist)){
+        if (!userCanEdit(artist)){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        Optional<Product> optionalProduct = productRepository.findById(itemId);
-        if(!optionalProduct.isPresent()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
         Product product = optionalProduct.get();
+        Set<Product> merchandise = artist.getMerchandise();
 
-        Set<Product> artistMerch = artist.getMerchandise();
-
-        if (!artistMerch.remove(product)){
+        if (!merchandise.remove(product)){
            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -271,29 +275,29 @@ public class ArtistController {
     }
 
     /**
-     *
-     * @param artistId
-     * @return Http.OK, successful, Http.NOT_FOUND, cannot find artist,
-     *         Http.Forbidden, artist not owned by label or not an admin,
-     *         Http.BAD_REQUEST, label does not have that artist
+     * Delete an artist.
+     * @param artistId ID of artist to delete.
+     * @return a 200 response on success, otherwise a 404 if the artist ID is invalid or
+     *         a 403 if the current user can't delete the specified artist.
      */
     @DeleteMapping(path = "artists/{artistId}")
-    @PreAuthorize("hasAnyRole('ROLE_LABEL','ADMIN')")
-    public ResponseEntity<?> deleteArtist(@PathVariable(value = "artistId") Integer artistId){
+    @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
+    public ResponseEntity<?> deleteArtist(@PathVariable Integer artistId) {
+        // todo: do not use label.getArtists() -- set artist owner/label to null instead
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
-        if(!optionalArtist.isPresent()) {
+        if (!optionalArtist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Artist artist = optionalArtist.get();
-        if(!underLabelorAdmin(artist)){
+        if (!userCanEdit(artist)){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         LabelOwner label = (LabelOwner)authFacade.getCurrentUser();
         Set<Artist> labelArtists = label.getArtists();
 
-        if(labelArtists.remove(artist)){
+        if (labelArtists.remove(artist)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -301,7 +305,8 @@ public class ArtistController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private boolean underLabelorAdmin(Artist artist){
+    private boolean userCanEdit(Artist artist) {
+        // todo: do not use label.getArtists() -- check artist owner ID instead
         User user = authFacade.getCurrentUser();
         boolean containsArtist = false;
         if (user instanceof LabelOwner){

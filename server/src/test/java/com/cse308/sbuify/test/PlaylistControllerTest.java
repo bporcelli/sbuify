@@ -93,7 +93,7 @@ public class PlaylistControllerTest extends AuthenticatedTest {
 
         // check: does new playlist count equal old count + 1?
         ownedPlaylists = playlistRepository.findAllByOwner_Id(customer.getId());
-        assertEquals(ownedPlaylists.size(), previousSize + 1);
+        assertEquals(previousSize + 1, ownedPlaylists.size());
 
         // check: is saved playlist in ownedPlaylists?
         assertTrue(ownedPlaylists.contains(response.getBody()));
