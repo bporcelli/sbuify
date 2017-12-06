@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Album } from "./album";
 import { PlayerService } from "../player/player.service";
 import { PlayQueueService } from "../player/play-queue.service";
-import { LibraryService } from "../user/library.service";
+import { LibraryService } from "../library/library.service";
 
 @Component({
   selector: '[album-list]',

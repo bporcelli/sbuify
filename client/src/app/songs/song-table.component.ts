@@ -6,7 +6,7 @@ import { Playable } from "../player/playable";
 import { PlayQueueService } from "../player/play-queue.service";
 import { PlayQueue } from "../player/play-queue";
 import { SongList } from "./song-list";
-import { LibraryService } from "../user/library.service";
+import { LibraryService } from "../library/library.service";
 
 @Component({
   selector: '[song-table]',

@@ -8,7 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { CommonModule } from './common/common.module';
 import { BrowseModule } from './browse/browse.module';
-import { ArtistDetailModule } from './artist/artist-detail.module';
+import { ArtistModule } from './artist/artist.module';
 import { PlaylistDetailModule } from './playlist/playlist-detail.module';
 import { SongsModule } from './songs/songs.module';
 import { SearchModule } from './search/search.module';
@@ -27,7 +27,8 @@ import { AlbumModule } from "./album/album.module";
 import { PlayerModule } from "./player/player.module";
 import { PlayerService } from "./player/player.service";
 import { PlayQueueService } from "./player/play-queue.service";
-import {LibraryService} from "./user/library.service";
+import { LibraryService } from "./library/library.service";
+import { LibraryModule } from "./library/library.module";
 
 @NgModule({
   declarations: [
@@ -41,10 +42,11 @@ import {LibraryService} from "./user/library.service";
     APIModule,
     AuthModule,
     BrowseModule,
-    ArtistDetailModule,
+    ArtistModule,
     PlaylistDetailModule,
     SongsModule,
     AlbumModule,
+    LibraryModule,
     SearchModule,
     PlayerModule,
     GuestModule,
