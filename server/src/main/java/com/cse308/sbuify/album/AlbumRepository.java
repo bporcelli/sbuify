@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -37,13 +38,24 @@ public interface AlbumRepository extends PagingAndSortingRepository<Album, Integ
     )
     Page<Album> findRecent(Pageable page);
 
-    @Query(value = "SELECT * FROM album WHERE id IN (" +
+    @Query(
+            value = "SELECT * FROM album WHERE id IN (" +
             "   SELECT DISTINCT s.album_id" +
             "   FROM song s, customer c, playlist_songs ps" +
             "   WHERE ps.playlist_id = c.library_id" +
             "       AND ps.song_id = s.id" +
-            "       AND c.id = ?1)", nativeQuery = true)
-    List<Album> getSavedByCustomerId(Integer customerId);
+            "       AND c.id = :customerId" +
+            ")\n-- #pageable\n",
+            countQuery = "SELECT COUNT(*) FROM album WHERE id IN (" +
+            "   SELECT DISTINCT s.album_id" +
+            "   FROM song s, customer c, playlist_songs ps" +
+            "   WHERE ps.playlist_id = c.library_id" +
+            "       AND ps.song_id = s.id" +
+            "       AND c.id = :customerId" +
+            ")",
+            nativeQuery = true
+    )
+    Page<Album> getSavedByCustomerId(@Param("customerId") Integer customerId, Pageable pageable);
 
     @Query(value = "SELECT COUNT(ps.song_id) = a.num_songs " +
             "FROM album a, album_songs aso, playlist_songs ps, customer c " +

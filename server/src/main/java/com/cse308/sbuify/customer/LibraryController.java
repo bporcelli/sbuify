@@ -31,7 +31,7 @@ import java.util.Optional;
 public class LibraryController {
 
     // todo: avoid grabbing entire library at once; should attempt to add song twice really be a 400?; pagination?
-    private static final Integer SONGS_PER_PAGE = 25;  // todo: make configurable
+    private static final Integer ITEMS_PER_PAGE = 25;  // todo: make configurable
 
     @Autowired
     private PlaylistRepository playlistRepo;
@@ -62,7 +62,7 @@ public class LibraryController {
         Customer customer = getCurrentCustomer();
 
         Page<PlaylistSong> result = playlistSongRepo.getLibrarySongs(customer.getId(),
-                PageRequest.of(page, SONGS_PER_PAGE));
+                PageRequest.of(page, ITEMS_PER_PAGE));
         List<PlaylistSong> songs = new ArrayList<>();
 
         for (PlaylistSong ps: result) {
@@ -127,13 +127,20 @@ public class LibraryController {
 
     /**
      * Return all albums in the user's library.
+     * @param page Page index.
      * @return a 200 response containing a list of artists on success.
      */
     @GetMapping(path = "/albums")
     @DecorateResponse(type = TypedCollection.class)
-    public @ResponseBody TypedCollection getAlbums() {
+    public @ResponseBody TypedCollection getAlbums(@RequestParam Integer page) {
         Customer customer = getCurrentCustomer();
-        List<Album> albums = albumRepo.getSavedByCustomerId(customer.getId());
+
+        Page<Album> results = albumRepo.getSavedByCustomerId(customer.getId(), PageRequest.of(page, ITEMS_PER_PAGE));
+        List<Album> albums = new ArrayList<>();
+
+        for (Album album: results) {
+            albums.add(album);
+        }
         return new TypedCollection(albums, Album.class);
     }
 
@@ -190,7 +197,7 @@ public class LibraryController {
      * @return a 200 response containing the set of artists in the user's library.
      */
     @GetMapping(path = "/artists")
-    public @ResponseBody TypedCollection getArtists(){
+    public @ResponseBody TypedCollection getArtists() {
         Customer customer = getCurrentCustomer();
         List<Artist> savedArtists = artistRepo.getSavedByCustomerId(customer.getId());
         return new TypedCollection(savedArtists, Artist.class);
