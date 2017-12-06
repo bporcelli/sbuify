@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { LibraryService } from "../user/library.service";
-import { SongList } from "./song-list";
+import { LibraryService } from "./library.service";
+import { SongList } from "../songs/song-list";
 import { PlaylistSong } from "../playlist/playlist-song";
 import { Config } from "../config";
-import { Song } from "./song";
+import { Song } from "../songs/song";
 import { PlayerService } from "../player/player.service";
 
 @Component({

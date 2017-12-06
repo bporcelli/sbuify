@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Album } from "./album";
-import { LibraryService } from "../user/library.service";
+import { Album } from "../album/album";
+import { LibraryService } from "./library.service";
 import { Config } from "../config";
 import { BehaviorSubject } from "rxjs/Rx";
 

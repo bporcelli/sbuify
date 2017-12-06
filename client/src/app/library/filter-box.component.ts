@@ -3,7 +3,7 @@ import { Observable } from "rxjs/Rx";
 
 @Component({
   selector: 'filter-box',
-  templateUrl: 'filter-box.component.html'
+  templateUrl: './filter-box.component.html'
 })
 export class FilterBoxComponent implements AfterViewInit {
   @ViewChild('filterInput') filterInput: ElementRef;
