@@ -194,15 +194,21 @@ public class LibraryController {
 
     /**
      * Return all artists in the user's library.
+     * @param page Page index.
      * @return a 200 response containing the set of artists in the user's library.
      */
     @GetMapping(path = "/artists")
     @DecorateResponse(type = TypedCollection.class)
-    public @ResponseBody TypedCollection getArtists() {
-        // todo: paginate
+    public @ResponseBody TypedCollection getArtists(@RequestParam(defaultValue = "0") Integer page) {
         Customer customer = getCurrentCustomer();
-        List<Artist> savedArtists = artistRepo.getSavedByCustomerId(customer.getId());
-        return new TypedCollection(savedArtists, Artist.class);
+
+        Page<Artist> results = artistRepo.getSavedByCustomerId(customer.getId(), PageRequest.of(page, ITEMS_PER_PAGE));
+        List<Artist> artists = new ArrayList<>();
+
+        for (Artist artist: results) {
+            artists.add(artist);
+        }
+        return new TypedCollection(artists, Artist.class);
     }
 
     protected static boolean containsSong(List<PlaylistSong> list, Integer songId){
