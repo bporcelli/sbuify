@@ -1,5 +1,5 @@
 <div *ngIf="artists.length > 0 || pending; else noResultsTemplate" class="row">
-  <div *ngFor="let artist of artists" class="col-md-2 artist-list-item">
+  <div *ngFor="let artist of artists" class="col-sm-6 col-lg-4 col-xl-2 playlist text-center" [contextMenu]="artistMenu" [contextMenuSubject]="artist">
     <a class="playlist-image" [routerLink]="['/artist', artist.id]">
       <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}" width="500" height="500">
       <div class="hover-actions">
@@ -15,3 +15,12 @@
 <ng-template #noResultsTemplate>
   <p>No results found.</p>
 </ng-template>
+
+<context-menu #artistMenu>
+  <ng-template contextMenuItem (execute)="openArtistPage($event.item)">
+    Go to Artist Page
+  </ng-template>
+  <ng-template contextMenuItem let-artist (execute)="toggleFollowing($event.item)">
+    {{ isFollowing(artist) ? 'Unfollow' : 'Follow' }}
+  </ng-template>
+</context-menu>

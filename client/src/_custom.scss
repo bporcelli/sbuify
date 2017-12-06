@@ -470,15 +470,6 @@ ul.artist-list a.artist-name {
     color: $sbu-red;
 }
 
-.artist-list-item {
-    text-align: center;
-}
-
-.artist-list-item a.artist-name {
-    padding-top: map-get($spacers, 3);
-    display: inline-block;
-}
-
 .thumbs-row {
     margin-bottom: 30px;
 }
