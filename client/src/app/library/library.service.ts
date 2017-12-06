@@ -4,7 +4,8 @@ import { APIClient } from "../api/api-client.service";
 import { Queueable } from "../player/queueable";
 import { Observable } from "rxjs/Rx";
 import { PlaylistSong } from "../playlist/playlist-song";
-import {Album} from "../album/album";
+import { Album } from "../album/album";
+import { Artist } from "../artist/artist";
 
 @Injectable()
 export class LibraryService {
@@ -98,5 +99,11 @@ export class LibraryService {
     let params = new HttpParams();
     params = params.set("page", page.toString());
     return this.client.get<Album[]>('/api/customer/library/albums', { params: params });
+  }
+
+  getArtists(page: number): Observable<Artist[]> {
+    let params = new HttpParams();
+    params = params.set("page", page.toString());
+    return this.client.get<Artist[]>('/api/customer/library/artists', { params: params });
   }
 }
