@@ -1,9 +1,6 @@
 package com.cse308.sbuify.test;
 
-import com.cse308.sbuify.artist.Artist;
-import com.cse308.sbuify.artist.ArtistRepository;
-import com.cse308.sbuify.artist.Biography;
-import com.cse308.sbuify.artist.BiographyRepository;
+import com.cse308.sbuify.artist.*;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +25,14 @@ public class ArtistControllerTest extends AuthenticatedTest {
     private ArtistRepository artistRepository;
 
     @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
     private BiographyRepository biographyRepository;
+
+    private static final String NAME = "test";
+    private static final String DESCRIPTION = "description";
+    private static final String PRODUCT_URL = "www.example.com";
 
     /**
      * Test serialization/deserialization of artists.
@@ -94,22 +98,72 @@ public class ArtistControllerTest extends AuthenticatedTest {
 
     @Test
     public void updateArtistBio(){
+        //todo
+    }
 
-        Biography mockBio = new Biography();
-        mockBio.setText("THIS IS A NEW BIO");
-        Artist newBioArtist = new Artist();
-        newBioArtist.setBio(mockBio);
+    @Test
+    public void updateArtistName(){
+        Artist updatedArtist = new Artist();
+        updatedArtist.setName(NAME);
+
         Map<String, String> params = new HashMap<>();
         params.put("artistId", "1");
-        HttpEntity<Artist> artist = new HttpEntity<>(newBioArtist);
+
+        HttpEntity<Artist> request = new HttpEntity<>(updatedArtist);
         ResponseEntity<Void> response =
-                restTemplate.exchange("/api/label/artists/{artistId}", HttpMethod.PATCH, artist, Void.class, params);
+                restTemplate.exchange("/api/artists/{artistId}", HttpMethod.PATCH , request, Void.class, params );
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Artist dbArtist = artistRepository.findById(1).get();
+        Artist dbArtist = getArtistById(1);
 
-        assertEquals(dbArtist.getBio(), mockBio);
+        assertEquals(NAME, dbArtist.getName());
+    }
 
+    @Test
+    public void updateArtistAlias(){
+        Artist updatedArtist = new Artist();
+        Set<String> updatedAlias = new HashSet<>();
+        updatedAlias.add(NAME);
+        updatedArtist.setAliases(updatedAlias);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("artistId", "1");
+
+        HttpEntity<Artist> request = new HttpEntity<>(updatedArtist);
+        ResponseEntity<Void> response =
+                restTemplate.exchange("/api/artists/{artistId}", HttpMethod.PATCH , request, Void.class, params );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Artist dbArtist = getArtistById(1);
+
+        assertEquals(updatedAlias, dbArtist.getAliases());
+    }
+
+    @Test
+    public void updateImage(){
+        //todo
+    }
+
+    @Test
+    public void addMerchandise(){
+        //todo
+    }
+
+    @Test
+    public void removeMerchandise(){
+        //todo
+    }
+
+    @Test
+    public void updateMerchandise(){
+        //todo
+    }
+
+    @Test
+    public void removeArtist(){
+        //todo
     }
 
 

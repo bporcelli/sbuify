@@ -85,6 +85,14 @@ public class Biography implements Serializable {
         return jsonString;
     }
 
+    public Artist getArtist() {
+        return artist;
+    }
+
+    public void setArtist(Artist artist) {
+        this.artist = artist;
+    }
+
     @Override
     public boolean equals(Object that) {
         // todo: need more than id?
