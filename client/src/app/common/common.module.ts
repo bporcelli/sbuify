@@ -12,6 +12,7 @@ import { LeftSidebarComponent } from './left-sidebar.component';
 import { UpgradeAccountComponent } from './upgrade-account.component';
 import { CreatePlaylistComponent } from './create-playlist.component';
 import { FormatDurationPipe } from "./format-duration.pipe";
+import { FilterBoxComponent } from "./filter-box.component";
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { FormatDurationPipe } from "./format-duration.pipe";
     LeftSidebarComponent,
     UpgradeAccountComponent,
     CreatePlaylistComponent,
-    FormatDurationPipe
+    FormatDurationPipe,
+    FilterBoxComponent
   ],
   imports: [
     CommonRoutingModule,
@@ -31,7 +33,8 @@ import { FormatDurationPipe } from "./format-duration.pipe";
   exports: [
     NavbarComponent,
     LeftSidebarComponent,
-    FormatDurationPipe
+    FormatDurationPipe,
+    FilterBoxComponent
   ]
 })
 export class CommonModule {}

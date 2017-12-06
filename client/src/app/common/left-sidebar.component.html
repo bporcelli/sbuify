@@ -1,19 +1,16 @@
 <div class="left-sidebar-item">
     <h6 class="nav-title">Main</h6>
-    
+
     <ul class="nav sidebar-nav flex-column">
         <li class="nav-item">
             <a class="nav-link" routerLink="/browse" routerLinkActive="active">Browse</a>
         </li>
-        <!-- <li class="nav-item">
-            <a class="nav-link" href="#">Radio</a> 
-        </li> -->
     </ul>
 </div>
 
 <div class="left-sidebar-item">
     <h6 class="nav-title">Your Library</h6>
-    
+
     <ul class="nav sidebar-nav flex-column">
         <li class="nav-item">
             <a class="nav-link" href="#">Recently Played</a>
@@ -22,13 +19,10 @@
             <a class="nav-link" routerLink="/songs" routerLinkActive="active">Songs</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Albums</a>
+            <a class="nav-link" routerLink="/albums" routerLinkActive="active">Albums</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="#">Artists</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Stations</a> 
         </li>
     </ul>
 </div>
@@ -40,7 +34,7 @@
             <i class="fa fa-plus-square-o"></i>
         </a>
     </h6>
-    
+
     <ul class="nav sidebar-nav flex-column" *ngIf="playlists$ | async as playlists">
         <li *ngFor="let playlist of playlists" class="nav-item">
             <a class="nav-link" [routerLink]="['playlist', playlist.id]" routerLinkActive="active">{{ playlist.name }}</a>

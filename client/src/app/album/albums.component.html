@@ -1,0 +1,20 @@
+<h1 class="display-4 page-heading">Albums</h1>
+
+<filter-box (onFilterChanged)="onFilterChange($event)"></filter-box>
+
+<div class="mt-4"
+    album-list
+    [albums]="albums | async"
+    [pending]="pending"
+    infiniteScroll
+    [infiniteScrollContainer]="'main'"
+    [infiniteScrollDistance]="1"
+    [infiniteScrollThrottle]="50"
+    [fromRoot]="true"
+    (scrolled)="nextPage()">
+</div>
+
+<div class="results-spinner mt-3 col-12" [hidden]="!pending">
+  <i class="fa fa-spinner fa-spin"></i>
+  <span>Loading...</span>
+</div>
