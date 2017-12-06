@@ -27,16 +27,7 @@
     </ngb-tab>
     <ngb-tab id="artist" title="Artists">
       <ng-template ngbTabContent>
-        <div *ngIf="results | async">
-          <div *ngIf="results.value.length > 0 || pending; else noResultsTemplate" class="row">
-            <div *ngFor="let artist of results.value" class="col-md-2 artist-list-item">
-              <a class="d-block" [routerLink]="['/artist', artist.id]">
-                <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}" width="500" height="500">
-              </a>
-              <a class="artist-name" [routerLink]="['/artist', artist.id]" title="{{ artist.name }}">{{ artist.name }}</a>
-            </div>
-          </div>
-        </div>
+        <div artist-grid [artists]="results | async" [pending]="pending"></div>
       </ng-template>
     </ngb-tab>
     <ngb-tab id="playlist" title="Playlists">

@@ -7,16 +7,18 @@ import { SearchRoutingModule } from './search-routing.module';
 import { CommonModule as ACommonModule } from "../common/common.module";
 import { SongsModule } from "../songs/songs.module";
 import { AlbumModule } from "../album/album.module";
+import { ArtistModule } from "../artist/artist.module";
 
 @NgModule({
   imports: [
-    NgbModule,
     SearchRoutingModule,
     CommonModule,
     ACommonModule,
+    NgbModule,
+    InfiniteScrollModule,
     SongsModule,
     AlbumModule,
-    InfiniteScrollModule
+    ArtistModule
   ],
   declarations: [
     SearchComponent

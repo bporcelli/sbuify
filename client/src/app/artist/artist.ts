@@ -18,7 +18,8 @@ export class Artist extends CatalogItem {
     public aliases: Array<string>,
     public monthlyListeners: number,
     public bio: Biography,
-    public coverImage: Image
+    public coverImage: Image,
+    public popularSongs: any
   ) {
     super(id, name, createdDate, active, image, owner);
   }

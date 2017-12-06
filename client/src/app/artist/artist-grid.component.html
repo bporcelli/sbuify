@@ -1,0 +1,17 @@
+<div *ngIf="artists.length > 0 || pending; else noResultsTemplate" class="row">
+  <div *ngFor="let artist of artists" class="col-md-2 artist-list-item">
+    <a class="playlist-image" [routerLink]="['/artist', artist.id]">
+      <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}" width="500" height="500">
+      <div class="hover-actions">
+        <button type="button" class="btn btn-link" title="Play" (click)="togglePlayback($event, artist)">
+          <i class="fa fa-3x fa-fw" [ngClass]="isPlaying(artist) ? 'fa-pause-circle-o' : 'fa-play-circle-o'"></i>
+        </button>
+      </div>
+    </a>
+    <a class="artist-name" [routerLink]="['/artist', artist.id]" title="{{ artist.name }}">{{ artist.name }}</a>
+  </div>
+</div>
+
+<ng-template #noResultsTemplate>
+  <p>No results found.</p>
+</ng-template>
