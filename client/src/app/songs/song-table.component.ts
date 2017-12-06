@@ -6,6 +6,7 @@ import { Playable } from "../player/playable";
 import { PlayQueueService } from "../player/play-queue.service";
 import { PlayQueue } from "../player/play-queue";
 import { SongList } from "./song-list";
+import {LibraryService} from "../user/library.service";
 
 @Component({
   selector: '[song-table]',
@@ -22,9 +23,12 @@ export class SongTableComponent {
   /** Boolean flag to indicate whether the songs for the table are loading */
   @Input() pending: boolean;
 
-  constructor(private ps: PlayerService,
-              private pqs: PlayQueueService,
-              private router: Router) {}
+  constructor(
+    private ps: PlayerService,
+    private pqs: PlayQueueService,
+    private router: Router,
+    private libService: LibraryService
+  ) {}
 
   /**
    * Determine whether a song is currently playing.
@@ -67,18 +71,28 @@ export class SongTableComponent {
   }
 
   /** Enqueue a song. */
-  enqueue(song: Song): void {
+  addToQueue(song: Song): void {
     this.pqs.add(song);
   }
 
   /** Remove an enqueued song. */
-  remove(song: Song): void {
+  removeFromQueue(song: Song): void {
     this.pqs.remove(song);
   }
 
   /** Check whether a song is enqueued */
   isEnqueued(item: any): boolean {
     return item != null && item['queued'];
+  }
+
+  /** Save a song to or remove a song from the customer's library. */
+  saveOrRemove(song: Song): void {
+    this.libService.saveOrRemove(song);
+  }
+
+  /** Check whether a song is saved */
+  isSaved(item: any): boolean {
+    return item != null && this.libService.isSaved(item);
   }
 
   /** Open the album page for a song */

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Album } from "./album";
 import { PlayerService } from "../player/player.service";
 import { PlayQueueService } from "../player/play-queue.service";
+import { LibraryService } from "../user/library.service";
 
 @Component({
   selector: '[album-list]',
@@ -12,9 +13,12 @@ export class AlbumListComponent {
   @Input() albums: Array<Album>;
   @Input() pending: boolean;
 
-  constructor(private ps: PlayerService,
-              private pqs: PlayQueueService,
-              private router: Router) {}
+  constructor(
+    private ps: PlayerService,
+    private pqs: PlayQueueService,
+    private libService: LibraryService,
+    private router: Router
+  ) {}
 
   toggleAlbumPlayback(event: Event, album: Album) {
     event.stopPropagation();
@@ -38,6 +42,16 @@ export class AlbumListComponent {
 
   isPlaying(album: Album) {
     return this.ps.isPlaying(album);
+  }
+
+  /** Save an album to or remove an album from the customer's library. */
+  saveOrRemove(album: Album): void {
+    this.libService.saveOrRemove(album);
+  }
+
+  /** Check: is the given album saved in the customer's library? */
+  isSaved(album: Album): boolean {
+    return album != null && this.libService.isSaved(album);
   }
 
   /** Add album to play queue */

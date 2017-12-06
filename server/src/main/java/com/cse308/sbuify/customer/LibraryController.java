@@ -114,6 +114,7 @@ public class LibraryController {
      * @return a 200 response containing a list of artists on success.
      */
     @GetMapping(path = "/albums")
+    @DecorateResponse(type = TypedCollection.class)
     public @ResponseBody TypedCollection getAlbums() {
         Customer customer = getCurrentCustomer();
         List<Album> albums = albumRepo.getSavedByCustomerId(customer.getId());

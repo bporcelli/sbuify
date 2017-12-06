@@ -44,4 +44,13 @@ public interface AlbumRepository extends PagingAndSortingRepository<Album, Integ
             "       AND ps.song_id = s.id" +
             "       AND c.id = ?1)", nativeQuery = true)
     List<Album> getSavedByCustomerId(Integer customerId);
+
+    @Query(value = "SELECT COUNT(ps.song_id) = a.num_songs " +
+            "FROM album a, album_songs aso, playlist_songs ps, customer c " +
+            "WHERE ps.playlist_id = c.library_id" +
+            "   AND aso.song_id = ps.song_id" +
+            "   AND aso.album_id = a.id" +
+            "   AND a.id = ?2" +
+            "   AND c.id = ?1", nativeQuery = true)
+    Integer isSavedByUser(Integer userId, Integer albumId);
 }

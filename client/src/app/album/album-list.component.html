@@ -3,8 +3,11 @@
     <a class="playlist-image" href="#">
       <img class="img-fluid" src="/static/i/{{ album.image ? album.image.id : 1 }}/catalog" alt="{{ album.name }}" width="500" height="500">
       <div class="hover-actions">
-        <button type="button" class="btn btn-link remove-song" title="Remove" (click)="$event.preventDefault();">
-          <i class="fa fa-3x fa-fw fa-check"></i>
+        <button type="button" class="btn btn-link"
+                [title]="isSaved(album) ? 'Remove' : 'Save'"
+                [ngClass]="isSaved(album) ? 'remove-song' : 'add-song'"
+                (click)="$event.preventDefault(); saveOrRemove(album)">
+          <i class="fa fa-3x fa-fw" [ngClass]="isSaved(album) ? 'fa-check' : 'fa-plus'"></i>
         </button>
         <button type="button" class="btn btn-link" title="Play" (click)="toggleAlbumPlayback($event, album)">
           <i class="fa fa-3x fa-fw" [ngClass]="getPlayButtonClass(album)"></i>
@@ -32,5 +35,9 @@
   </ng-template>
   <ng-template contextMenuItem (execute)="openAlbumPage($event.item)">
     Go to Album
+  </ng-template>
+  <ng-template contextMenuItem divider="true"></ng-template>
+  <ng-template contextMenuItem let-album (execute)="saveOrRemove($event.item)">
+    {{ isSaved(album) ? 'Remove from Library' : 'Save to Library' }}
   </ng-template>
 </context-menu>

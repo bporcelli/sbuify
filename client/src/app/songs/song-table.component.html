@@ -16,8 +16,8 @@
         <button type="button" class="btn btn-link play-button" title="Play" (click)="togglePlayback(i)">
           <i class="fa fa-lg fa-fw" [ngClass]="getPlayButtonClass(song)"></i>
         </button>
-        <button type="button" class="btn btn-link remove-song" title="Remove">
-          <i class="fa fa-lg fa-fw fa-check"></i>
+        <button type="button" class="btn btn-link" [title]="isSaved(song) ? 'Remove' : 'Save'" [ngClass]="isSaved(song) ? 'remove-song' : 'add-song'" (click)="saveOrRemove(song)">
+          <i class="fa fa-lg fa-fw" [ngClass]="isSaved(song) ? 'fa-check' : 'fa-plus'"></i>
         </button>
       </td>
       <td class="title">{{ song.name }}</td>
@@ -40,18 +40,22 @@
 </table>
 
 <context-menu #songMenu>
-  <ng-template contextMenuItem let-song (execute)="enqueue($event.item)">
+  <ng-template contextMenuItem (execute)="addToQueue($event.item)">
     Add to Play Queue
   </ng-template>
   <ng-template contextMenuItem [divider]="true"></ng-template>
-  <ng-template contextMenuItem let-song (execute)="openArtistPage($event.item)">
+  <ng-template contextMenuItem (execute)="openArtistPage($event.item)">
     Go to Artist
   </ng-template>
-  <ng-template contextMenuItem let-song (execute)="openAlbumPage($event.item)">
+  <ng-template contextMenuItem (execute)="openAlbumPage($event.item)">
     Go to Album
   </ng-template>
+  <ng-template contextMenuItem [divider]="true"></ng-template>
+  <ng-template contextMenuItem let-song (execute)="saveOrRemove($event.item)">
+    {{ isSaved(song) ? 'Remove from Library' : 'Save to Library' }}
+  </ng-template>
   <ng-template contextMenuItem [divider]="true" [visible]="isEnqueued"></ng-template>
-  <ng-template contextMenuItem let-song [visible]="isEnqueued" (execute)="remove($event.item)">
+  <ng-template contextMenuItem [visible]="isEnqueued" (execute)="removeFromQueue($event.item)">
     Remove from Play Queue
   </ng-template>
 </context-menu>

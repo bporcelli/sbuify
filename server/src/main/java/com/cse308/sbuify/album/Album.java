@@ -3,20 +3,20 @@ package com.cse308.sbuify.album;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Queueable;
+import com.cse308.sbuify.common.api.Decorable;
 import com.cse308.sbuify.song.Song;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Indexed
-public class Album extends CatalogItem implements Queueable {
+public class Album extends CatalogItem implements Queueable, Decorable {
 
     private Date releaseDate;
 
@@ -39,6 +39,9 @@ public class Album extends CatalogItem implements Queueable {
     @Enumerated(value = EnumType.STRING)
     @NotNull
     private AlbumType type;  // todo: make searchable?
+
+    @Transient
+    private Map<String, Object> properties = new HashMap<>();
 
     public Album() {}
 
@@ -105,5 +108,28 @@ public class Album extends CatalogItem implements Queueable {
     @JsonIgnore
     public Collection<Song> getItems() {
         return this.songs;
+    }
+
+    /**
+     * Transient properties of the album.
+     */
+    @JsonAnyGetter
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    /**
+     * Get a specific transient property.
+     */
+    public Object get(String key) {
+        return properties.get(key);
+    }
+
+    /**
+     * Set a transient property.
+     */
+    @JsonAnySetter
+    public void set(String key, Object value) {
+        properties.put(key, value);
     }
 }
