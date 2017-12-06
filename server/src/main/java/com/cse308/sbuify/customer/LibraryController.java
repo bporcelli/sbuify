@@ -30,7 +30,7 @@ import java.util.Optional;
 @RequestMapping(path = "/api/customer/library")
 public class LibraryController {
 
-    // todo: avoid grabbing entire library at once; should attempt to add song twice really be a 400?; pagination?
+    // todo: avoid grabbing entire library at once; should attempt to add song twice really be a 400?
     private static final Integer ITEMS_PER_PAGE = 25;  // todo: make configurable
 
     @Autowired
@@ -197,7 +197,9 @@ public class LibraryController {
      * @return a 200 response containing the set of artists in the user's library.
      */
     @GetMapping(path = "/artists")
+    @DecorateResponse(type = TypedCollection.class)
     public @ResponseBody TypedCollection getArtists() {
+        // todo: paginate
         Customer customer = getCurrentCustomer();
         List<Artist> savedArtists = artistRepo.getSavedByCustomerId(customer.getId());
         return new TypedCollection(savedArtists, Artist.class);

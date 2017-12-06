@@ -43,4 +43,13 @@ public interface SongRepository  extends CrudRepository<Song, Integer> {
             "THEN 1 " +
             "ELSE 0 END", nativeQuery = true)
     Integer isSavedByUser(Integer songId, Integer userId);
+
+    @Query(value = "SELECT s.* " +
+            "FROM song s, album a, artist ar " +
+            "WHERE ar.id = :artistId" +
+            "   AND a.artist_id = ar.id" +
+            "   AND s.album_id = a.id " +
+            "ORDER BY s.play_count DESC " +
+            "LIMIT 10", nativeQuery = true)
+    List<Song> getPopularByArtist(@Param("artistId") Integer artistId);
 }

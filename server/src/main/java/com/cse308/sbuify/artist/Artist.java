@@ -3,9 +3,12 @@ package com.cse308.sbuify.artist;
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Followable;
+import com.cse308.sbuify.common.api.Decorable;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -13,17 +16,12 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Indexed
-public class Artist extends CatalogItem implements Followable {
+public class Artist extends CatalogItem implements Followable, Decorable {
 
-    // todo: popular songs (not appropriate to maintain in a separate table unless
-    // we can make it a view)
     // todo: monthly listeners (does it really make sense to make this a property?)
 
     @NotNull
@@ -57,6 +55,9 @@ public class Artist extends CatalogItem implements Followable {
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "album_id"))
     @JsonIgnore
     private List<Album> albums = new ArrayList<>();
+
+    @Transient
+    private Map<String, Object> properties = new HashMap<>();
 
     /** Followers. */
     @ManyToMany
@@ -139,5 +140,28 @@ public class Artist extends CatalogItem implements Followable {
     @Override
     public Boolean isFollowedBy(Customer customer) {
         return this.followers.contains(customer);
+    }
+
+    /**
+     * Get all transient properties of the artist.
+     */
+    @JsonAnyGetter
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    /**
+     * Get a specific transient property of the artist.
+     */
+    public Object get(String key) {
+        return properties.get(key);
+    }
+
+    /**
+     * Set a transient property of the artist.
+     */
+    @JsonAnySetter
+    public void set(String key, Object value) {
+        properties.put(key, value);
     }
 }
