@@ -1,6 +1,8 @@
 <h1 class="display-4 page-heading">Songs</h1>
 
-<button type="button" class="btn btn-wide btn-primary" id="play-songs">Play</button>
+<button type="button" class="btn btn-wide btn-primary" id="play-songs" (click)="togglePlayback()">
+  {{ isPlaying() ? 'Pause' : 'Play' }}
+</button>
 
 <div class="filter-box">
     <label for="filter">
@@ -8,13 +10,24 @@
         <span class="sr-only">Filter Songs</span>
     </label>
 
-    <input type="text" class="form-control" name="filter" id="filter" placeholder="Filter...">
+    <input type="text" class="form-control" name="filter" id="filter" placeholder="Filter..." #filterInput>
 
-    <a href="#" class="clear-filter" title="Remove Filter">
+    <button class="clear-filter btn btn-link" title="Remove Filter" (click)="resetFilter()" [hidden]="!filterInput.value">
         <i class="fa fa-fw fa-times-circle"></i>
         <span class="sr-only">Remove Filter</span>
-    </a>
+    </button>
 </div>
 
-<!-- todo: get songs from server -->
-<div class="mt-4" song-table [playlist]="null"></div>
+<section class="mt-4"
+     infiniteScroll
+     [infiniteScrollDistance]="1"
+     [infiniteScrollThrottle]="50"
+     [infiniteScrollContainer]="'main'"
+     [fromRoot]="true"
+     (scrolled)="nextPage()">
+  <div song-table [playlist]="songs" [pending]="pending"></div>
+  <div class="results-spinner mt-3" [hidden]="!pending">
+    <i class="fa fa-spinner fa-spin"></i>
+    <span>Loading...</span>
+  </div>
+</section>

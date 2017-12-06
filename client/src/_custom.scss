@@ -345,9 +345,8 @@ ul#playback-controls li {
 }
 
 .filter-box .clear-filter {
-    display: none;
-    right: 15px;
-    top: 9px;
+  top: 0;
+  right: 0;
 }
 
 .btn.play-button, .btn.remove-song, .btn.add-song {

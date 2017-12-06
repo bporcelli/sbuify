@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContextMenuModule } from 'ngx-contextmenu';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { CommonModule as ACommonModule } from "../common/common.module";
 import { SongsComponent } from './songs.component';
 import { SongsRoutingModule } from './songs-routing.module';
@@ -12,7 +13,8 @@ import { ToSongListPipe } from "./to-song-list.pipe";
     SongsRoutingModule,
     CommonModule,
     ACommonModule,
-    ContextMenuModule
+    ContextMenuModule,
+    InfiniteScrollModule
   ],
   declarations: [
     SongsComponent,

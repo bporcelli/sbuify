@@ -6,7 +6,7 @@ import { Playable } from "../player/playable";
 import { PlayQueueService } from "../player/play-queue.service";
 import { PlayQueue } from "../player/play-queue";
 import { SongList } from "./song-list";
-import {LibraryService} from "../user/library.service";
+import { LibraryService } from "../user/library.service";
 
 @Component({
   selector: '[song-table]',
@@ -34,7 +34,7 @@ export class SongTableComponent {
    * Determine whether a song is currently playing.
    * @returns {boolean}
    */
-  isPlaying(song: Song): boolean {  // must pass curSong to make idempotent
+  isPlaying(song: Song): boolean {
     return this.ps.isPlaying(song);
   }
 

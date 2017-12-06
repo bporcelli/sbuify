@@ -7,9 +7,9 @@ import { Playable } from "../player/playable";
 let id: number = 0;
 
 export class SongList implements Playable {
-  constructor(public songs: Array<Song>) {}
+  public id: number = 0;
 
-  get id(): number {
-    return id++;
+  constructor(public songs: Array<Song>) {
+    this.id = id++;
   }
 }

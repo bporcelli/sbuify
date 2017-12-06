@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 import { APIClient } from "../api/api-client.service";
 import { Queueable } from "../player/queueable";
+import { Observable } from "rxjs/Rx";
+import { PlaylistSong } from "../playlist/playlist-song";
 
 @Injectable()
 export class LibraryService {
@@ -82,5 +85,11 @@ export class LibraryService {
   private handleError(action: string, err: any) {
     // todo: display error message
     console.log(action, 'failed. error was:', err);
+  }
+
+  getSongs(page: number): Observable<PlaylistSong[]> {
+    let params = new HttpParams();
+    params = params.set("page", page.toString());
+    return this.client.get<PlaylistSong[]>('/api/customer/library/songs', { params: params });
   }
 }

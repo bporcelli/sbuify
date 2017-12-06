@@ -9,15 +9,19 @@ import com.cse308.sbuify.common.api.DecorateResponse;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.playlist.PlaylistRepository;
 import com.cse308.sbuify.playlist.PlaylistSong;
+import com.cse308.sbuify.playlist.PlaylistSongRepository;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.song.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +31,7 @@ import java.util.Optional;
 public class LibraryController {
 
     // todo: avoid grabbing entire library at once; should attempt to add song twice really be a 400?; pagination?
+    private static final Integer SONGS_PER_PAGE = 25;  // todo: make configurable
 
     @Autowired
     private PlaylistRepository playlistRepo;
@@ -43,16 +48,27 @@ public class LibraryController {
     @Autowired
     private ArtistRepository artistRepo;
 
+    @Autowired
+    private PlaylistSongRepository playlistSongRepo;
+
     /**
      * Get the songs in the customer's library.
+     * @param page Page index.
      * @return a 200 response with a list of songs in the body.
      */
     @GetMapping("/songs")
     @DecorateResponse(type = TypedCollection.class)
-    public @ResponseBody TypedCollection getSongs() {
+    public @ResponseBody TypedCollection getSongs(@RequestParam Integer page) {
         Customer customer = getCurrentCustomer();
-        Playlist library = customer.getLibrary();
-        return new TypedCollection(library.getSongs(), PlaylistSong.class);
+
+        Page<PlaylistSong> result = playlistSongRepo.getLibrarySongs(customer.getId(),
+                PageRequest.of(page, SONGS_PER_PAGE));
+        List<PlaylistSong> songs = new ArrayList<>();
+
+        for (PlaylistSong ps: result) {
+            songs.add(ps);
+        }
+        return new TypedCollection(songs, PlaylistSong.class);
     }
 
     /**
