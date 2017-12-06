@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import static org.hibernate.search.annotations.IndexedEmbedded.DEFAULT_NULL_TOKEN;
 
 @MappedSuperclass
-public abstract class CatalogItem implements Serializable {
+public abstract class CatalogItem implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue
@@ -141,5 +141,10 @@ public abstract class CatalogItem implements Serializable {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

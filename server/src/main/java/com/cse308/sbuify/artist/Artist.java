@@ -20,7 +20,7 @@ import java.util.*;
 
 @Entity
 @Indexed
-public class Artist extends CatalogItem implements Followable, Decorable {
+public class Artist extends CatalogItem implements Followable, Decorable, Cloneable {
 
     // todo: monthly listeners (does it really make sense to make this a property?)
 
@@ -163,5 +163,12 @@ public class Artist extends CatalogItem implements Followable, Decorable {
     @JsonAnySetter
     public void set(String key, Object value) {
         properties.put(key, value);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Artist clone = (Artist) super.clone();
+        clone.properties = new HashMap<>();
+        return clone;
     }
 }
