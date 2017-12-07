@@ -84,11 +84,11 @@ export class PlaylistListComponent implements OnInit {
 
   /** Delete a playlist or folder */
   delete(item: any): void {
-    if (item.folder) {
-      console.log('would delete folder', item);
-    } else {
-      console.log('would delete playlist', item);
-    }
+    this.playlistService.delete(item)
+      .subscribe(
+        () => {},
+        (err: any) => this.handleError(err)
+      );
   }
 
   private handleError(err: any) {

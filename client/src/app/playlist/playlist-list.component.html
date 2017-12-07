@@ -7,6 +7,7 @@
 
 <ng-container *ngIf="playlists | async as playlists">
   <ul class="nav sidebar-nav flex-column" *ngIf="playlists.length > 0; else noPlaylists">
+    <!-- todo: different template for playlist folders -->
     <li *ngFor="let playlist of playlists" class="nav-item" [contextMenu]="playlistMenu" [contextMenuSubject]="playlist">
       <a class="nav-link" [routerLink]="['playlist', playlist.id]" routerLinkActive="active">{{ playlist.name }}</a>
     </li>
@@ -36,6 +37,6 @@
 <ng-template #noPlaylists>
   <div id="no-playlists-message" class="text-center mt-4">
     <p>You don't have any playlists yet.</p>
-    <button class="btn btn-primary btn-wide" (click)="openModal()">Create a Playlist</button>
+    <button class="btn btn-primary btn-wide" (click)="openPlaylistModal()">Create a Playlist</button>
   </div>
 </ng-template>

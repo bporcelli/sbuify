@@ -37,10 +37,31 @@ export class PlaylistService {
       });
   }
 
-  private initPlaylists(playlists: any[]): void {
-    console.log('got playlists from server:');
-    console.log(playlists);
+  /** Delete a playlist or folder. */
+  delete(item: any) {
+    let endpoint: string;
 
+    if (item.folder) {
+      endpoint = '/api/playlist-folders/' + item.id;
+    } else {
+      endpoint = '/api/playlists/' + item.id;
+    }
+
+    return this.client.delete(endpoint)
+      .map(() => {
+        // remove playlist/folder from local cache on success
+        let playlists = this._playlists.value;
+        for (let i = 0; i < playlists.length; i++) {
+          if (item.id == playlists[i].id) {
+            playlists.splice(i, 1);
+            break;
+          }
+        }
+        this._playlists.next(playlists);
+      });
+  }
+
+  private initPlaylists(playlists: any[]): void {
     this._playlists.next(playlists);
   }
 

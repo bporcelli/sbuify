@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -155,12 +156,13 @@ public class PlaylistController {
 
     /**
      * Delete a playlist.
-     * @param id The ID of the playlist to delete.
+     * @param id The ID of the saved playlist to delete.
      * @return a 200 response if the operation is successful, a 404 if the playlist ID is invalid, or a
      *         403 if the current user does not have permission to delete the playlist.
      */
     @DeleteMapping(path = "/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    @Transactional
     public ResponseEntity<?> deletePlaylist(@PathVariable Integer id) {
         Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
 
@@ -175,9 +177,10 @@ public class PlaylistController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        // todo: delete image
-
+        // todo: delete playlist
+        savedPlaylistRepo.deleteAllByPlaylist(playlist);
         playlistRepository.deleteById(id);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -84,7 +84,7 @@ public class PlaylistFolderController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        savedPlaylistRepo.deleteByParent(folder);  // todo: ensure that playlist images are deleted
+        savedPlaylistRepo.deleteAllByParent(folder);  // todo: ensure that playlist images are deleted
         folderRepo.delete(folder);
 
         return new ResponseEntity<>(HttpStatus.OK);
