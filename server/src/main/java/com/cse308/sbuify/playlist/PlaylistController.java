@@ -49,6 +49,7 @@ public class PlaylistController {
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> createPlaylist(@RequestBody Playlist playlist) {
         Image image = null;
+
         if (playlist.getImage() != null) {
             Base64Image rawImage = (Base64Image) playlist.getImage();
             try {
@@ -57,7 +58,10 @@ public class PlaylistController {
                 return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
             }
         }
+
         playlist.setImage(image);
+        playlist.setOwner(authFacade.getCurrentUser());
+
         Playlist saved = playlistRepository.save(playlist);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }

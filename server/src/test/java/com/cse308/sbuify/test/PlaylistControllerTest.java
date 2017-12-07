@@ -80,7 +80,7 @@ public class PlaylistControllerTest extends AuthenticatedTest {
 
         Base64Image image = new Base64Image();
         image.setDataURL("data:image/jpeg;base64," + Base64Utils.encodeToString(bytes));
-        Playlist reqObj = new Playlist( "New Playlist", customer, image, false, 0);
+        Playlist reqObj = new Playlist( "New Playlist", customer, image, false);
         reqObj.setDescription("This is for testing. Lets see if it works");
 
         // attempt to create playlist

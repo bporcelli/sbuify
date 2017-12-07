@@ -92,7 +92,7 @@ public class Customer extends User implements Followable {
 	 */
 	@PrePersist
 	private void initialize() {
-		this.setLibrary(new Playlist(getName(), this, null, true, 0));
+		this.setLibrary(new Playlist(getName(), this, null, true));
 		this.setPlayQueue(new PlayQueue());
 	}
 

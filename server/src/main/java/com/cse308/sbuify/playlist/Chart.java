@@ -27,7 +27,7 @@ public class Chart extends Playlist {
     public Chart() {}
 
     public Chart(@NotEmpty String name, User owner, Image image, @NotNull Boolean _private, @NotNull Date date) {
-        super(name, owner, image, _private, 0);
+        super(name, owner, image, _private);
         this.date = date;
     }
 

@@ -26,8 +26,7 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     // todo: refactor to eliminate eager fetching of followers
 
     /** Sort position. */
-    @NotNull
-    private Integer position;
+    private Integer position = null;  // playlists with position null will be displayed last
 
     /** Parent folder, if any. */
     @OneToOne
@@ -53,12 +52,11 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     public Playlist() {
     }
 
-    public Playlist(@NotEmpty String name, User owner, ImageI image, @NotNull Boolean hidden, @NotNull Integer pos) {
+    public Playlist(@NotEmpty String name, User owner, ImageI image, @NotNull Boolean hidden) {
         super(name, owner, image);
         
         // parent is by default null
         this.hidden = hidden;
-        this.position = pos;
     }
 
     /**
