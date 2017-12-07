@@ -44,7 +44,7 @@ public class AdminController {
 	@GetMapping(path = "{id}")
 	public ResponseEntity<?> findById(@PathVariable Integer adminId) {
 		Admin admin = getAdminById(adminId);
-		if(admin == null) {
+		if (admin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 		return new ResponseEntity<>(admin, HttpStatus.OK);
@@ -58,7 +58,6 @@ public class AdminController {
 	public @ResponseBody TypedCollection getAllAdmins() {
         Iterable<Admin> adminIterable = adminRepo.findAll();
         Set<Admin> admins = new HashSet<>();
-
         adminIterable.forEach(labelOwner -> admins.add(labelOwner));
         return new TypedCollection(admins, Admin.class);
 	}
@@ -73,7 +72,7 @@ public class AdminController {
 		if (admin == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if (!superAdmin()){
+        if (!isSuperAdmin()){
 		    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         userRepository.save(admin);
@@ -88,15 +87,15 @@ public class AdminController {
 	@DeleteMapping(path = "{id}")
 	public ResponseEntity<?> deleteAdmin(@PathVariable Integer adminId) {
 	    Admin admin = getAdminById(adminId);
-	    if(admin == null){
+	    if (admin == null) {
 	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(!superAdmin()){
+        if (!isSuperAdmin()) {
 	        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         userRepository.delete(admin);
-        return  new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
 	}
 
     /**
@@ -108,20 +107,21 @@ public class AdminController {
 	@PatchMapping(path = "{id}")
 	public ResponseEntity<?> updateAdmin(@PathVariable Integer adminId, @RequestBody Admin partialAdmin) {
 	    Admin admin = getAdminById(adminId);
-        if(admin == null){
+
+	    if (admin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(!superAdmin()){
+        if (!isSuperAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        if(partialAdmin.getSuperAdmin() != null){
-            admin.setSuperAdmin(partialAdmin.getSuperAdmin());
+        if (partialAdmin.isSuperAdmin() != null) {
+            admin.setSuperAdmin(partialAdmin.isSuperAdmin());
         }
-        if(partialAdmin.getFirstName() != null){
+        if (partialAdmin.getFirstName() != null) {
             admin.setFirstName(partialAdmin.getFirstName());
         }
-        if(partialAdmin.getLastName() != null){
+        if (partialAdmin.getLastName() != null) {
             admin.setLastName(partialAdmin.getLastName());
         }
 
@@ -131,17 +131,18 @@ public class AdminController {
 
     public Admin getAdminById(Integer id){
         Optional<Admin> admin = adminRepo.findById(id);
-        if(!admin.isPresent()){
+        if (!admin.isPresent()) {
             return null;
         }
         return admin.get();
     }
-	private boolean superAdmin(){
+
+	private boolean isSuperAdmin(){
 	    User user = authFacade.getCurrentUser();
-	    if(!(user instanceof Admin)){
+	    if (!(user instanceof Admin)) {
 	        return false;
         }
-        Admin admin = (Admin)user;
-	    return admin.getSuperAdmin();
+        Admin admin = (Admin) user;
+	    return admin.isSuperAdmin();
     }
 }

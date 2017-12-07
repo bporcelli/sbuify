@@ -2,7 +2,6 @@ package com.cse308.sbuify.artist;
 
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.album.Album;
-import com.cse308.sbuify.common.AbstractCatalogItemRepository;
 import com.cse308.sbuify.common.TypedCollection;
 import com.cse308.sbuify.image.Base64Image;
 import com.cse308.sbuify.image.Image;
@@ -12,7 +11,6 @@ import com.cse308.sbuify.label.LabelOwner;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
-import com.cse308.sbuify.user.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +32,6 @@ public class ArtistController {
     private AuthFacade authFacade;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private AbstractCatalogItemRepository abstractCatalogItemRepository;
-
-    @Autowired
     private ArtistRepository artistRepo;
 
     @Autowired
@@ -47,6 +39,7 @@ public class ArtistController {
 
     @Autowired
     private ProductRepository productRepository;
+
     /**
      * Get basic information about an artist.
      * @param artistId ID of artist.
@@ -92,11 +85,11 @@ public class ArtistController {
         Set<Artist> relatedArtist = new HashSet<>();
         List<Album> artistAlbum = artist.getAlbums();
 
-        for (Album album: artistAlbum){
+        for (Album album: artistAlbum) {
             Set<Song> songs = album.getSongs();
-            for (Song song: songs){
+            for (Song song: songs) {
                 Set<Artist> artists = song.getFeaturedArtists();
-                for (Artist featured: artists){
+                for (Artist featured: artists) {
                     relatedArtist.add(featured);
                 }
             }
@@ -123,7 +116,6 @@ public class ArtistController {
 
         Artist artist = optionalArtist.get();
         if (!userCanEdit(artist)) {
-
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -170,22 +162,23 @@ public class ArtistController {
         if (!userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        // todo: biographies have images; handle image uploads -- NEEDS TESTING
-        if(bio.getImages() != null){
+
+        // todo: all images from the frontend will be base64 encoded; update code accordingly
+        if (bio.getImages() != null) {
             List<Image> images = bio.getImages();
             Image updatedImage;
             List<Image> updatedImages = new ArrayList<>();
-            for(Image image: images){
+            for (Image image: images) {
                 try{
                     updatedImage = this.storageService.save(image.getPath());
                     updatedImages.add(updatedImage);
                 } catch (StorageException ex){
-                    LOGGER.error("Image Storage Error");
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                    }
+                    LOGGER.error("Image storage error:", ex.getMessage());
+                    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
                 }
+            }
             images = artist.getBio().getImages();
-            images.forEach(image ->{ this.storageService.delete(image);});
+            images.forEach(image -> this.storageService.delete(image));
         }
 
         artist.setBio(bio);
@@ -233,8 +226,6 @@ public class ArtistController {
                                                @PathVariable Integer itemId,
                                                @RequestBody Product updated) {
 
-        // todo: should we have addProduct/removeProduct methods in artist? -- DONE
-
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
         if (!optionalArtist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -252,7 +243,7 @@ public class ArtistController {
 
         Product product = optionalProduct.get();
 
-        if (!artist.removeProduct(product)){
+        if (!artist.removeProduct(product)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -307,32 +298,29 @@ public class ArtistController {
     @DeleteMapping(path = "artists/{artistId}")
     @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
     public ResponseEntity<?> deleteArtist(@PathVariable Integer artistId) {
-        // todo: do not use label.getArtists() -- set artist owner/label to null instead --DONE
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
         if (!optionalArtist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Artist artist = optionalArtist.get();
-        if (!userCanEdit(artist)){
+        if (!userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         artist.setOwner(null);
-        abstractCatalogItemRepository.save(artist);
+        artistRepo.save(artist);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private boolean userCanEdit(Artist artist) {
-        // todo: do not use label.getArtists() -- check artist owner ID instead -- DONE
         User user = authFacade.getCurrentUser();
-        boolean containsArtist = false;
-        if (user instanceof LabelOwner){
-            LabelOwner labelOwner = (LabelOwner)user;
-            containsArtist = artist.getOwner() != null && artist.getOwner().getId().equals(labelOwner.getId());
+        boolean userOwnsArtist = false;
+        if (user instanceof LabelOwner) {
+            LabelOwner labelOwner = (LabelOwner) user;
+            userOwnsArtist = artist.getOwner() != null && artist.getOwner().getId().equals(labelOwner.getId());
         }
-        return containsArtist || user instanceof Admin;
+        return userOwnsArtist || user instanceof Admin;
     }
-
 }

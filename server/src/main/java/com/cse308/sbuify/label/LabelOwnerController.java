@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-
 @Controller
 @RequestMapping(path = "/api/label-owner/")
 public class LabelOwnerController {
@@ -36,19 +35,17 @@ public class LabelOwnerController {
      */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public @ResponseBody TypedCollection getAllLabelOwners(){
+    public @ResponseBody TypedCollection getAllLabelOwners() {
         Iterable<LabelOwner> labelOwnerIterable = labelOwnerRepository.findAll();
         Set<LabelOwner> labelOwners = new HashSet<>();
-
         labelOwnerIterable.forEach(labelOwner -> labelOwners.add(labelOwner));
-
         return new TypedCollection(labelOwners, LabelOwner.class);
     }
 
     @GetMapping(path = "{id}")
-    public ResponseEntity<?> getLabelOwner(@PathVariable Integer labelOwnerId){
+    public ResponseEntity<?> getLabelOwner(@PathVariable Integer labelOwnerId) {
         LabelOwner labelOwner = getLabelOwnerById(labelOwnerId);
-        if(labelOwner == null){
+        if (labelOwner == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(labelOwner, HttpStatus.OK);
@@ -56,55 +53,52 @@ public class LabelOwnerController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createLabelOwner(@RequestBody LabelOwner labelOwner){
-        if(labelOwner == null){
+    public ResponseEntity<?> createLabelOwner(@RequestBody LabelOwner labelOwner) {
+        if (labelOwner == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         userRepository.save(labelOwner);
-        return  new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping(path = "{id}")
-    @PreAuthorize("hasAnyRole('ROLE_LABEL','ADMIN')")
-    public ResponseEntity<?> updateLabelOwner(@PathVariable Integer labelOwnerId, @RequestBody LabelOwner partialLabelOwner){
+    @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
+    public ResponseEntity<?> updateLabelOwner(@PathVariable Integer labelOwnerId, @RequestBody LabelOwner updated) {
         LabelOwner labelOwner = getLabelOwnerById(labelOwnerId);
+
         User user = authFacade.getCurrentUser();
-        if(partialLabelOwner == null){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        if(!ownerOrAdmin(user, labelOwner)){
+        if (!isOwnerOrAdmin(user, labelOwner)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        if(partialLabelOwner.getName() != null){
-            labelOwner.setName(partialLabelOwner.getName());
+        if (updated.getName() != null) {
+            labelOwner.setName(updated.getName());
         }
-        if(partialLabelOwner.getLabel() != null){
-            labelOwner.setLabel(partialLabelOwner.getLabel());
+        if (updated.getLabel() != null) {  // todo: user editable?
+            labelOwner.setLabel(updated.getLabel());
         }
 
         userRepository.save(labelOwner);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private LabelOwner getLabelOwnerById(Integer id){
+    private LabelOwner getLabelOwnerById(Integer id) {
         Optional<LabelOwner> labelOwnerOptional = labelOwnerRepository.findById(id);
-        if(!labelOwnerOptional.isPresent()){
+        if (!labelOwnerOptional.isPresent()) {
             return null;
         }
         return labelOwnerOptional.get();
     }
 
-    protected static boolean ownerOrAdmin(User user, LabelOwner labelOwner){
+    // todo: move this and similar reused methods to a utility class; having shared utilities in a controller is inappropriate
+    protected static boolean isOwnerOrAdmin(User user, LabelOwner labelOwner) {
         boolean owner = false;
-        if(user instanceof LabelOwner){
-            LabelOwner userLabelOwner = (LabelOwner)user;
-            if(userLabelOwner.getId().equals(labelOwner.getId())){
+        if (user instanceof LabelOwner) {
+            LabelOwner userLabelOwner = (LabelOwner) user;
+            if (userLabelOwner.getId().equals(labelOwner.getId())) {
                 owner = true;
             }
         }
         return owner || (user instanceof Admin);
     }
-
-
 }

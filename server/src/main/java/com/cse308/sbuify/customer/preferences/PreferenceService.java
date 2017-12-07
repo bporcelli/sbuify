@@ -107,7 +107,7 @@ public class PreferenceService {
             try {
                 prefVal = objectMapper.writeValueAsString(value);
             } catch (JsonProcessingException ex) {
-                LOGGER.debug("Failed to write preference.");
+                LOGGER.debug("Failed to write preference. Error was:", ex.getMessage());
                 throw new PreferenceException("Failed to write preference.", ex);
             }
         }

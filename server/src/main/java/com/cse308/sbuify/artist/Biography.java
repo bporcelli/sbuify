@@ -67,11 +67,10 @@ public class Biography implements Serializable {
     }
 
     public void setImages(List<Image> images) {
-        if(images != null){
+        if (images != null) {
             this.images.clear();
             this.images.addAll(images);
         }
-
     }
     
     @Override
@@ -99,7 +98,6 @@ public class Biography implements Serializable {
 
     @Override
     public boolean equals(Object that) {
-        // todo: need more than id?
         if (that == null || !(that instanceof Biography))
             return false;
 

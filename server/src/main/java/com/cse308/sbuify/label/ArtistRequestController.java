@@ -1,15 +1,12 @@
 package com.cse308.sbuify.label;
 
 import com.cse308.sbuify.artist.Artist;
-import com.cse308.sbuify.common.AbstractCatalogItemRepository;
+import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.email.Email;
 import com.cse308.sbuify.email.RequestApprovedEmail;
 import com.cse308.sbuify.email.RequestDeniedEmail;
 import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.song.SongRepository;
-import com.cse308.sbuify.stream.StreamRepository;
 import com.cse308.sbuify.user.User;
-import com.cse308.sbuify.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Optional;
 
-import static com.cse308.sbuify.label.LabelOwnerController.ownerOrAdmin;
+import static com.cse308.sbuify.label.LabelOwnerController.isOwnerOrAdmin;
 
 @Controller
 @RequestMapping(path = "/api/artist-requests")
@@ -35,20 +32,19 @@ public class ArtistRequestController {
     private ArtistRequestRepository artistRequestRepository;
 
     @Autowired
-    private AbstractCatalogItemRepository abstractCatalogItemRepository;
-
+    private ArtistRepository artistRepository;
 
     @PostMapping(path = "/{id}/decline")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> declineArtistRequest(@PathVariable Integer requestId){
+    public ResponseEntity<?> declineArtistRequest(@PathVariable Integer requestId) {
         ArtistRequest requestArtist = getArtistRequestById(requestId);
-        if(requestArtist == null){
+        if (requestArtist == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Email declineEmail = new RequestDeniedEmail(requestArtist);
 
-        if (!(declineEmail.dispatch())){
+        if (!(declineEmail.dispatch())) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -58,15 +54,15 @@ public class ArtistRequestController {
 
     @PostMapping(path = "/{id}/approve")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> approveArtistRequest(@PathVariable Integer requestId){
+    public ResponseEntity<?> approveArtistRequest(@PathVariable Integer requestId) {
         ArtistRequest requestArtist = getArtistRequestById(requestId);
-        if(requestArtist == null){
+        if (requestArtist == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Email acceptEmail = new RequestApprovedEmail(requestArtist);
 
-        if (!(acceptEmail.dispatch())){
+        if (!(acceptEmail.dispatch())) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -74,20 +70,20 @@ public class ArtistRequestController {
         LabelOwner labelOwner = requestArtist.getLabel();
         Artist artist = requestArtist.getArtist();
         artist.setOwner(labelOwner);
-        abstractCatalogItemRepository.save(artist);
+        artistRepository.save(artist);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ROLE_LABEL', 'ADMIN')")
-    public ResponseEntity<?> createRequest(@RequestBody ArtistRequest artistRequest){
+    @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
+    public ResponseEntity<?> createRequest(@RequestBody ArtistRequest artistRequest) {
         User user = authFacade.getCurrentUser();
-        if(artistRequest == null){
+        if (artistRequest == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        if(!ownerOrAdmin(user, artistRequest.getLabel())){
+        if (!isOwnerOrAdmin(user, artistRequest.getLabel())) {
            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -95,13 +91,11 @@ public class ArtistRequestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-    private ArtistRequest getArtistRequestById(Integer requestId){
+    private ArtistRequest getArtistRequestById(Integer requestId) {
         Optional<ArtistRequest> requestDb = artistRequestRepository.findById(requestId);
-        if (!requestDb.isPresent()){
+        if (!requestDb.isPresent()) {
             return null;
         }
         return requestDb.get();
     }
-
 }

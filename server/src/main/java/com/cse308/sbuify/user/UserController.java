@@ -5,7 +5,6 @@ import java.util.Optional;
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.email.Email;
 import com.cse308.sbuify.email.NewAccountEmail;
-import com.cse308.sbuify.email.PasswordResetEmail;
 import com.cse308.sbuify.security.AuthFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,25 +56,24 @@ public class UserController {
     }
 
     /**
-     * Change user password given id
-     * @param userId
-     * @param password
+     * Change a user's password.
+     * @param userId ID of user.
+     * @param password New password for user.
      * @return Http.OK successful, Http.FORBIDDEN, no permission, Http.NOT_FOUND, cannot find user
      */
     @PostMapping(path = "/{id}/change-password")
-    @PreAuthorize("hasAnyRole('CUSTOMER','ROLE_LABEL','ADMIN' )")
-    public ResponseEntity<?> changePassword(@PathVariable Integer userId, @RequestBody String password){
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'LABEL', 'ADMIN')")
+    public ResponseEntity<?> changePassword(@PathVariable Integer userId, @RequestBody String password) {
+        // todo: surely we should require the user to enter a password verification. check verification here.
         User user = getUserById(userId);
-        if(user == null){
+        if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(!ownerOrAdmin(user)){
+        if (!currentUserCanEdit(user)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -85,42 +83,38 @@ public class UserController {
      * @return Http.OK successful, Http.FORBIDDEN, no permission, Http.NOT_FOUND, cannot find user
      */
     @DeleteMapping(path = "/{id}")
-    @PreAuthorize("hasAnyRole('CUSTOMER','ROLE_LABEL','ADMIN' )")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'LABEL', 'ADMIN')")
     public ResponseEntity<?> removeUser(@PathVariable Integer userId){
         User user = getUserById(userId);
-        if(user == null){
+        if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(!ownerOrAdmin(user)){
+        if (!currentUserCanEdit(user)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
         userRepository.delete(user);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
      * Helper to get user by Id
-     * @param id
-     * @return
+     * @param id User ID.
+     * @return User, or null if the provided user ID is invalid.
      */
-    private User getUserById(Integer id){
+    private User getUserById(Integer id) {
         Optional<User> userOptional = userRepository.findById(id);
-        if(!userOptional.isPresent()){
+        if (!userOptional.isPresent()) {
             return null;
         }
         return userOptional.get();
     }
 
     /**
-     * check if user is admin or current user
+     * Check: can the current user edit a user?
      * @param checkUser
-     * @return
      */
-    private boolean ownerOrAdmin(User checkUser){
+    private boolean currentUserCanEdit(User checkUser) {
         User user = authFacade.getCurrentUser();
         return user.equals(checkUser) || user instanceof Admin;
     }
-    
 }

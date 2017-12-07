@@ -46,30 +46,33 @@ public class CustomerController {
     // todo: refactor to avoid eager fetching of customer's friends, artists, and playlists
 
     /**
-     * Update a customer
-     * @param Id
-     * @param partialCustomer
+     * Update a customer.
+     * @param id ID of customer.
+     * @param updated Updated customer, with fields that should be left unchanged set to null.
      * @return Http.OK successful, Http.FORBIDDEN, no permission, Http.NOT_FOUND, invalid Id
      */
     @PatchMapping(path = "{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
-    public ResponseEntity<?> updateCustomer(@PathVariable Integer Id,@RequestBody Customer partialCustomer){
-        User user = getCustomerById(Id);
-        if (user == null){
+    public ResponseEntity<?> updateCustomer(@PathVariable Integer id, @RequestBody Customer updated) {
+        User user = getUserById(id);
+
+        if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(!selfOrAdmin(user)){
+        if (!currentUserCanEdit(user)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        Customer customer = (Customer)user;
-        if(partialCustomer.getFirstName() != null){
-            customer.setFirstName(partialCustomer.getFirstName());
+
+        Customer customer = (Customer) user;
+
+        if (updated.getFirstName() != null) {
+            customer.setFirstName(updated.getFirstName());
         }
-        if(partialCustomer.getLastName() != null){
-            customer.setLastName(partialCustomer.getLastName());
+        if (updated.getLastName() != null) {
+            customer.setLastName(updated.getLastName());
         }
-        if(partialCustomer.getBirthday() != null){
-            customer.setBirthday(partialCustomer.getBirthday());
+        if (updated.getBirthday() != null) {
+            customer.setBirthday(updated.getBirthday());
         }
 
         userRepository.save(customer);
@@ -213,19 +216,19 @@ public class CustomerController {
 
     /**
      * Change the user's profile picture.
-     * @param imageData
+     * @param newImage Base64-encoded image.
      * @return Http.OK when successful, otherwise, Http.BAD_REQUEST
      */
     @PutMapping(path = "profile-picture")
-    public ResponseEntity<?> updateProfilePicture(@RequestBody Base64Image imageData){
+    public ResponseEntity<?> updateProfilePicture(@RequestBody Base64Image newImage){
         Customer customer = getCurrentCustomer();
         Image image;
         try{
-            image = storageService.save(imageData.getDataURL());
-        } catch (StorageException e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            image = storageService.save(newImage.getDataURL());
+        } catch (StorageException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        if (customer.getProfileImage() != null){
+        if (customer.getProfileImage() != null) {
             this.storageService.delete(customer.getProfileImage());
         }
         customer.setProfileImage(image);
@@ -238,25 +241,24 @@ public class CustomerController {
     }
 
     /**
-     * helper to get customer from repository
-     * @param id
-     * @return
+     * Helper to get a user by ID.
+     * @param id User ID.
+     * @return User, or null if the given user ID is invalid.
      */
-    private User getCustomerById(Integer id){
+    private User getUserById(Integer id) {
         Optional<User> userOptional = userRepository.findById(id);
-        if(!userOptional.isPresent()){
+        if (!userOptional.isPresent()) {
             return null;
         }
         return userOptional.get();
-
     }
 
     /**
-     * Helper to check if user is themselves or admin
+     * Helper to determine whether the current user can edit another user.
      * @param checkUser
      * @return
      */
-    private boolean selfOrAdmin(User checkUser){
+    private boolean currentUserCanEdit(User checkUser) {
         User user = authFacade.getCurrentUser();
         return user.equals(checkUser) || user instanceof Admin;
     }

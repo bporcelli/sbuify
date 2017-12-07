@@ -1,20 +1,15 @@
 package com.cse308.sbuify.label;
 
-
-import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.user.User;
 import org.hibernate.search.annotations.ContainedIn;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Represents a user who owns/manages a Label.
@@ -52,7 +47,7 @@ public class LabelOwner extends User {
      * {@link #getName()}
      */
     public void setName(String name) {
-        this.label.setName(name);
+        label.setName(name);
     }
 
     /**
@@ -67,7 +62,6 @@ public class LabelOwner extends User {
      */
     public void setLabel(Label label) {
         this.label = label;
-
     }
 
     /**

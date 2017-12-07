@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("album")
 public class AlbumProperties {
     /**
-     * number of New Release
+     * The number of new releases to display per page on the New Releases screen.
      */
     private Integer numNewReleases = 30;
 

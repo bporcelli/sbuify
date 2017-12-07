@@ -23,27 +23,24 @@ public class LabelController {
     @Autowired
     private LabelRepository labelRepository;
 
-
-
-
     @PatchMapping(path = "/api/record-labels/{labelId}")
-    @PreAuthorize("hasAnyRole('ROLE_LABEL','ADMIN')")
-    public ResponseEntity<?> updateRecordLabel(@PathVariable Integer labelId, @RequestBody Label partialLabel){
+    @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
+    public ResponseEntity<?> updateRecordLabel(@PathVariable Integer labelId, @RequestBody Label partialLabel) {
         Label label = getRecordLabelById(labelId);
-        if(label == null){
+        if (label == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        if(!ownerOrAdmin(label)){
+        if (!currentUserCanEdit(label)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        if(partialLabel.getOwner() != null){
+        if (partialLabel.getOwner() != null) {
             label.setOwner(partialLabel.getOwner());
         }
-        if(partialLabel.getName() != null){
+        if (partialLabel.getName() != null) {
             label.setName(partialLabel.getName());
         }
-        if(partialLabel.getAddress() != null){
+        if (partialLabel.getAddress() != null) {
             label.setAddress(partialLabel.getAddress());
         }
 
@@ -52,20 +49,20 @@ public class LabelController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private Label getRecordLabelById(Integer labelId){
+    private Label getRecordLabelById(Integer labelId) {
         Optional<Label> label = labelRepository.findById(labelId);
-        if(!label.isPresent()){
+        if (!label.isPresent()) {
             return null;
         }
         return label.get();
     }
 
-    private boolean ownerOrAdmin(Label label){
+    private boolean currentUserCanEdit(Label label) {
         User user = authFacade.getCurrentUser();
         boolean owner = false;
-        if(user instanceof LabelOwner){
-            LabelOwner labelOwner = (LabelOwner)user;
-            if(label.getOwner().equals(labelOwner)){
+        if (user instanceof LabelOwner) {
+            LabelOwner labelOwner = (LabelOwner) user;
+            if (label.getOwner().equals(labelOwner)) {
                 owner = true;
             }
         }

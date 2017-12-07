@@ -105,7 +105,6 @@ public class Album extends CatalogItem implements Queueable, Decorable {
             this.songs.clear();
             this.songs.addAll(songs);
         }
-
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.cse308.sbuify.customer.Customer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -38,7 +39,6 @@ public abstract class User implements Serializable, UserDetails {
     // Hashed password
     @NotNull
 	@NotEmpty
-    @JsonIgnore
 	private String password;
 
     // Token used for password reset requests

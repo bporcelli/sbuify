@@ -20,7 +20,6 @@ import java.util.*;
  */
 @Entity
 @Indexed
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Song extends CatalogItem implements Queueable, Decorable {
 
     @NotNull

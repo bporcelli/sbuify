@@ -1,6 +1,5 @@
 package com.cse308.sbuify.playlist;
 
-
 import com.cse308.sbuify.common.TypedCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,46 +26,35 @@ public class ChartController {
      * @return
      */
     @GetMapping
-    public @ResponseBody TypedCollection getCharts(){
-        return getAllCharts();
+    public @ResponseBody TypedCollection getAllCharts() {
+        Iterable<Chart> chartsIterable = chartRepository.findAll();
+        Set<Chart> charts = new HashSet<>();
+        chartsIterable.forEach(chart -> charts.add(chart));
+        return new TypedCollection(charts, Chart.class);
     }
 
     /**
      * Return specified chart
      * @param chartId
-     * @return Http.Ok successful, HTTP.NOT_FOUND, id not found
+     * @return a 200 response on success, otherwise a 404 if the provided chart ID is invalid.
      */
     @GetMapping(path = "/{id}")
     public ResponseEntity<?> getChart(@PathVariable Integer chartId){
         Chart chart = getChartById(chartId);
-        if(chart == null){
+        if (chart == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
         return new ResponseEntity<>(chart, HttpStatus.OK);
     }
 
     /**
-     * Helper method to get all charts
-     * @return TypeCollection, all charts
-     */
-    private TypedCollection getAllCharts(){
-        Iterable<Chart> chartsIterable = chartRepository.findAll();
-        Set<Chart> charts = new HashSet<>();
-
-        chartsIterable.forEach(chart -> charts.add(chart));
-
-        return new TypedCollection(charts, Chart.class);
-    }
-
-    /**
-     * Helper method to get chart by Id
+     * Helper method to get chart by ID.
      * @param chartId
-     * @return Chart
+     * @return A Chart object, or null if the chart ID is invalid.
      */
-    private Chart getChartById(Integer chartId){
+    private Chart getChartById(Integer chartId) {
         Optional<Chart> chartOptional = chartRepository.findById(chartId);
-        if(!chartOptional.isPresent()){
+        if (!chartOptional.isPresent()) {
             return null;
         }
         return chartOptional.get();
