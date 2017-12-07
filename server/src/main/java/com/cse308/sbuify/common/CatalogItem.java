@@ -3,6 +3,7 @@ package com.cse308.sbuify.common;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.image.ImageI;
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -43,6 +44,7 @@ public abstract class CatalogItem implements Serializable, Cloneable {
 
     @OneToOne
     @IndexedEmbedded(includeEmbeddedObjectId = true, indexNullAs = DEFAULT_NULL_TOKEN)
+    @JsonIgnoreProperties("password")
     private User owner;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = Image.class)

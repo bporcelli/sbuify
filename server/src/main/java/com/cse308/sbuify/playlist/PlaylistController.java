@@ -2,6 +2,9 @@ package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.common.Queueable;
+import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.customer.SavedPlaylist;
+import com.cse308.sbuify.customer.SavedPlaylistRepository;
 import com.cse308.sbuify.image.Base64Image;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.image.StorageException;
@@ -28,6 +31,9 @@ public class PlaylistController {
     private PlaylistRepository playlistRepository;
 
     @Autowired
+    private SavedPlaylistRepository savedPlaylistRepo;
+
+    @Autowired
     private AuthFacade authFacade;
 
     @Autowired
@@ -48,6 +54,8 @@ public class PlaylistController {
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> createPlaylist(@RequestBody Playlist playlist) {
+        Customer customer = (Customer) authFacade.getCurrentUser();
+
         Image image = null;
 
         if (playlist.getImage() != null) {
@@ -60,9 +68,14 @@ public class PlaylistController {
         }
 
         playlist.setImage(image);
-        playlist.setOwner(authFacade.getCurrentUser());
+        playlist.setOwner(customer);
 
         Playlist saved = playlistRepository.save(playlist);
+
+        // save the playlist in the user's library
+        SavedPlaylist savedPlaylist = new SavedPlaylist(customer, saved);
+        savedPlaylistRepo.save(savedPlaylist);
+
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 

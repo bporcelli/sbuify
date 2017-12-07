@@ -1,7 +1,6 @@
 package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +18,6 @@ public class PlaylistFolderController {
 
     @Autowired
     private PlaylistFolderRepository folderRepo;
-    
-    @Autowired
-    private PlaylistRepository playlistRepo;
 
     /**
      * Create a playlist folder.
@@ -47,16 +43,14 @@ public class PlaylistFolderController {
         Optional<PlaylistFolder> optionalFolder = folderRepo.findById(id);
 
         if (!optionalFolder.isPresent()) {
-            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         PlaylistFolder folder = optionalFolder.get();
 
         folder.setName(updated.getName());
-        folder.setParentFolder(updated.getParentFolder());
-        folder.setPosition(updated.getPosition());
 
         folderRepo.save(folder);  // if the parent folder ID is invalid, this should trigger a 500 response
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

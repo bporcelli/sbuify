@@ -19,19 +19,14 @@ public class PlaylistFolder implements PlaylistComponent {
     @NotNull
     private String name;
 
-    // Sort position
-    @NotNull
-    private Integer position;
-
-    // Folder owner
+    /** Folder owner */
     @OneToOne
     @NotNull
     @JsonIgnore
     private User owner;
 
-    // Parent folder, if any
-    @OneToOne
-    private PlaylistFolder parentFolder;
+    /** Sort position */
+    private Integer position;
 
     public Integer getId() {
         return id;
@@ -48,16 +43,6 @@ public class PlaylistFolder implements PlaylistComponent {
     }
 
     @Override
-    public Integer getPosition() {
-        return this.position;
-    }
-
-    @Override
-    public void setPosition(Integer position) {
-        this.position = position;
-    }
-
-    @Override
     public User getOwner() {
         return owner;
     }
@@ -67,17 +52,15 @@ public class PlaylistFolder implements PlaylistComponent {
     }
 
     @Override
-    public PlaylistFolder getParentFolder() {
-        return parentFolder;
-    }
-
-    @Override
-    public void setParentFolder(PlaylistFolder folder) {
-        this.parentFolder = folder;
-    }
-
-    @Override
     public Boolean isFolder() {
         return true;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }

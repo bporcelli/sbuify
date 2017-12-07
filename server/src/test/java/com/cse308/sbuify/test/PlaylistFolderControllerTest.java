@@ -33,7 +33,6 @@ public class PlaylistFolderControllerTest extends AuthenticatedTest {
         PlaylistFolder reqObj = new PlaylistFolder();
         reqObj.setName("New Playlist Folder");
         reqObj.setOwner(customer);
-        reqObj.setParentFolder(null);
         reqObj.setPosition(previousSize + 1);
 
         HttpEntity<PlaylistFolder> request = new HttpEntity<>(reqObj);
