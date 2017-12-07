@@ -47,23 +47,52 @@ export class PlaylistService {
 
   /** Update a playlist. */
   update(playlist: object): Observable<void> {
-    return this.client.patch<void>('/api/playlists/' + playlist['id'], playlist)
+    let endpoint: string;
+
+    if (playlist['folder']) {
+      endpoint = '/api/playlist-folders/' + playlist['id'];
+    } else {
+      endpoint = '/api/playlists/' + playlist['id'];
+    }
+
+    return this.client.patch<void>(endpoint, playlist)
       .map(() => {
-        // update playlist locally
-        let index = this.findPlaylist(playlist['id']);
-        let playlists = this._playlists.value;
-
-        if (index >= 0) {
-          playlists[index]['name'] = playlist['name'];
-          playlists[index]['description'] = playlist['description'];
-          playlists[index]['hidden'] = playlist['hidden'];
-
-          if (playlist['image']['type'] == 'base64_image') {  // image changed
-            playlists[index]['image'] = playlist['image'];
-          }
+        if (playlist['folder']) {
+          this.syncFolder(playlist);
+        } else {
+          this.syncPlaylist(playlist);
         }
-        this._playlists.next(playlists);
       });
+  }
+
+  /** Sync local playlist with server copy */
+  private syncPlaylist(playlist: object): void {
+    let index = this.findPlaylist(playlist['id']);
+    let playlists = this._playlists.value;
+
+    if (index >= 0) {
+      playlists[index]['name'] = playlist['name'];
+      playlists[index]['description'] = playlist['description'];
+      playlists[index]['hidden'] = playlist['hidden'];
+
+      if (playlist['image']['type'] == 'base64_image') {  // image changed
+        playlists[index]['image'] = playlist['image'];
+      }
+    }
+
+    this._playlists.next(playlists);
+  }
+
+  /** Sync local folder with server copy */
+  private syncFolder(folder: object): void {
+    let index = this.findPlaylist(folder['id']);
+    let playlists = this._playlists.value;
+
+    if (index >= 0) {
+      playlists[index]['name'] = folder['name'];
+    }
+
+    this._playlists.next(playlists);
   }
 
   /** Delete a playlist or folder. */

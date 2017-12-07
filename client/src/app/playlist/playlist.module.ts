@@ -10,7 +10,7 @@ import { PlaylistDetailResolver } from './playlist-resolver.service';
 import { AuthGuard } from '../auth/auth-guard.service';
 import { PlaylistListComponent } from "./playlist-list.component";
 import { PlaylistModalComponent } from "./playlist-modal.component";
-import { CreatePlaylistFolderComponent } from "./create-playlist-folder.component";
+import { PlaylistFolderModalComponent } from "./playlist-folder-modal.component";
 import { PlaylistFolderComponent } from "./playlist-folder.component";
 
 const routes: Routes = [
@@ -40,12 +40,12 @@ const routes: Routes = [
     PlaylistDetailComponent,
     PlaylistListComponent,
     PlaylistModalComponent,
-    CreatePlaylistFolderComponent,
+    PlaylistFolderModalComponent,
     PlaylistFolderComponent
   ],
   entryComponents: [
     PlaylistModalComponent,
-    CreatePlaylistFolderComponent
+    PlaylistFolderModalComponent
   ],
   providers: [
     PlaylistDetailResolver

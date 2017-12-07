@@ -6,7 +6,7 @@ import { PlaylistService } from "./playlist.service";
 import { PlaylistModalComponent } from "./playlist-modal.component";
 import { UserService } from "../user/user.service";
 import { User } from "../user/user";
-import { CreatePlaylistFolderComponent } from "./create-playlist-folder.component";
+import { PlaylistFolderModalComponent } from "./playlist-folder-modal.component";
 
 @Component({
   selector: 'playlist-list',
@@ -49,7 +49,7 @@ export class PlaylistListComponent implements OnInit {
 
   /** Open the create folder modal. */
   openFolderModal(): void {
-    this.modalService.open(CreatePlaylistFolderComponent);
+    this.modalService.open(PlaylistFolderModalComponent);
   }
 
   /** Check whether a playlist or folder is owned by the current user */
@@ -76,7 +76,11 @@ export class PlaylistListComponent implements OnInit {
   /** Edit a playlist or folder */
   edit(item: any): void {
     if (item.folder) {
-      console.log('would edit folder', item);
+      let modal = this.modalService.open(PlaylistFolderModalComponent);
+      let comp = modal.componentInstance;
+
+      comp.id = item.id;
+      comp.name = item.name;
     } else {
       let modal = this.modalService.open(PlaylistModalComponent);
       let comp = modal.componentInstance;

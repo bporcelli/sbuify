@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h5 class="modal-title" id="modalLabel">Create Playlist Folder</h5>
+  <h5 class="modal-title" id="modalLabel">{{ id > 0 ? 'Edit' : 'Create' }} Playlist Folder</h5>
   <button type="button" class="close" aria-label="Close" (click)="close()">
     <span aria-hidden="true">&times;</span>
   </button>
@@ -17,5 +17,9 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
-  <button type="button" class="btn btn-primary" [disabled]="!form.form.valid || disabled" (click)="doSubmit(form)">Create</button>
+  <button type="button" class="btn btn-primary"
+          [disabled]="!form.form.valid || disabled"
+          (click)="doSubmit(form)">
+    {{ id > 0 ? 'Save Changes' : 'Create' }}
+  </button>
 </div>

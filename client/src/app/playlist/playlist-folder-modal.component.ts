@@ -1,19 +1,22 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, Input } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlaylistService } from "./playlist.service";
 import { FormComponent } from "../common/forms/form.component";
 
 @Component({
-  templateUrl: './create-playlist-folder.component.html'
+  templateUrl: './playlist-folder-modal.component.html'
 })
-export class CreatePlaylistFolderComponent extends FormComponent {
+export class PlaylistFolderModalComponent extends FormComponent {
 
   @ViewChild('form') form: NgForm;
 
-  /** Folder name */
-  public name: string = '';
+  /** ID of folder if folder is being edited */
+  @Input() public id: number = 0;
 
+  /** Folder name */
+  @Input() public name: string = '';
+  
   constructor(
     private activeModal: NgbActiveModal,
     private playlistService: PlaylistService
@@ -33,11 +36,21 @@ export class CreatePlaylistFolderComponent extends FormComponent {
       folder: true
     };
 
-    this.playlistService.create(folder)
-      .subscribe(
-        () => this.activeModal.close(),
-        (err: any) => this.handleError(err)
-      );
+    if (this.id) {
+      folder['id'] = this.id;
+
+      this.playlistService.update(folder)
+        .subscribe(
+          () => this.activeModal.close(),
+          (err: any) => this.handleError(err)
+        );
+    } else {
+      this.playlistService.create(folder)
+        .subscribe(
+          () => this.activeModal.close(),
+          (err: any) => this.handleError(err)
+        );
+    }
   }
 
   /** Close the modal. */
