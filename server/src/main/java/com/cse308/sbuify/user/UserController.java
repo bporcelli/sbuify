@@ -1,11 +1,8 @@
 package com.cse308.sbuify.user;
 
-import java.util.Optional;
-
-import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.email.Email;
 import com.cse308.sbuify.email.NewAccountEmail;
-import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +11,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping(path = "/api/users")
 public class UserController {
-
-    @Autowired
-    private AuthFacade authFacade;
 
     @Autowired
     private UserRepository userRepository;
@@ -69,7 +65,7 @@ public class UserController {
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (!currentUserCanEdit(user)) {
+        if (!SecurityUtils.userCanEdit(user)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         user.setPassword(passwordEncoder.encode(password));
@@ -89,7 +85,7 @@ public class UserController {
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (!currentUserCanEdit(user)) {
+        if (!SecurityUtils.userCanEdit(user)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         userRepository.delete(user);
@@ -107,14 +103,5 @@ public class UserController {
             return null;
         }
         return userOptional.get();
-    }
-
-    /**
-     * Check: can the current user edit a user?
-     * @param checkUser
-     */
-    private boolean currentUserCanEdit(User checkUser) {
-        User user = authFacade.getCurrentUser();
-        return user.equals(checkUser) || user instanceof Admin;
     }
 }

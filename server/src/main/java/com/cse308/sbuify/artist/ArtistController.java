@@ -1,16 +1,13 @@
 package com.cse308.sbuify.artist;
 
-import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.common.TypedCollection;
 import com.cse308.sbuify.image.Base64Image;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.image.StorageException;
 import com.cse308.sbuify.image.StorageService;
-import com.cse308.sbuify.label.LabelOwner;
-import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.security.SecurityUtils;
 import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +24,6 @@ import java.util.*;
 public class ArtistController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtistController.class);
-
-    @Autowired
-    private AuthFacade authFacade;
 
     @Autowired
     private ArtistRepository artistRepo;
@@ -115,7 +109,7 @@ public class ArtistController {
         }
 
         Artist artist = optionalArtist.get();
-        if (!userCanEdit(artist)) {
+        if (!SecurityUtils.userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -159,7 +153,7 @@ public class ArtistController {
         }
 
         Artist artist = optionalArtist.get();
-        if (!userCanEdit(artist)) {
+        if (!SecurityUtils.userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -202,7 +196,7 @@ public class ArtistController {
         }
 
         Artist artist = optionalArtist.get();
-        if (!userCanEdit(artist)) {
+        if (!SecurityUtils.userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -232,7 +226,7 @@ public class ArtistController {
         }
 
         Artist artist = optionalArtist.get();
-        if (!userCanEdit(artist)) {
+        if (!SecurityUtils.userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -275,7 +269,7 @@ public class ArtistController {
         }
 
         Artist artist = optionalArtist.get();
-        if (!userCanEdit(artist)){
+        if (!SecurityUtils.userCanEdit(artist)){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -304,7 +298,7 @@ public class ArtistController {
         }
 
         Artist artist = optionalArtist.get();
-        if (!userCanEdit(artist)) {
+        if (!SecurityUtils.userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -312,15 +306,5 @@ public class ArtistController {
         artistRepo.save(artist);
 
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private boolean userCanEdit(Artist artist) {
-        User user = authFacade.getCurrentUser();
-        boolean userOwnsArtist = false;
-        if (user instanceof LabelOwner) {
-            LabelOwner labelOwner = (LabelOwner) user;
-            userOwnsArtist = artist.getOwner() != null && artist.getOwner().getId().equals(labelOwner.getId());
-        }
-        return userOwnsArtist || user instanceof Admin;
     }
 }

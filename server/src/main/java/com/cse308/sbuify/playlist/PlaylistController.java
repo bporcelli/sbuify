@@ -1,17 +1,13 @@
 package com.cse308.sbuify.playlist;
 
-import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.customer.SavedPlaylist;
 import com.cse308.sbuify.customer.SavedPlaylistRepository;
-import com.cse308.sbuify.image.Base64Image;
-import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.image.StorageException;
-import com.cse308.sbuify.image.StorageService;
+import com.cse308.sbuify.image.*;
 import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.security.SecurityUtils;
 import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -95,9 +91,7 @@ public class PlaylistController {
         }
         Playlist playlist = optionalPlaylist.get();
 
-        User user = authFacade.getCurrentUser();
-        boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
-        if (!isOwnerOrAdmin && playlist.isHidden()) { // current user can't access playlist
+        if (!SecurityUtils.userCanEdit(playlist) && playlist.isHidden()) { // current user can't access playlist
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -122,9 +116,7 @@ public class PlaylistController {
         }
         Playlist playlist = optionalPlaylist.get();
 
-        User user = authFacade.getCurrentUser();
-        boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
-        if (!isOwnerOrAdmin) {  // can't edit playlist
+        if (!SecurityUtils.userCanEdit(playlist)) {  // can't edit playlist
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -134,21 +126,26 @@ public class PlaylistController {
         if (updated.getDescription() != null) {
             playlist.setDescription(updated.getDescription());
         }
-        if (updated.getImage() != null) {
-            Image image;
-            try{
-                image = storageService.save(((Image)updated.getImage()).getPath());
-            } catch (StorageException e){
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-            if (playlist.getImage() != null){
-                Image oldImage = (Image)playlist.getImage();
-                this.storageService.delete(oldImage);
-            }
-            playlist.setImage(image);
+        if (updated.isHidden() != null) {
+            playlist.setHidden(updated.isHidden());
         }
 
-        // todo: allow updates to parent folder
+        ImageI newImage = updated.getImage();
+        if (!(newImage instanceof Image)) {  // image was edited
+            if (newImage instanceof Base64Image) {
+                try{
+                    newImage = storageService.save(((Base64Image) newImage).getDataURL());
+                } catch (StorageException ex){
+                    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+                }
+            }
+
+            if (playlist.getImage() != null) {
+                Image oldImage = (Image) playlist.getImage();
+                this.storageService.delete(oldImage);
+            }
+            playlist.setImage(newImage);
+        }
         
         playlistRepository.save(playlist);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -171,9 +168,7 @@ public class PlaylistController {
         }
         Playlist playlist = optionalPlaylist.get();
 
-        User user = authFacade.getCurrentUser();
-        boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
-        if (!isOwnerOrAdmin) {  // can't delete playlist
+        if (!SecurityUtils.userCanEdit(playlist)) {  // can't delete playlist
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -201,9 +196,7 @@ public class PlaylistController {
         }
         Playlist playlist = optionalPlaylist.get();
 
-        User user = authFacade.getCurrentUser();
-        boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
-        if (!isOwnerOrAdmin) { // can't edit playlist
+        if (!SecurityUtils.userCanEdit(playlist)) { // can't edit playlist
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -244,10 +237,7 @@ public class PlaylistController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        User user = authFacade.getCurrentUser();
-        boolean isOwnerOrAdmin = playlist.getOwner().equals(user) || user instanceof Admin;
-
-        if (!isOwnerOrAdmin) {  // can't edit playlist
+        if (!SecurityUtils.userCanEdit(playlist)) {  // can't edit playlist
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 

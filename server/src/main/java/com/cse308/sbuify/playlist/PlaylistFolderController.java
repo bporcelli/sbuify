@@ -3,7 +3,7 @@ package com.cse308.sbuify.playlist;
 import com.cse308.sbuify.customer.SavedPlaylist;
 import com.cse308.sbuify.customer.SavedPlaylistRepository;
 import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.user.User;
+import com.cse308.sbuify.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +54,7 @@ public class PlaylistFolderController {
 
         PlaylistFolder folder = optionalFolder.get();
 
-        if (!currentUserCanEdit(folder)) {
+        if (!SecurityUtils.userCanEdit(folder)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -80,7 +80,7 @@ public class PlaylistFolderController {
 
         PlaylistFolder folder = optionalFolder.get();
 
-        if (!currentUserCanEdit(folder)) {
+        if (!SecurityUtils.userCanEdit(folder)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -106,17 +106,12 @@ public class PlaylistFolderController {
 
         PlaylistFolder folder = optionalFolder.get();
 
-        if (!currentUserCanEdit(folder)) {
+        if (!SecurityUtils.userCanEdit(folder)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         List<SavedPlaylist> playlists = savedPlaylistRepo.findByParent(folder);
 
         return new ResponseEntity<>(playlists, HttpStatus.OK);
-    }
-
-    private boolean currentUserCanEdit(PlaylistFolder folder) {
-        User user = authFacade.getCurrentUser();
-        return user.getId().equals(folder.getOwner().getId());
     }
 }

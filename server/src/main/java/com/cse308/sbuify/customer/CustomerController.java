@@ -11,6 +11,7 @@ import com.cse308.sbuify.image.StorageException;
 import com.cse308.sbuify.image.StorageService;
 import com.cse308.sbuify.playlist.*;
 import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.security.SecurityUtils;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class CustomerController {
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (!currentUserCanEdit(user)) {
+        if (!SecurityUtils.userCanEdit(user)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -278,15 +279,5 @@ public class CustomerController {
             return null;
         }
         return userOptional.get();
-    }
-
-    /**
-     * Helper to determine whether the current user can edit another user.
-     * @param checkUser
-     * @return
-     */
-    private boolean currentUserCanEdit(User checkUser) {
-        User user = authFacade.getCurrentUser();
-        return user.equals(checkUser) || user instanceof Admin;
     }
 }
