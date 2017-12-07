@@ -110,10 +110,27 @@ public class PlaylistController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        playlist.setName(updated.getName());
-        playlist.setDescription(updated.getDescription());
+        if(updated.getName() != null){
+            playlist.setName(updated.getName());
+        }
+        if(updated.getDescription() != null){
+            playlist.setDescription(updated.getDescription());
+        }
+        if(updated.getImage() != null){ ;
+            Image image;
+            try{
+                image = storageService.save(((Image)updated.getImage()).getPath());
+            } catch (StorageException e){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            if (playlist.getImage() != null){
+                Image oldImage = (Image)playlist.getImage();
+                this.storageService.delete(oldImage);
+            }
+            playlist.setImage(image);
+        }
+        
         playlistRepository.save(playlist);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
