@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ import java.util.*;
  */
 @Service
 public class PreferenceService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PreferenceService.class);
 
     @Autowired
     private PreferenceRepository preferenceRepository;
@@ -103,7 +107,7 @@ public class PreferenceService {
             try {
                 prefVal = objectMapper.writeValueAsString(value);
             } catch (JsonProcessingException ex) {
-                // todo: log error
+                LOGGER.debug("Failed to write preference.");
                 throw new PreferenceException("Failed to write preference.", ex);
             }
         }

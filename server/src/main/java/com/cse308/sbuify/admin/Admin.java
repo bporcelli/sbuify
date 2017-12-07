@@ -59,7 +59,7 @@ public class Admin extends User {
         this.lastName = lastName;
     }
 
-    public boolean getSuperAdmin() {
+    public Boolean getSuperAdmin() {
         return superAdmin;
     }
 

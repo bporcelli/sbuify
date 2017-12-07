@@ -1,9 +1,11 @@
 package com.cse308.sbuify.customer;
 
+import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.common.Followable;
 import com.cse308.sbuify.common.TypedCollection;
+import com.cse308.sbuify.image.Base64Image;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.image.StorageException;
 import com.cse308.sbuify.image.StorageService;
@@ -15,6 +17,7 @@ import com.cse308.sbuify.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +44,37 @@ public class CustomerController {
     private StorageService storageService;
 
     // todo: refactor to avoid eager fetching of customer's friends, artists, and playlists
+
+    /**
+     * Update a customer
+     * @param Id
+     * @param partialCustomer
+     * @return Http.OK successful, Http.FORBIDDEN, no permission, Http.NOT_FOUND, invalid Id
+     */
+    @PatchMapping(path = "{id}")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    public ResponseEntity<?> updateCustomer(@PathVariable Integer Id,@RequestBody Customer partialCustomer){
+        User user = getCustomerById(Id);
+        if (user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if(!selfOrAdmin(user)){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        Customer customer = (Customer)user;
+        if(partialCustomer.getFirstName() != null){
+            customer.setFirstName(partialCustomer.getFirstName());
+        }
+        if(partialCustomer.getLastName() != null){
+            customer.setLastName(partialCustomer.getLastName());
+        }
+        if(partialCustomer.getBirthday() != null){
+            customer.setBirthday(partialCustomer.getBirthday());
+        }
+
+        userRepository.save(customer);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     /**
      * Get the playlists followed by the customer.
@@ -183,13 +217,16 @@ public class CustomerController {
      * @return Http.OK when successful, otherwise, Http.BAD_REQUEST
      */
     @PutMapping(path = "profile-picture")
-    public ResponseEntity<?> updateProfilePicture(@RequestBody String imageData){
+    public ResponseEntity<?> updateProfilePicture(@RequestBody Base64Image imageData){
         Customer customer = getCurrentCustomer();
         Image image;
         try{
-            image = storageService.save(imageData);
+            image = storageService.save(imageData.getDataURL());
         } catch (StorageException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        if (customer.getProfileImage() != null){
+            this.storageService.delete(customer.getProfileImage());
         }
         customer.setProfileImage(image);
         userRepository.save(customer);
@@ -198,5 +235,29 @@ public class CustomerController {
 
     private Customer getCurrentCustomer(){
         return (Customer) authFacade.getCurrentUser();
+    }
+
+    /**
+     * helper to get customer from repository
+     * @param id
+     * @return
+     */
+    private User getCustomerById(Integer id){
+        Optional<User> userOptional = userRepository.findById(id);
+        if(!userOptional.isPresent()){
+            return null;
+        }
+        return userOptional.get();
+
+    }
+
+    /**
+     * Helper to check if user is themselves or admin
+     * @param checkUser
+     * @return
+     */
+    private boolean selfOrAdmin(User checkUser){
+        User user = authFacade.getCurrentUser();
+        return user.equals(checkUser) || user instanceof Admin;
     }
 }

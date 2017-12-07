@@ -33,9 +33,6 @@ public class LabelOwner extends User {
     @NotNull
     private Label label;
 
-    @OneToMany(mappedBy = "owner")
-    private Set<Artist> artists = new HashSet<>();
-
     public LabelOwner() {
     }
 
@@ -55,7 +52,7 @@ public class LabelOwner extends User {
      * {@link #getName()}
      */
     public void setName(String name) {
-        label.setName(name);
+        this.label.setName(name);
     }
 
     /**
@@ -70,13 +67,7 @@ public class LabelOwner extends User {
      */
     public void setLabel(Label label) {
         this.label = label;
-    }
 
-    /**
-     * Artists managed by the label owner.
-     */
-    public Set<Artist> getArtists() {
-        return artists;
     }
 
     /**
