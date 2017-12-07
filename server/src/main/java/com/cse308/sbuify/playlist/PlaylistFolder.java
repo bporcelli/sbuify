@@ -1,7 +1,7 @@
 package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.user.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +22,7 @@ public class PlaylistFolder implements PlaylistComponent {
     /** Folder owner */
     @OneToOne
     @NotNull
-    @JsonIgnore
+    @JsonIgnoreProperties("password")
     private User owner;
 
     /** Sort position */
