@@ -27,6 +27,7 @@ export class PlaylistService {
       .map(playlists => playlists.find(playlist => playlist.id == +id));
   }
 
+  /** Create a playlist or folder. */
   create(playlist: object): Observable<object> {
     let endpoint: string;
 
@@ -44,6 +45,27 @@ export class PlaylistService {
       });
   }
 
+  /** Update a playlist. */
+  update(playlist: object): Observable<void> {
+    return this.client.patch<void>('/api/playlists/' + playlist['id'], playlist)
+      .map(() => {
+        // update playlist locally
+        let index = this.findPlaylist(playlist['id']);
+        let playlists = this._playlists.value;
+
+        if (index >= 0) {
+          playlists[index]['name'] = playlist['name'];
+          playlists[index]['description'] = playlist['description'];
+          playlists[index]['hidden'] = playlist['hidden'];
+
+          if (playlist['image']['type'] == 'base64_image') {  // image changed
+            playlists[index]['image'] = playlist['image'];
+          }
+        }
+        this._playlists.next(playlists);
+      });
+  }
+
   /** Delete a playlist or folder. */
   delete(item: any) {
     let endpoint: string;
@@ -56,16 +78,26 @@ export class PlaylistService {
 
     return this.client.delete(endpoint)
       .map(() => {
-        // remove playlist/folder from local cache on success
+        // remove playlist/folder locally
+        let index = this.findPlaylist(item.id);
         let playlists = this._playlists.value;
-        for (let i = 0; i < playlists.length; i++) {
-          if (item.id == playlists[i].id) {
-            playlists.splice(i, 1);
-            break;
-          }
+
+        if (index >= 0) {
+          playlists.splice(index, 1);
         }
         this._playlists.next(playlists);
       });
+  }
+
+  /** Find the index of the playlist with the given ID */
+  private findPlaylist(id): number {
+    let playlists = this._playlists.value;
+
+    for (let i = 0; i < playlists.length; i++) {
+      if (id == playlists[i].id)
+        return i;
+    }
+    return -1;
   }
 
   /** Get the playlists in a folder. */

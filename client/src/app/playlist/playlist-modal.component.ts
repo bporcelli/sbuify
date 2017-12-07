@@ -4,26 +4,30 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormComponent } from "../common/forms/form.component";
 import { Config } from "../config";
 import { Base64Image } from "../common/base64-image";
+import { Image } from "../common/image";
 import { PlaylistService } from "./playlist.service";
 
 @Component({
-  templateUrl: './create-playlist.component.html'
+  templateUrl: './playlist-modal.component.html'
 })
-export class CreatePlaylistComponent extends FormComponent {
+export class PlaylistModalComponent extends FormComponent {
 
-  @ViewChild("createForm") form: NgForm;
+  @ViewChild("form") form: NgForm;
+
+  /** Playlist ID (if editing) */
+  @Input() public id: number = 0;
 
   /** Name */
-  public name: string = "";
+  @Input() public name: string = "";
 
   /** Description */
-  public description: string = "";
+  @Input() public description: string = "";
 
   /** Image */
-  private imageURL: string = "";
+  @Input() private imageURL: string = Config.DEFAULT_PLAYLIST_IMG;
 
   /** Playlist visibility */
-  private hidden: boolean = true;
+  @Input() private hidden: boolean = true;
 
   constructor(
     private activeModal: NgbActiveModal,
@@ -32,7 +36,7 @@ export class CreatePlaylistComponent extends FormComponent {
     super();
   }
 
-  onFileChange(event, preview) {
+  onFileChange(event) {
     let this$ = this;
     let file: File = event.target.files[0];
 
@@ -40,13 +44,12 @@ export class CreatePlaylistComponent extends FormComponent {
       let reader = new FileReader();
 
       reader.onloadend = function(event) {
-        preview.src = reader.result;
-        this$.imageURL = preview.src;
+        this$.imageURL = reader.result;
       };
 
       reader.readAsDataURL(file);
     } else {
-      preview.src = Config.DEFAULT_PLAYLIST_IMG;
+      this.imageURL = Config.DEFAULT_PLAYLIST_IMG;
     }
   }
 
@@ -62,16 +65,32 @@ export class CreatePlaylistComponent extends FormComponent {
       type: 'playlist',  // type info, required for deserialization
       name: this.name,
       description: this.description,
-      hidden: this.hidden,
-      image: new Base64Image(this.imageURL)
+      hidden: this.hidden
     };
 
-    // create
-    this.playlistService.create(playlist)
-      .subscribe(
-        (resp: any) => this.activeModal.close(),
-        (err: any) => this.handleError(err)
-      );
+    if (this.id) {
+      playlist['id'] = this.id;
+    }
+
+    if (this.imageURL.startsWith('data:')) {   // new image
+      playlist['image'] = new Base64Image(this.imageURL);
+    } else if(this.imageURL != Config.DEFAULT_PLAYLIST_IMG) {  // keep old image
+      playlist['image'] = new Image(this.id, 0, 0);
+    }
+
+    if (this.id) {  // edit
+      this.playlistService.update(playlist)
+        .subscribe(
+          (resp: any) => this.activeModal.close(),
+          (err: any) => this.handleError(err)
+        );
+    } else {
+      this.playlistService.create(playlist)
+        .subscribe(
+          (resp: any) => this.activeModal.close(),
+          (err: any) => this.handleError(err)
+        );
+    }
   }
 
   /** Close the modal. */

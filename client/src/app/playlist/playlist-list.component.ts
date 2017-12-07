@@ -3,7 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Playlist } from "./playlist";
 import { BehaviorSubject, Observable } from "rxjs/Rx";
 import { PlaylistService } from "./playlist.service";
-import { CreatePlaylistComponent } from "./create-playlist.component";
+import { PlaylistModalComponent } from "./playlist-modal.component";
 import { UserService } from "../user/user.service";
 import { User } from "../user/user";
 import { CreatePlaylistFolderComponent } from "./create-playlist-folder.component";
@@ -44,7 +44,7 @@ export class PlaylistListComponent implements OnInit {
 
   /** Open the create playlist modal. */
   openPlaylistModal(): void {
-    this.modalService.open(CreatePlaylistComponent);
+    this.modalService.open(PlaylistModalComponent);
   }
 
   /** Open the create folder modal. */
@@ -78,7 +78,17 @@ export class PlaylistListComponent implements OnInit {
     if (item.folder) {
       console.log('would edit folder', item);
     } else {
-      console.log('would edit playlist', item);
+      let modal = this.modalService.open(PlaylistModalComponent);
+      let comp = modal.componentInstance;
+
+      comp.id = item.id;
+      comp.name = item.name;
+      comp.description = item.description;
+      comp.hidden = item.hidden;
+
+      if (item.image) {
+        comp.imageURL = '/static/i/' + item.image.id + '/full';  // todo: get catalog size instead
+      }
     }
   }
 

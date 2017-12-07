@@ -2,7 +2,11 @@
  * Image model.
  */
 export class Image {
-  constructor(id: number,
-              width: number,
-              height: number) {}
+  type: string = 'image';
+
+  constructor(
+    id: number,
+    width: number,
+    height: number
+  ) {}
 }

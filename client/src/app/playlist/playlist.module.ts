@@ -9,7 +9,7 @@ import { PlaylistDetailComponent } from './playlist-detail.component';
 import { PlaylistDetailResolver } from './playlist-resolver.service';
 import { AuthGuard } from '../auth/auth-guard.service';
 import { PlaylistListComponent } from "./playlist-list.component";
-import { CreatePlaylistComponent } from "./create-playlist.component";
+import { PlaylistModalComponent } from "./playlist-modal.component";
 import { CreatePlaylistFolderComponent } from "./create-playlist-folder.component";
 import { PlaylistFolderComponent } from "./playlist-folder.component";
 
@@ -39,12 +39,12 @@ const routes: Routes = [
   declarations: [
     PlaylistDetailComponent,
     PlaylistListComponent,
-    CreatePlaylistComponent,
+    PlaylistModalComponent,
     CreatePlaylistFolderComponent,
     PlaylistFolderComponent
   ],
   entryComponents: [
-    CreatePlaylistComponent,
+    PlaylistModalComponent,
     CreatePlaylistFolderComponent
   ],
   providers: [
