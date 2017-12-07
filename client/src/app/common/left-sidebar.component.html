@@ -28,16 +28,5 @@
 </div>
 
 <div class="left-sidebar-item">
-    <h6 class="nav-title">
-        <span>Playlists</span>
-        <a class="create-playlist float-right" [routerLink]="[{ outlets: { modal: 'create-playlist' } }]" title="Create New Playlist">
-            <i class="fa fa-plus-square-o"></i>
-        </a>
-    </h6>
-
-    <ul class="nav sidebar-nav flex-column" *ngIf="playlists$ | async as playlists">
-        <li *ngFor="let playlist of playlists" class="nav-item">
-            <a class="nav-link" [routerLink]="['playlist', playlist.id]" routerLinkActive="active">{{ playlist.name }}</a>
-        </li>
-    </ul>
+  <playlist-list></playlist-list>
 </div>

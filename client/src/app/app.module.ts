@@ -9,7 +9,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { CommonModule } from './common/common.module';
 import { BrowseModule } from './browse/browse.module';
 import { ArtistModule } from './artist/artist.module';
-import { PlaylistDetailModule } from './playlist/playlist-detail.module';
+import { PlaylistModule } from './playlist/playlist.module';
 import { SongsModule } from './songs/songs.module';
 import { SearchModule } from './search/search.module';
 import { GuestModule } from './guest/guest.module';
@@ -43,7 +43,7 @@ import { LibraryModule } from "./library/library.module";
     AuthModule,
     BrowseModule,
     ArtistModule,
-    PlaylistDetailModule,
+    PlaylistModule,
     SongsModule,
     AlbumModule,
     LibraryModule,

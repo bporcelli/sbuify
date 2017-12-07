@@ -5,6 +5,7 @@ import { PlaylistSong } from "./playlist-song";
 import { Customer } from "../user/customer";
 import { Playable } from "../player/playable";
 import { Song } from "../songs/song";
+import { Base64Image } from "../common/base64-image";
 
 /**
  * Playlist model.
@@ -15,7 +16,7 @@ export class Playlist extends CatalogItem implements Playable {
     public name: string,
     public createdDate: any,
     public active: boolean,
-    public image: Image,
+    public image: Image | Base64Image,
     public owner: Customer,
     public position: number,
     public parentFolder: PlaylistFolder,

@@ -1,0 +1,22 @@
+<h6 class="nav-title">
+  <span>Playlists</span>
+  <a class="create-playlist float-right" title="Create New Playlist" (click)="openModal()">
+    <i class="fa fa-plus-square-o"></i>
+  </a>
+</h6>
+
+<ng-container *ngIf="playlists | async as playlists">
+  <ul class="nav sidebar-nav flex-column" *ngIf="playlists.length > 0; else noPlaylists">
+    <li *ngFor="let playlist of playlists" class="nav-item">
+      <a class="nav-link" [routerLink]="['playlist', playlist.id]" routerLinkActive="active">{{ playlist.name }}</a>
+    </li>
+  </ul>
+</ng-container>
+
+
+<ng-template #noPlaylists>
+  <div id="no-playlists-message" class="text-center mt-4">
+    <p>You don't have any playlists yet.</p>
+    <button class="btn btn-primary btn-wide" (click)="openModal()">Create a Playlist</button>
+  </div>
+</ng-template>

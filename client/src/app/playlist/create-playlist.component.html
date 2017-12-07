@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="modalLabel">Create Playlist</h5>
+  <button type="button" class="close" aria-label="Close" (click)="close()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form (ngSubmit)="onSubmit()" #createForm="ngForm">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" name="name" maxlength="100" placeholder="New Playlist" required [(ngModel)]="name">
+    </div>
+    <div class="form-row form-group">
+      <div class="col-5">
+        <label for="image">Image</label>
+        <div class="text-center">
+          <img #preview class="img-fluid" src="assets/img/playlist-placeholder.jpg" alt="Playlist Image" title="Playlist Image">
+          <label class="custom-file mt-2">
+            <input type="file" class="custom-file-input" name="image" id="image" (change)="onFileChange($event, preview)">
+            <button class="my-custom-file-control btn btn-outline-secondary">Choose Image</button>
+          </label>
+        </div>
+      </div>
+      <div class="col-7">
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea class="form-control" name="description" id="description" rows="5" maxlength="300" placeholder="Give your playlist a description." [(ngModel)]="description"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" name="public" id="public" value="1" [(ngModel)]="isPublic">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">Make this playlist public</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-row" *ngIf="feedback">
+      <p class="mx-auto" [ngClass]="feedback.class">{{ feedback.text }}</p>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+  <button type="button" class="btn btn-primary" [disabled]="!createForm.form.valid || disabled" (click)="doSubmit(createForm)">Create</button>
+</div>

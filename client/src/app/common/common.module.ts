@@ -10,15 +10,14 @@ import { CommonRoutingModule } from './common-routing.module';
 import { NavbarComponent } from './navbar.component';
 import { LeftSidebarComponent } from './left-sidebar.component';
 import { UpgradeAccountComponent } from './upgrade-account.component';
-import { CreatePlaylistComponent } from './create-playlist.component';
 import { FormatDurationPipe } from "./format-duration.pipe";
+import { PlaylistModule } from "../playlist/playlist.module";
 
 @NgModule({
   declarations: [
     NavbarComponent,
     LeftSidebarComponent,
     UpgradeAccountComponent,
-    CreatePlaylistComponent,
     FormatDurationPipe
   ],
   imports: [
@@ -26,7 +25,8 @@ import { FormatDurationPipe } from "./format-duration.pipe";
     BrowserModule,
     NgbModule,
     ACommonModule,
-    FormsModule
+    FormsModule,
+    PlaylistModule
   ],
   exports: [
     NavbarComponent,
