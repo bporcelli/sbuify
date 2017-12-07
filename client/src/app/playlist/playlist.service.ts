@@ -3,7 +3,6 @@ import 'rxjs/operators/map';
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs/Rx';
 import { APIClient } from "../api/api-client.service";
-import { Playlist } from "./playlist";
 
 @Injectable()
 export class PlaylistService {
@@ -28,9 +27,17 @@ export class PlaylistService {
       .map(playlists => playlists.find(playlist => playlist.id == +id));
   }
 
-  create(playlist: object): Observable<Playlist> {
-    return this.client.post<Playlist>('/api/playlists', playlist)
-      .map((response: Playlist) => {
+  create(playlist: object): Observable<object> {
+    let endpoint: string;
+
+    if (playlist['folder']) {
+      endpoint = '/api/playlist-folders';
+    } else {
+      endpoint = '/api/playlists';
+    }
+
+    return this.client.post<object>(endpoint, playlist)
+      .map((response: object) => {
         this._playlists.value.push(response);
         this._playlists.next(this._playlists.value);
         return response;
@@ -59,6 +66,11 @@ export class PlaylistService {
         }
         this._playlists.next(playlists);
       });
+  }
+
+  /** Get the playlists in a folder. */
+  getFolder(id: any): Observable<object[]> {
+    return this.client.get<object[]>('/api/playlist-folders/' + id);
   }
 
   private initPlaylists(playlists: any[]): void {

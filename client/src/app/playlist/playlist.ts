@@ -1,6 +1,5 @@
 import { CatalogItem } from "../common/catalog-item";
 import { Image } from "../common/image";
-import { PlaylistFolder } from "./playlist-folder";
 import { PlaylistSong } from "./playlist-song";
 import { Customer } from "../user/customer";
 import { Playable } from "../player/playable";
@@ -18,8 +17,6 @@ export class Playlist extends CatalogItem implements Playable {
     public active: boolean,
     public image: Image | Base64Image,
     public owner: Customer,
-    public position: number,
-    public parentFolder: PlaylistFolder,
     public description: string,
     public hidden: boolean,
     private _songs: Array<PlaylistSong>  // todo: will this be an issue when decoding playlists?

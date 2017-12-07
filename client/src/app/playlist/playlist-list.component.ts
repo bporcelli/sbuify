@@ -4,8 +4,9 @@ import { Playlist } from "./playlist";
 import { BehaviorSubject, Observable } from "rxjs/Rx";
 import { PlaylistService } from "./playlist.service";
 import { CreatePlaylistComponent } from "./create-playlist.component";
-import {UserService} from "../user/user.service";
-import {User} from "../user/user";
+import { UserService } from "../user/user.service";
+import { User } from "../user/user";
+import { CreatePlaylistFolderComponent } from "./create-playlist-folder.component";
 
 @Component({
   selector: 'playlist-list',
@@ -48,8 +49,7 @@ export class PlaylistListComponent implements OnInit {
 
   /** Open the create folder modal. */
   openFolderModal(): void {
-    console.log('would open create folder modal');
-    // todo
+    this.modalService.open(CreatePlaylistFolderComponent);
   }
 
   /** Check whether a playlist or folder is owned by the current user */

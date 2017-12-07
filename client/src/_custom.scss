@@ -87,12 +87,16 @@ ul.button-list li {
     text-transform: uppercase;
 }
 
-.sidebar-nav a {
+.sidebar-nav .nav-link {
     font-weight: normal;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
     padding-left: 0;
     position: relative;
+}
+
+ul.submenu {
+  padding-left: 0.75rem;
 }
 
 .sidebar-nav a.active {
@@ -106,6 +110,21 @@ ul.button-list li {
     left: -15px;
     position: absolute;
     width: 5px;
+}
+
+a.toggle-collapse::after {
+  line-height: 10px;
+  padding-left: 2px;
+}
+
+a.toggle-collapse.collapsed::after {
+  font-size: 26px;
+  content: '\25B6';
+}
+
+a.toggle-collapse.expanded::after {
+  font-size: 10px;
+  content: '\25BC';
 }
 
 // Center Pane
