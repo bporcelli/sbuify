@@ -103,7 +103,7 @@ public class CustomerController {
         }
 
         // add playlists
-        List<SavedPlaylist> playlists = savedPlaylistRepo.findByCustomer(customer);
+        List<SavedPlaylist> playlists = savedPlaylistRepo.findByCustomerAndParent(customer, null);
 
         for (SavedPlaylist savedPlaylist: playlists) {
             Playlist playlist = savedPlaylist.getPlaylist();
