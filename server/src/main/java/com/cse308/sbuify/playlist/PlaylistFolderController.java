@@ -1,12 +1,16 @@
 package com.cse308.sbuify.playlist;
 
+import com.cse308.sbuify.customer.SavedPlaylist;
+import com.cse308.sbuify.customer.SavedPlaylistRepository;
 import com.cse308.sbuify.security.AuthFacade;
+import com.cse308.sbuify.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -19,13 +23,16 @@ public class PlaylistFolderController {
     @Autowired
     private PlaylistFolderRepository folderRepo;
 
+    @Autowired
+    private SavedPlaylistRepository savedPlaylistRepo;
+
     /**
      * Create a playlist folder.
      * @param folder The folder to create.
      * @return a 201 response containing the saved playlist folder in the body.
      */
     @PostMapping
-    public ResponseEntity<?> createPlaylistFolder(@RequestBody PlaylistFolder folder) {
+    public ResponseEntity<?> create(@RequestBody PlaylistFolder folder) {
         folder.setOwner(authFacade.getCurrentUser());
         PlaylistFolder saved = folderRepo.save(folder);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
@@ -38,8 +45,7 @@ public class PlaylistFolderController {
      * @return an empty 200 response if the folder is updated successfully, otherwise a 404.
      */
     @PatchMapping(path = "/{id}")
-    public ResponseEntity<?> updatePlaylistFolder(@PathVariable Integer id, @RequestBody PlaylistFolder updated) {
-        // changed to handle all playlist folder updates instead of just changes to the parent folder
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody PlaylistFolder updated) {
         Optional<PlaylistFolder> optionalFolder = folderRepo.findById(id);
 
         if (!optionalFolder.isPresent()) {
@@ -48,9 +54,69 @@ public class PlaylistFolderController {
 
         PlaylistFolder folder = optionalFolder.get();
 
-        folder.setName(updated.getName());
+        if (!currentUserCanEdit(folder)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
 
-        folderRepo.save(folder);  // if the parent folder ID is invalid, this should trigger a 500 response
+        folder.setName(updated.getName());
+        folderRepo.save(folder);
+
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Delete a playlist folder.
+     * @param id Folder ID.
+     * @return an empty 200 response on success, otherwise a 404 if the folder ID is invalid or a 403
+     *         if the current user can't edit the folder.
+     */
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
+        Optional<PlaylistFolder> optionalFolder = folderRepo.findById(id);
+
+        if (!optionalFolder.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        PlaylistFolder folder = optionalFolder.get();
+
+        if (!currentUserCanEdit(folder)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        savedPlaylistRepo.deleteByParent(folder);  // todo: ensure that playlist images are deleted
+        folderRepo.delete(folder);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Get the playlists in a folder.
+     * @param id Folder ID.
+     * @return a 200 response containing a list of playlists on success, otherwise a 404 if the folder ID
+     *         is invalid or a 403 if the folder is not owned by the current user.
+     */
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<?> read(@PathVariable Integer id) {
+        Optional<PlaylistFolder> optionalFolder = folderRepo.findById(id);
+
+        if (!optionalFolder.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        PlaylistFolder folder = optionalFolder.get();
+
+        if (!currentUserCanEdit(folder)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        List<SavedPlaylist> playlists = savedPlaylistRepo.findByParent(folder);
+
+        return new ResponseEntity<>(playlists, HttpStatus.OK);
+    }
+
+    private boolean currentUserCanEdit(PlaylistFolder folder) {
+        User user = authFacade.getCurrentUser();
+        return user.getId().equals(folder.getOwner().getId());
     }
 }

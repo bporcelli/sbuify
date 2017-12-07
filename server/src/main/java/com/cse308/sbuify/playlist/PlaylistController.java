@@ -127,13 +127,13 @@ public class PlaylistController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        if(updated.getName() != null){
+        if (updated.getName() != null) {
             playlist.setName(updated.getName());
         }
-        if(updated.getDescription() != null){
+        if (updated.getDescription() != null) {
             playlist.setDescription(updated.getDescription());
         }
-        if(updated.getImage() != null){ ;
+        if (updated.getImage() != null) {
             Image image;
             try{
                 image = storageService.save(((Image)updated.getImage()).getPath());
@@ -146,6 +146,8 @@ public class PlaylistController {
             }
             playlist.setImage(image);
         }
+
+        // todo: allow updates to parent folder
         
         playlistRepository.save(playlist);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -172,6 +174,8 @@ public class PlaylistController {
         if (!isOwnerOrAdmin) {  // can't delete playlist
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+
+        // todo: delete image
 
         playlistRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
