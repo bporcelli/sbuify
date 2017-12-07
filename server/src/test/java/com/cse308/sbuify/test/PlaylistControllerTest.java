@@ -32,10 +32,7 @@ import com.cse308.sbuify.user.UserRepository;
 
 public class PlaylistControllerTest extends AuthenticatedTest {
 
-    private static final String TEST_IMAGE = "test-image.jpg";
-
-    @Autowired
-    private UserRepository userRepository;
+    private static final String TEST_IMAGE = "static/img/test-image.jpg";
 
     @Autowired
     private SongRepository songRepository;

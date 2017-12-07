@@ -165,12 +165,7 @@ public class StorageService {
      * @return Resource
      */
     public Resource loadAsResource(String filename) {
-        Path path;
-        if (filename.contains("/")) {  // abs. path
-            path = Paths.get(filename);
-        } else {  // relative path
-            path = rootDir.resolve(filename);
-        }
+        Path path = Paths.get(filename);
         try {
             Resource resource = new UrlResource(path.toUri());
             if (resource.exists() || resource.isReadable()) {

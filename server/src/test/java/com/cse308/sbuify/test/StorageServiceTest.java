@@ -1,7 +1,6 @@
 package com.cse308.sbuify.test;
 
 import com.cse308.sbuify.image.Image;
-import com.cse308.sbuify.image.ImageSize;
 import com.cse308.sbuify.image.StorageException;
 import com.cse308.sbuify.image.StorageService;
 import org.junit.Test;
@@ -24,7 +23,7 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class StorageServiceTest {
 
-    private static final String TEST_IMAGE = "test-image.jpg";
+    private static final String TEST_IMAGE = "static/img/test-image.jpg";
 
     @Autowired
     private StorageService storageService;
