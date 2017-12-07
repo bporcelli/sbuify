@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MomentModule } from 'angular2-moment';
+import { ContextMenuModule } from 'ngx-contextmenu';
 import { PlaylistDetailComponent } from './playlist-detail.component';
 import { PlaylistDetailResolver } from './playlist-resolver.service';
 import { AuthGuard } from '../auth/auth-guard.service';
@@ -27,7 +28,8 @@ const routes: Routes = [
     CommonModule,
     NgbModule,
     MomentModule,
-    FormsModule
+    FormsModule,
+    ContextMenuModule
   ],
   exports: [
     PlaylistListComponent

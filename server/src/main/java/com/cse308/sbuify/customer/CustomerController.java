@@ -9,8 +9,7 @@ import com.cse308.sbuify.image.Base64Image;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.image.StorageException;
 import com.cse308.sbuify.image.StorageService;
-import com.cse308.sbuify.playlist.Playlist;
-import com.cse308.sbuify.playlist.PlaylistRepository;
+import com.cse308.sbuify.playlist.*;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
@@ -21,8 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @RequestMapping(path = "/api/customer/")
@@ -42,6 +40,12 @@ public class CustomerController {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private SavedPlaylistRepository savedPlaylistRepo;
+
+    @Autowired
+    private PlaylistFolderRepository playlistFolderRepo;
 
     // todo: refactor to avoid eager fetching of customer's friends, artists, and playlists
 
@@ -80,15 +84,38 @@ public class CustomerController {
     }
 
     /**
-     * Get the playlists followed by the customer.
+     * Get a list of playlists and playlist folders owned or followed by the user.
      *
      * @return Set<Playlist>
      */
     @GetMapping(path = "playlists")
-    public ResponseEntity<?> getFollowedPlaylists() {
+    public ResponseEntity<?> getPlaylists() {
         Customer customer = getCurrentCustomer();
-        TypedCollection collection = new TypedCollection(customer.getPlaylists(), Playlist.class);
-        return new ResponseEntity<>(collection, HttpStatus.OK);
+
+        Map<Integer, PlaylistComponent> componentMap = new TreeMap<>();
+
+        // add folders
+        List<PlaylistFolder> folders = playlistFolderRepo.findByOwner(customer);
+
+        for (PlaylistFolder folder: folders) {
+            Integer sortKey = folder.getPosition() != null ? folder.getPosition() : folder.getId();
+            componentMap.put(sortKey, folder);
+        }
+
+        // add playlists
+        List<SavedPlaylist> playlists = savedPlaylistRepo.findByCustomer(customer);
+
+        for (SavedPlaylist savedPlaylist: playlists) {
+            Playlist playlist = savedPlaylist.getPlaylist();
+            Integer sortKey = savedPlaylist.getPosition() != null ? savedPlaylist.getPosition() : playlist.getId();
+            componentMap.put(sortKey, playlist);
+        }
+
+        // convert to list
+        List<PlaylistComponent> response = new ArrayList<>();
+        response.addAll(componentMap.values());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**

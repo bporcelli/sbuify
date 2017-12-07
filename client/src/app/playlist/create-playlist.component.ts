@@ -69,7 +69,7 @@ export class CreatePlaylistComponent extends FormComponent {
     // create
     this.playlistService.create(playlist)
       .subscribe(
-        (resp: any) => this.close(),
+        (resp: any) => this.activeModal.close(),
         (err: any) => this.handleError(err)
       );
   }

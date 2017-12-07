@@ -1,18 +1,37 @@
 <h6 class="nav-title">
   <span>Playlists</span>
-  <a class="create-playlist float-right" title="Create New Playlist" (click)="openModal()">
+  <a class="create-playlist float-right" title="Create New Playlist" (click)="openPlaylistModal()">
     <i class="fa fa-plus-square-o"></i>
   </a>
 </h6>
 
 <ng-container *ngIf="playlists | async as playlists">
   <ul class="nav sidebar-nav flex-column" *ngIf="playlists.length > 0; else noPlaylists">
-    <li *ngFor="let playlist of playlists" class="nav-item">
+    <li *ngFor="let playlist of playlists" class="nav-item" [contextMenu]="playlistMenu" [contextMenuSubject]="playlist">
       <a class="nav-link" [routerLink]="['playlist', playlist.id]" routerLinkActive="active">{{ playlist.name }}</a>
     </li>
   </ul>
 </ng-container>
 
+<context-menu #playlistMenu>
+  <ng-template contextMenuItem [visible]="isUserOwnedBound" (execute)="edit($event.item)">
+    Edit
+  </ng-template>
+  <ng-template contextMenuItem [visible]="isUserOwnedBound" (execute)="delete($event.item)">
+    Delete
+  </ng-template>
+  <ng-template contextMenuItem divider="true" [visible]="isFollowedBound"></ng-template>
+  <ng-template contextMenuItem [visible]="isFollowedBound" (execute)="unfollow($event.item)">
+    Unfollow
+  </ng-template>
+  <ng-template contextMenuItem divider="true"></ng-template>
+  <ng-template contextMenuItem (execute)="openPlaylistModal()">
+    Create Playlist
+  </ng-template>
+  <ng-template contextMenuItem [visible]="isNotFolder" (execute)="openFolderModal()">
+    Create Folder
+  </ng-template>
+</context-menu>
 
 <ng-template #noPlaylists>
   <div id="no-playlists-message" class="text-center mt-4">

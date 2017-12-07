@@ -8,13 +8,18 @@ import { Playlist } from "./playlist";
 @Injectable()
 export class PlaylistService {
 
-  private _playlists: BehaviorSubject<Playlist[]> = new BehaviorSubject([]);
+  private _playlists: BehaviorSubject<any[]> = new BehaviorSubject([]);
 
-  constructor(private client: APIClient) {}
+  constructor(private client: APIClient) {
+    this.client.get<any[]>('/api/customer/playlists')
+      .subscribe(
+        (resp: any[]) => this.initPlaylists(resp),
+        (err: any) => this.handleError(err)
+      );
+  }
 
-  getAll(): Observable<Playlist[]> {
-    // todo: concact server for playlists; return PlaylistComponent[] instead of Playlist[]
-    return Observable.of([]);
+  getAll(): Observable<any[]> {
+    return this._playlists;
   }
 
   getPlaylist(id: number | string) {
@@ -30,5 +35,17 @@ export class PlaylistService {
         this._playlists.next(this._playlists.value);
         return response;
       });
+  }
+
+  private initPlaylists(playlists: any[]): void {
+    console.log('got playlists from server:');
+    console.log(playlists);
+
+    this._playlists.next(playlists);
+  }
+
+  private handleError(err: any): void {
+    // todo: show error
+    console.log('error occurred while fetching playlists:', err);
   }
 }
