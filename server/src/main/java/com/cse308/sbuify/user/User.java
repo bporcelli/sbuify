@@ -38,6 +38,7 @@ public abstract class User implements Serializable, UserDetails {
     // Hashed password
     @NotNull
 	@NotEmpty
+    @JsonIgnore
 	private String password;
 
     // Token used for password reset requests
