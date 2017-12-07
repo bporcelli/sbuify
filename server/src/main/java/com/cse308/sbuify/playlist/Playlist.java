@@ -128,7 +128,10 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     }
 
     public void setSongs(List<PlaylistSong> songs) {
-        this.songs = songs;
+        if (songs != null){
+            this.songs.clear();
+            this.songs.addAll(songs);
+        }
     }
 
     /**

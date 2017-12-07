@@ -18,10 +18,15 @@ import java.util.List;
 @RequestMapping(path = "/api/albums")
 public class AlbumController {
 
-    private final static int NUM_NEW_RELEASES = 30;  // todo: make configurable with @ConfigurationProperties
-
 	@Autowired
 	private AlbumRepository albumRepo;
+
+    public final Integer NUM_NEW_RELEASES;
+
+    @Autowired
+    public AlbumController(AlbumProperties albumProperties){
+        NUM_NEW_RELEASES = albumProperties.getNumNewReleases();
+    }
 
     /**
      * Get new releases.

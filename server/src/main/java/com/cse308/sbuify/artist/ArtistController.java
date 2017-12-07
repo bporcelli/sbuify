@@ -2,6 +2,7 @@ package com.cse308.sbuify.artist;
 
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.album.Album;
+import com.cse308.sbuify.common.AbstractCatalogItemRepository;
 import com.cse308.sbuify.common.TypedCollection;
 import com.cse308.sbuify.image.Base64Image;
 import com.cse308.sbuify.image.Image;
@@ -12,6 +13,8 @@ import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
 import com.cse308.sbuify.user.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,8 @@ import java.util.*;
 @RequestMapping(path = "/api/artists")
 public class ArtistController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArtistController.class);
+
     @Autowired
     private AuthFacade authFacade;
 
@@ -32,17 +37,16 @@ public class ArtistController {
     private UserRepository userRepository;
 
     @Autowired
-    private ArtistRepository artistRepo;
+    private AbstractCatalogItemRepository abstractCatalogItemRepository;
 
     @Autowired
-    private BiographyRepository biographyRepository;
+    private ArtistRepository artistRepo;
 
     @Autowired
     private StorageService storageService;
 
     @Autowired
     private ProductRepository productRepository;
-
     /**
      * Get basic information about an artist.
      * @param artistId ID of artist.
@@ -51,6 +55,7 @@ public class ArtistController {
     public ResponseEntity<?> getArtistInfo(@PathVariable Integer artistId) {
         Optional<Artist> artist = artistRepo.findById(artistId);
         if (!artist.isPresent()) {
+            LOGGER.warn("Artist not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(artist.get(), HttpStatus.OK);
@@ -64,6 +69,7 @@ public class ArtistController {
     public ResponseEntity<?> getArtistBio(@PathVariable Integer artistId) {
         Optional<Artist> artist = artistRepo.findById(artistId);
         if (!artist.isPresent()) {
+            LOGGER.warn("Artist not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(artist.get().getBio(), HttpStatus.OK);
@@ -77,6 +83,7 @@ public class ArtistController {
     public ResponseEntity<?> getRelatedArtists(@PathVariable Integer artistId) {
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
         if (!optionalArtist.isPresent()) {
+            LOGGER.warn("Artist not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -116,6 +123,7 @@ public class ArtistController {
 
         Artist artist = optionalArtist.get();
         if (!userCanEdit(artist)) {
+
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -129,6 +137,9 @@ public class ArtistController {
                 image = storageService.save(rawImage.getDataURL());
             } catch (StorageException ex) {
                 return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+            if (artist.getCoverImage() != null){
+                this.storageService.delete(artist.getCoverImage());
             }
             artist.setImage(image);
         }
@@ -159,8 +170,24 @@ public class ArtistController {
         if (!userCanEdit(artist)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+        // todo: biographies have images; handle image uploads -- NEEDS TESTING
+        if(bio.getImages() != null){
+            List<Image> images = bio.getImages();
+            Image updatedImage;
+            List<Image> updatedImages = new ArrayList<>();
+            for(Image image: images){
+                try{
+                    updatedImage = this.storageService.save(image.getPath());
+                    updatedImages.add(updatedImage);
+                } catch (StorageException ex){
+                    LOGGER.error("Image Storage Error");
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
+                }
+            images = artist.getBio().getImages();
+            images.forEach(image ->{ this.storageService.delete(image);});
+        }
 
-        // todo: biographies have images; handle image uploads
         artist.setBio(bio);
         artistRepo.save(artist);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -206,7 +233,7 @@ public class ArtistController {
                                                @PathVariable Integer itemId,
                                                @RequestBody Product updated) {
 
-        // todo: should we have addProduct/removeProduct methods in artist?
+        // todo: should we have addProduct/removeProduct methods in artist? -- DONE
 
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
         if (!optionalArtist.isPresent()) {
@@ -225,13 +252,11 @@ public class ArtistController {
 
         Product product = optionalProduct.get();
 
-        if (!artist.getMerchandise().remove(product)){
+        if (!artist.removeProduct(product)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        productRepository.save(updated);
-
-        artist.getMerchandise().add(updated);
+        artist.addProduct(updated);
         artistRepo.save(artist);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -264,9 +289,8 @@ public class ArtistController {
         }
 
         Product product = optionalProduct.get();
-        Set<Product> merchandise = artist.getMerchandise();
 
-        if (!merchandise.remove(product)){
+        if (!artist.removeProduct(product)){
            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -275,7 +299,7 @@ public class ArtistController {
     }
 
     /**
-     * Delete an artist.
+     * Delete an artist from label record.
      * @param artistId ID of artist to delete.
      * @return a 200 response on success, otherwise a 404 if the artist ID is invalid or
      *         a 403 if the current user can't delete the specified artist.
@@ -283,7 +307,7 @@ public class ArtistController {
     @DeleteMapping(path = "artists/{artistId}")
     @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
     public ResponseEntity<?> deleteArtist(@PathVariable Integer artistId) {
-        // todo: do not use label.getArtists() -- set artist owner/label to null instead
+        // todo: do not use label.getArtists() -- set artist owner/label to null instead --DONE
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
         if (!optionalArtist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -294,25 +318,19 @@ public class ArtistController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        LabelOwner label = (LabelOwner)authFacade.getCurrentUser();
-        Set<Artist> labelArtists = label.getArtists();
+        artist.setOwner(null);
+        abstractCatalogItemRepository.save(artist);
 
-        if (labelArtists.remove(artist)){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        userRepository.save(label);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private boolean userCanEdit(Artist artist) {
-        // todo: do not use label.getArtists() -- check artist owner ID instead
+        // todo: do not use label.getArtists() -- check artist owner ID instead -- DONE
         User user = authFacade.getCurrentUser();
         boolean containsArtist = false;
         if (user instanceof LabelOwner){
-            LabelOwner labelOwner = (LabelOwner)authFacade.getCurrentUser();
-            Set<Artist> artists = labelOwner.getArtists();
-            containsArtist = artists.contains(artist);
+            LabelOwner labelOwner = (LabelOwner)user;
+            containsArtist = artist.getOwner() != null && artist.getOwner().getId().equals(labelOwner.getId());
         }
         return containsArtist || user instanceof Admin;
     }

@@ -89,8 +89,8 @@ public class Artist extends CatalogItem implements Followable {
     }
 
     public void setMerchandise(Set<Product> merchandise) {
-        this.merchandise.clear();
         if (merchandise != null) {
+            this.merchandise.clear();
             this.merchandise.addAll(merchandise);
         }
     }
@@ -119,9 +119,17 @@ public class Artist extends CatalogItem implements Followable {
         return aliases;
     }
 
+    public Boolean addProduct(Product product){
+        return this.getMerchandise().add(product);
+    }
+
+    public Boolean removeProduct(Product product){
+        return this.getMerchandise().remove(product);
+    }
+
     public void setAliases(Set<String> aliases) {
-        this.aliases.clear();
         if(aliases != null){
+            this.aliases.clear();
             this.aliases.addAll(aliases);
         }
     }

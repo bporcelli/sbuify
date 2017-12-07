@@ -101,7 +101,11 @@ public class Album extends CatalogItem implements Queueable, Decorable {
     }
 
     public void setSongs(Set<Song> songs) {
-        this.songs = songs;
+        if(songs != null){
+            this.songs.clear();
+            this.songs.addAll(songs);
+        }
+
     }
 
     @Override

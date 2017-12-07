@@ -67,7 +67,11 @@ public class Biography implements Serializable {
     }
 
     public void setImages(List<Image> images) {
-        this.images = images;
+        if(images != null){
+            this.images.clear();
+            this.images.addAll(images);
+        }
+
     }
     
     @Override
@@ -101,13 +105,6 @@ public class Biography implements Serializable {
 
         final Biography thatBio = (Biography) that;
 
-        if (this.getId() == null ? thatBio.getId() != null : !this.getId().equals(thatBio.getId()))
-            return false;
-        if (this.getText() == null ? thatBio.getText() != null : !this.getText().equals(thatBio.getText()))
-            return false;
-        if (this.getImages() == null ? thatBio.getImages() != null : !this.getImages().equals(thatBio.getImages()))
-            return false;
-
-        return true;
+        return id != null ? id.equals(thatBio.id) : thatBio.id == null;
     }
 }
