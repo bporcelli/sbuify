@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class PlaylistFolderController {
      * Update a playlist folder.
      * @param id Folder ID.
      * @param updated Updated playlist folder.
-     * @return an empty 200 response if the folder is updated successfully, otherwise a 404.
+     * @return an 200 response containing the updated folder on success, otherwise a 404.
      */
     @PatchMapping(path = "/{id}")
     public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody PlaylistFolder updated) {
@@ -59,9 +60,9 @@ public class PlaylistFolderController {
         }
 
         folder.setName(updated.getName());
-        folderRepo.save(folder);
+        folder = folderRepo.save(folder);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(folder, HttpStatus.OK);
     }
 
     /**
@@ -71,6 +72,7 @@ public class PlaylistFolderController {
      *         if the current user can't edit the folder.
      */
     @DeleteMapping(path = "/{id}")
+    @Transactional
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         Optional<PlaylistFolder> optionalFolder = folderRepo.findById(id);
 

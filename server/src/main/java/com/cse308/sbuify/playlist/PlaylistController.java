@@ -36,6 +36,9 @@ public class PlaylistController {
     @Autowired
     private StorageService storageService;
 
+    @Autowired
+    private PlaylistFolderRepository folderRepository;
+
     private final Integer MAX_SONGS;
 
     @Autowired
@@ -46,13 +49,15 @@ public class PlaylistController {
     /**
      * Create a new playlist.
      * @param playlist The playlist to create.
+     * @param folderId Optional folder ID. If provided, the playlist will be saved in this folder.
      * @return The playlist as saved in the database.
      */
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<?> createPlaylist(@RequestBody Playlist playlist) {
+    public ResponseEntity<?> createPlaylist(@RequestBody Playlist playlist, @RequestParam(required = false) Integer folderId) {
         Customer customer = (Customer) authFacade.getCurrentUser();
 
+        // create playlist
         Image image = null;
 
         if (playlist.getImage() != null) {
@@ -71,6 +76,15 @@ public class PlaylistController {
 
         // save the playlist in the user's library
         SavedPlaylist savedPlaylist = new SavedPlaylist(customer, saved);
+
+        if (folderId != null) {
+            Optional<PlaylistFolder> optionalFolder = folderRepository.findById(folderId);
+            if (!optionalFolder.isPresent()) {
+                return new ResponseEntity<>("Invalid folder ID.", HttpStatus.BAD_REQUEST);
+            }
+            savedPlaylist.setParent(optionalFolder.get());
+        }
+
         savedPlaylistRepo.save(savedPlaylist);
 
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
@@ -103,8 +117,8 @@ public class PlaylistController {
      * Update a playlist.
      * @param id The ID of the playlist to update.
      * @param updated Updated playlist.
-     * @return a 200 response if operation is successful, a 404 if the playlist ID is invalid, or a
-     *         403 if the current user does not have permission to update the playlist.
+     * @return a 200 response containing the updated playlist, otherwise a 404 if the playlist ID is invalid
+     *         or a 403 if the current user does not have permission to update the playlist.
      */
     @PatchMapping(path = "/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
@@ -131,6 +145,7 @@ public class PlaylistController {
         }
 
         ImageI newImage = updated.getImage();
+
         if (!(newImage instanceof Image)) {  // image was edited
             if (newImage instanceof Base64Image) {
                 try{
@@ -146,9 +161,9 @@ public class PlaylistController {
             }
             playlist.setImage(newImage);
         }
-        
-        playlistRepository.save(playlist);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        playlist = playlistRepository.save(playlist);
+        return new ResponseEntity<>(playlist, HttpStatus.OK);
     }
 
     /**
