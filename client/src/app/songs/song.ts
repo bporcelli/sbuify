@@ -3,7 +3,7 @@ import { Image } from "../common/image";
 import { Album } from "../album/album";
 import { User } from "../user/user";
 import { Queueable } from "../play-queue/queueable";
-import { Playable } from "../player/playable";
+import { Playable } from "../playback/playable";
 
 /**
  * Represents a song in the music catalog.

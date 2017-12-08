@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { APIClient } from "../api/api-client.service";
+import { APIClient } from "../common/api-client.service";
 import { BehaviorSubject } from "rxjs/Rx";
 import { Observable } from "rxjs/Rx";
 

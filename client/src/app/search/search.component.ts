@@ -3,7 +3,7 @@ import { HttpParams } from '@angular/common/http';
 import { SearchService } from "./search.service";
 import { NgbTabChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { APIClient } from "../api/api-client.service";
+import { APIClient } from "../common/api-client.service";
 
 @Component({
   templateUrl: './search.component.html',

@@ -2,7 +2,7 @@ import { CatalogItem } from "../common/catalog-item";
 import { Image } from "../common/image";
 import { PlaylistSong } from "./playlist-song";
 import { Customer } from "../user/customer";
-import { Playable } from "../player/playable";
+import { Playable } from "../playback/playable";
 import { Song } from "../songs/song";
 import { Base64Image } from "../common/base64-image";
 

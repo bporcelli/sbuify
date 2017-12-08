@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { Router } from "@angular/router";
 import { Song } from "./song";
-import { PlayerService } from "../player/player.service";
-import { Playable } from "../player/playable";
+import { PlayerService } from "../playback/player.service";
+import { Playable } from "../playback/playable";
 import { PlayQueueService } from "../play-queue/play-queue.service";
 import { PlayQueue } from "../play-queue/play-queue";
 import { SongList } from "./song-list";

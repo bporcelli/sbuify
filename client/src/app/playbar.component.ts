@@ -1,9 +1,9 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Song } from "../songs/song";
-import { PlayerService } from "./player.service";
+import { Song } from "./songs/song";
+import { PlayerService } from "./playback/player.service";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { RepeatMode } from "./repeat-mode";
+import { RepeatMode } from "./playback/repeat-mode";
 import { LyricsModalComponent } from "./lyrics-modal.component";
 
 @Component({

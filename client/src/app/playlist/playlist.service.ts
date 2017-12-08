@@ -3,7 +3,7 @@ import 'rxjs/operators/map';
 import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs/Rx';
-import { APIClient } from "../api/api-client.service";
+import { APIClient } from "../common/api-client.service";
 
 @Injectable()
 export class PlaylistService {

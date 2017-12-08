@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SearchService } from "../search/search.service";
-import { UserService } from "../user/user.service";
-import { User } from "../user/user";
+import { SearchService } from "./search/search.service";
+import { UserService } from "./user/user.service";
+import { User } from "./user/user";
 
 @Component({
   selector: 'navbar',

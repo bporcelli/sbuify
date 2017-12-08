@@ -1,5 +1,5 @@
 import { Song } from "./song";
-import { Playable } from "../player/playable";
+import { Playable } from "../playback/playable";
 
 /**
  * A playable list of songs.

@@ -2,7 +2,7 @@ import { Component, ViewChild, Input } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlaylistService } from "./playlist.service";
-import { FormComponent } from "../common/forms/form.component";
+import { FormComponent } from "../common/form.component";
 
 @Component({
   templateUrl: './playlist-folder-modal.component.html'
@@ -16,7 +16,7 @@ export class PlaylistFolderModalComponent extends FormComponent {
 
   /** Folder name */
   @Input() public name: string = '';
-  
+
   constructor(
     private activeModal: NgbActiveModal,
     private playlistService: PlaylistService

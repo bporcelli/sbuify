@@ -4,7 +4,7 @@ import { SongList } from "../songs/song-list";
 import { PlaylistSong } from "../playlist/playlist-song";
 import { Config } from "../config";
 import { Song } from "../songs/song";
-import { PlayerService } from "../player/player.service";
+import { PlayerService } from "../playback/player.service";
 
 @Component({
   templateUrl: './songs.component.html',

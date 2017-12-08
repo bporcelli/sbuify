@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { User } from "../user/user";
-import { FormComponent } from "../common/forms/form.component";
-import { APIClient } from "../api/api-client.service";
+import { FormComponent } from "../common/form.component";
+import { APIClient } from "../common/api-client.service";
 import { UserEndpoints } from "../user/endpoints";
 import { UserService } from "../user/user.service";
 import { Config } from "../config";

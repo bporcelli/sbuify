@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Song } from "../songs/song";
+import { Song } from "./songs/song";
 
 @Component({
   templateUrl: './lyrics-modal.component.html'

@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Artist } from "./artist";
 import { SongList } from "../songs/song-list";
-import { PlayerService } from "../player/player.service";
+import { PlayerService } from "../playback/player.service";
 
 @Component({
   selector: '[artist-grid]',

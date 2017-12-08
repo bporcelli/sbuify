@@ -1,8 +1,8 @@
 import { Component, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormComponent } from "../common/forms/form.component";
+import { FormComponent } from "../common/form.component";
 import { UserEndpoints } from "../user/endpoints";
-import { APIClient } from "../api/api-client.service";
+import { APIClient } from "../common/api-client.service";
 
 @Component({
     templateUrl: './reset-password.component.html',

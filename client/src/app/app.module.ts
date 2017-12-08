@@ -3,6 +3,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ContextMenuModule } from 'ngx-contextmenu';
+import { FormsModule } from '@angular/forms';
+import { TruncateModule } from "ng2-truncate";
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
@@ -21,27 +23,40 @@ import { AuthModule } from "./auth/auth.module";
 import { PlaylistService } from './playlist/playlist.service';
 import { SearchService } from "./search/search.service";
 import { AuthInterceptor } from "./auth/auth-interceptor.";
-import { APIModule } from "./api/api.module";
 import { GenreService } from "./browse/genres/genre.service";
 import { AlbumModule } from "./album/album.module";
-import { PlayerModule } from "./player/player.module";
-import { PlayerService } from "./player/player.service";
+import { PlayerService } from "./playback/player.service";
 import { PlayQueueService } from "./play-queue/play-queue.service";
 import { LibraryService } from "./library/library.service";
 import { LibraryModule } from "./library/library.module";
-import { StreamService } from "./player/stream.service";
+import { StreamService } from "./playback/stream.service";
 import { PlayQueueModule } from "./play-queue/play-queue.module";
+import { LeftSidebarComponent } from "./left-sidebar.component";
+import { NavbarComponent } from "./navbar.component";
+import { PlaybarComponent } from "./playbar.component";
+import { LyricsToHtmlPipe } from "./lyrics-to-html.pipe";
+import { LyricsModalComponent } from "./lyrics-modal.component";
+import { APIClient } from "./common/api-client.service";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    NavbarComponent,
+    LeftSidebarComponent,
+    PlaybarComponent,
+    LyricsModalComponent,
+    LyricsToHtmlPipe
+  ],
+  entryComponents: [
+    LyricsModalComponent
   ],
   imports: [
     NgbModule.forRoot(),
     BrowserModule,
     CommonModule,
     HttpClientModule,
-    APIModule,
+    FormsModule,
+    TruncateModule,
     AuthModule,
     BrowseModule,
     ArtistModule,
@@ -50,7 +65,6 @@ import { PlayQueueModule } from "./play-queue/play-queue.module";
     AlbumModule,
     LibraryModule,
     SearchModule,
-    PlayerModule,
     PlayQueueModule,
     GuestModule,
     ConcertsModule,
@@ -69,6 +83,7 @@ import { PlayQueueModule } from "./play-queue/play-queue.module";
     PlayQueueService,
     LibraryService,
     StreamService,
+    APIClient,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Song } from "../songs/song";
 import { Stream, TimeRange } from "./stream";
 import { Playlist } from "../playlist/playlist";
-import { APIClient } from "../api/api-client.service";
+import { APIClient } from "../common/api-client.service";
 
 @Injectable()
 export class StreamService {
