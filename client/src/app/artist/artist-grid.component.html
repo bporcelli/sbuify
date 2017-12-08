@@ -1,7 +1,7 @@
 <div *ngIf="artists.length > 0 || pending; else noResultsTemplate" class="row">
   <div *ngFor="let artist of artists" class="col-sm-6 col-lg-4 col-xl-2 playlist text-center" [contextMenu]="artistMenu" [contextMenuSubject]="artist">
     <a class="playlist-image" [routerLink]="['/artist', artist.id]">
-      <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}" width="500" height="500">
+      <img class="img-fluid" [src]="artist.image | toImageSrc:'catalog'" alt="{{ artist.name }}" width="500" height="500">
       <div class="hover-actions">
         <button type="button" class="btn btn-link" title="Play" (click)="togglePlayback($event, artist)">
           <i class="fa fa-3x fa-fw" [ngClass]="isPlaying(artist) ? 'fa-pause-circle-o' : 'fa-play-circle-o'"></i>

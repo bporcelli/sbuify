@@ -36,7 +36,7 @@
           <div *ngIf="results.value.length > 0 || pending; else noResultsTemplate" class="row">
             <div *ngFor="let playlist of results.value" class="col-sm-6 col-lg-4 col-xl-3 playlist">
               <a class="playlist-image" href="#">
-                <img class="img-fluid" src="/static/i/{{ playlist.image ? playlist.image.id : 1 }}/catalog" alt="{{ playlist.name }}" width="500" height="500">
+                <img class="img-fluid" [src]="playlist.image | toImageSrc:'catalog'" alt="{{ playlist.name }}" width="500" height="500">
               </a>
               <h3 class="h6">
                 <a href="#">{{ playlist.name }}</a>
@@ -53,7 +53,7 @@
           <div *ngIf="results.value.length > 0 || pending; else noResultsTemplate" class="row">
             <div *ngFor="let artist of results.value" class="col-md-2 artist-list-item">
               <a class="d-block" href="#">
-                <img class="img-fluid" src="/static/i/{{ artist.image ? artist.image.id : 1 }}/catalog" alt="{{ artist.name }}" width="500" height="500">
+                <img class="img-fluid" [src]="artist.image | toImageSrc:'catalog'" alt="{{ artist.name }}" width="500" height="500">
               </a>
               <a class="artist-name" [routerLink]="['artist', artist.id]" title="{{ artist.name }}">{{ artist.name }}</a>
             </div>

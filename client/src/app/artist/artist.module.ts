@@ -8,13 +8,15 @@ import { OverviewComponent } from './overview.component';
 import { RelatedArtistsComponent } from './related-artists.component';
 import { AboutComponent } from './about.component';
 import { ArtistGridComponent } from "./artist-grid.component";
+import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
   imports: [
     ArtistRoutingModule,
     CommonModule,
     NgbModule,
-    ContextMenuModule
+    ContextMenuModule,
+    SharedModule
   ],
   declarations: [
     ArtistDetailComponent,

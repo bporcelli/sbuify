@@ -13,12 +13,14 @@ import { GenreResolver } from "./genres/genre-resolver.service";
 import { GenreDetailResolver } from "./genres/genre-detail-resolver.service";
 import { GenreComponent } from "./genres/genre.component";
 import { AlbumModule } from "../album/album.module";
+import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
   imports: [
     BrowseRoutingModule,
     CommonModule,
     AlbumModule,
+    SharedModule,
     InfiniteScrollModule
   ],
   declarations: [
