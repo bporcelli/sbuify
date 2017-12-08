@@ -29,6 +29,7 @@ import { PlayerService } from "./player/player.service";
 import { PlayQueueService } from "./player/play-queue.service";
 import { LibraryService } from "./library/library.service";
 import { LibraryModule } from "./library/library.module";
+import { StreamService } from "./player/stream.service";
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { LibraryModule } from "./library/library.module";
     PlayerService,
     PlayQueueService,
     LibraryService,
+    StreamService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

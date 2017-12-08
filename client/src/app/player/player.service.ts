@@ -10,6 +10,8 @@ import { Playable } from "./playable";
 import { PlayQueue } from "./play-queue";
 import { RepeatMode } from "./repeat-mode";
 import { PreferencesService } from "../user/preferences.service";
+import { StreamService } from "./stream.service";
+import {Playlist} from "../playlist/playlist";
 
 @Injectable()
 export class PlayerService {
@@ -43,7 +45,8 @@ export class PlayerService {
 
   constructor(
     private prefService: PreferencesService,
-    private pqs: PlayQueueService
+    private pqs: PlayQueueService,
+    private streamService: StreamService
   ) {
     this.initSongObserver();
     this.initPlayingObserver();
@@ -174,7 +177,12 @@ export class PlayerService {
   }
 
   setSong(song: Song): void {
-    // todo: record stream of previous song
+    if (this.song.value && this.player.played) {
+      // record stream of previous song
+      let playlist = this.playlist instanceof Playlist ? this.playlist : null;
+      this.streamService.create(this.song.value, this.player.played);
+    }
+
     this.song.next(song);
 
     if (song != null) {

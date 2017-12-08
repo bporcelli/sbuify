@@ -1,5 +1,7 @@
 package com.cse308.sbuify.stream;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -12,15 +14,14 @@ public class TimeRange {
     private Integer id;
 
     @NotNull
-    @Column(name = "range_start")
     private Double start;
 
     @NotNull
-    @Column(name = "range_end")
     private Double end;
 
     @NotNull
     @ManyToOne
+    @JsonIgnore
     public Stream stream;
 
     public TimeRange() {}

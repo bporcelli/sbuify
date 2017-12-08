@@ -3,6 +3,7 @@ package com.cse308.sbuify.stream;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.song.Song;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -32,6 +33,7 @@ public class Stream implements Serializable {
     private List<TimeRange> played;
 
     @OneToOne
+    @JsonIgnoreProperties("password")
     private Customer customer;
 
     @NotNull

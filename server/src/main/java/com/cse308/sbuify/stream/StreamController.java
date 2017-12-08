@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.cse308.sbuify.security.SecurityConstants.HEADER_PREFIX;
@@ -52,8 +53,17 @@ public class StreamController {
 	@PostMapping(path = "/api/customer/streams")
 	public ResponseEntity<?> recordStream(@RequestBody Stream stream) {
 		Customer customer = (Customer) authFacade.getCurrentUser();
+
 		stream.setCustomer(customer);
-		streamRepo.save(stream);
+		stream.setPremium(customer.isPremium());
+		stream.setTime(LocalDateTime.now());
+
+		for (TimeRange range: stream.getPlayed()) {
+		    range.setStream(stream);
+        }
+
+		stream = streamRepo.save(stream);
+
 		return new ResponseEntity<>(stream, HttpStatus.CREATED);
 	}
 
