@@ -1,5 +1,7 @@
 <div class="modal-header">
-  <h5 class="modal-title" id="modalLabel">{{ id > 0 ? 'Edit' : 'Create' }} Playlist</h5>
+  <h5 class="modal-title" id="modalLabel">
+    {{ id > 0 ? 'Edit' : 'Create' }} Playlist {{ folder ? 'in ' + folder.name : '' }}
+  </h5>
   <button type="button" class="close" aria-label="Close" (click)="close()">
     <span aria-hidden="true">&times;</span>
   </button>

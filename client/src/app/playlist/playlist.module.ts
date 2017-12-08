@@ -8,7 +8,6 @@ import { ContextMenuModule } from 'ngx-contextmenu';
 import { PlaylistDetailComponent } from './playlist-detail.component';
 import { PlaylistDetailResolver } from './playlist-resolver.service';
 import { AuthGuard } from '../auth/auth-guard.service';
-import { PlaylistListComponent } from "./playlist-list.component";
 import { PlaylistModalComponent } from "./playlist-modal.component";
 import { PlaylistFolderModalComponent } from "./playlist-folder-modal.component";
 import { PlaylistFolderComponent } from "./playlist-folder.component";
@@ -34,11 +33,10 @@ const routes: Routes = [
     ContextMenuModule
   ],
   exports: [
-    PlaylistListComponent
+    PlaylistFolderComponent
   ],
   declarations: [
     PlaylistDetailComponent,
-    PlaylistListComponent,
     PlaylistModalComponent,
     PlaylistFolderModalComponent,
     PlaylistFolderComponent

@@ -17,6 +17,9 @@ export class PlaylistModalComponent extends FormComponent {
   /** Playlist ID (if editing) */
   @Input() public id: number = 0;
 
+  /** Folder to save playlist in */
+  @Input() public folder: object = null;
+
   /** Name */
   @Input() public name: string = "";
 
@@ -85,7 +88,7 @@ export class PlaylistModalComponent extends FormComponent {
           (err: any) => this.handleError(err)
         );
     } else {
-      this.playlistService.create(playlist)
+      this.playlistService.create(playlist, this.folder)
         .subscribe(
           (resp: any) => this.activeModal.close(),
           (err: any) => this.handleError(err)

@@ -1,34 +1,32 @@
 import 'rxjs/operators/map';
 
 import { Injectable } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs/Rx';
 import { APIClient } from "../api/api-client.service";
 
 @Injectable()
 export class PlaylistService {
 
-  private _playlists: BehaviorSubject<any[]> = new BehaviorSubject([]);
+  private folders: object = {
+    0: new BehaviorSubject(null)
+  };
 
   constructor(private client: APIClient) {
     this.client.get<any[]>('/api/customer/playlists')
       .subscribe(
-        (resp: any[]) => this.initPlaylists(resp),
+        (resp: any[]) => this.folders[0].next(resp),
         (err: any) => this.handleError(err)
       );
   }
 
-  getAll(): Observable<any[]> {
-    return this._playlists;
-  }
-
-  getPlaylist(id: number | string) {
-    return this.getAll()
-      // (+) converts id to string
-      .map(playlists => playlists.find(playlist => playlist.id == +id));
+  getPlaylist(id: number | string): Observable<object> {
+    // todo: get from server
+    return null;
   }
 
   /** Create a playlist or folder. */
-  create(playlist: object): Observable<object> {
+  create(playlist: object, folder: object = null): Observable<object> {
     let endpoint: string;
 
     if (playlist['folder']) {
@@ -37,10 +35,19 @@ export class PlaylistService {
       endpoint = '/api/playlists';
     }
 
-    return this.client.post<object>(endpoint, playlist)
+    let params = new HttpParams();
+
+    if (folder != null) {
+      params = params.set("folderId", folder['id']);
+    }
+
+    return this.client.post<object>(endpoint, playlist, { params: params })
       .map((response: object) => {
-        this._playlists.value.push(response);
-        this._playlists.next(this._playlists.value);
+        let fID = folder ? folder['id'] : 0;
+
+        this.folders[fID].value.push(response);
+        this.folders[fID].next(this.folders[fID].value);
+
         return response;
       });
   }
@@ -55,44 +62,40 @@ export class PlaylistService {
       endpoint = '/api/playlists/' + playlist['id'];
     }
 
-    return this.client.patch<void>(endpoint, playlist)
-      .map(() => {
+    return this.client.patch<object>(endpoint, playlist)
+      .map((updated: object) => {
         if (playlist['folder']) {
-          this.syncFolder(playlist);
+          this.syncFolder(updated);
         } else {
-          this.syncPlaylist(playlist);
+          this.syncPlaylist(updated);
         }
       });
   }
 
   /** Sync local playlist with server copy */
-  private syncPlaylist(playlist: object): void {
-    let index = this.findPlaylist(playlist['id']);
-    let playlists = this._playlists.value;
+  private syncPlaylist(updated: object): void {
+    for (let fID in this.folders) {
+      let folder = this.folders[fID];
+      let playlists = folder.value;
+      let index = this.findPlaylist(updated['id'], playlists);
 
-    if (index >= 0) {
-      playlists[index]['name'] = playlist['name'];
-      playlists[index]['description'] = playlist['description'];
-      playlists[index]['hidden'] = playlist['hidden'];
-
-      if (playlist['image']['type'] == 'base64_image') {  // image changed
-        playlists[index]['image'] = playlist['image'];
+      if (index >= 0) {
+        playlists[index] = updated;
+        this.folders[fID].next(playlists);
+        break;
       }
     }
-
-    this._playlists.next(playlists);
   }
 
   /** Sync local folder with server copy */
-  private syncFolder(folder: object): void {
-    let index = this.findPlaylist(folder['id']);
-    let playlists = this._playlists.value;
+  private syncFolder(updated: object): void {
+    let index = this.findPlaylist(updated['id']);
+    let playlists = this.folders[0].value;
 
     if (index >= 0) {
-      playlists[index]['name'] = folder['name'];
+      playlists[index]['name'] = updated['name'];
+      this.folders[0].next(playlists);
     }
-
-    this._playlists.next(playlists);
   }
 
   /** Delete a playlist or folder. */
@@ -108,20 +111,22 @@ export class PlaylistService {
     return this.client.delete(endpoint)
       .map(() => {
         // remove playlist/folder locally
-        let index = this.findPlaylist(item.id);
-        let playlists = this._playlists.value;
+        for (let fID in this.folders) {
+          let folder = this.folders[fID];
+          let playlists = folder.value;
+          let index = this.findPlaylist(item.id, playlists);
 
-        if (index >= 0) {
-          playlists.splice(index, 1);
+          if (index >= 0) {
+            playlists.splice(index, 1);
+          }
+          this.folders[fID].next(playlists);
         }
-        this._playlists.next(playlists);
       });
   }
 
   /** Find the index of the playlist with the given ID */
-  private findPlaylist(id): number {
-    let playlists = this._playlists.value;
-
+  private findPlaylist(id, folder: object[] = null): number {
+    let playlists = folder == null ? this.folders[0].value : folder;
     for (let i = 0; i < playlists.length; i++) {
       if (id == playlists[i].id)
         return i;
@@ -131,11 +136,15 @@ export class PlaylistService {
 
   /** Get the playlists in a folder. */
   getFolder(id: any): Observable<object[]> {
-    return this.client.get<object[]>('/api/playlist-folders/' + id);
-  }
-
-  private initPlaylists(playlists: any[]): void {
-    this._playlists.next(playlists);
+    if (!(id in this.folders)) {
+      this.folders[id] = new BehaviorSubject(null);
+      this.client.get<object[]>('/api/playlist-folders/' + id)
+        .subscribe(
+          (playlists: object[]) => this.folders[id].next(playlists),
+          (err: any) => this.handleError(err)
+        );
+    }
+    return this.folders[id];
   }
 
   private handleError(err: any): void {

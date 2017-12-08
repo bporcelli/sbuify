@@ -1,72 +1,152 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { PlaylistService } from "./playlist.service";
+import { User } from "../user/user";
+import { UserService } from "../user/user.service";
+import { PlaylistFolderModalComponent } from "./playlist-folder-modal.component";
+import { PlaylistModalComponent } from "./playlist-modal.component";
+import { Playlist } from "./playlist";
 
 @Component({
   selector: 'playlist-folder',
-  template: `
-    <a class="nav-link toggle-collapse" [href]="'#' + collapseId" (click)="toggleCollapse($event)" [ngClass]="isCollapsed ? 'collapsed' : 'expanded'">
-      {{ folder.name }}
-    </a>
-    <ul [id]="collapseId" [ngbCollapse]="isCollapsed" class="submenu">
-      <ng-container *ngIf="playlists.length > 0 || pending; else noPlaylists">
-        <li *ngFor="let playlist of playlists">
-          <a class="nav-link" [routerLink]="['playlist', playlist.id]" routerLinkActive="active">{{ playlist.name }}</a>
-        </li>
-      </ng-container>
-      <ng-template #noPlaylists>
-         <li class="nav-item nav-link">Folder is empty.</li>
-      </ng-template>
-      <li class="nav-link" [hidden]="!pending">
-        Loading...
-      </li>
-    </ul>
-  `
+  templateUrl: './playlist-folder.component.html'
 })
-export class PlaylistFolderComponent {
-  @Input() folder: object;
+export class PlaylistFolderComponent implements OnInit {
+  @Input() folder: object = null;
+
+  /** Current user */
+  private user: User = null;
+
+  /** Required to reference 'this' in ngx-contextmenu visible functions */
+  public isUserOwnedBound = this.isUserOwned.bind(this);
+  public isFollowedBound = this.isFollowed.bind(this);
+  public canCreateFolderBound = this.canCreateFolder.bind(this);
 
   /** Is the folder collapsed? */
   isCollapsed: boolean = true;
-
-  /** Is a request for the folder's playlists pending? */
-  pending: boolean = false;
 
   /** Playlists in the folder. */
   playlists: any[] = [];
 
   /** Have we initialized the playlists list? */
-  private initialized: boolean = false;
+  initialized: boolean = false;
 
-  constructor(private playlistService: PlaylistService) {}
+  constructor(
+    private playlistService: PlaylistService,
+    private userService: UserService,
+    private modalService: NgbModal
+  ) {}
 
-  toggleCollapse(event: Event): void {
-    event.preventDefault();
+  ngOnInit(): void {
+    this.playlistService.getFolder(this.folderId)
+      .filter((value: object[]) => value != null)
+      .subscribe(
+        (playlists: object[]) => this.setPlaylists(playlists),
+        (err: any) => this.handleError(err)
+      );
 
+    this.userService.currentUser
+      .subscribe(user => this.user = user);
+  }
+
+  /** Expand or collapse the folder tree */
+  toggleCollapse(event: MouseEvent): void {
     this.isCollapsed = !this.isCollapsed;
+    event.preventDefault();
+  }
 
-    if (!this.initialized) {
-      this.pending = true;
+  /** Open the create playlist modal. */
+  openPlaylistModal(item: any): void {
+    let modal = this.modalService.open(PlaylistModalComponent);
 
-      this.playlistService.getFolder(this.folder['id'])
-        .subscribe(
-          (playlists: object[]) => this.setPlaylists(playlists),
-          (err: any) => this.handleError(err)
-        );
+    if (item && item.folder) {
+      modal.componentInstance.folder = item;
+    } else {
+      modal.componentInstance.folder = this.folder;
     }
   }
 
-  get collapseId(): string {
-    return 'collapse' + this.folder['id'];
+  /** Open the create folder modal. */
+  openFolderModal(): void {
+    this.modalService.open(PlaylistFolderModalComponent);
+  }
+
+  /** Check whether a playlist or folder is owned by the current user */
+  isUserOwned(item: any): boolean {
+    return this.user != null && item != null && this.user.email == item.owner.email;
+  }
+
+  /** Check whether a playlist is followed by the current user */
+  isFollowed(item: any): boolean {
+    // todo
+    return !item.folder && false;
+  }
+
+  /** Unfollow a playlist */
+  unfollow(item: Playlist): void {
+    console.log('would unfollow', item);
+  }
+
+  /** Can we create a folder at this level of the playlist folder hierarchy? */
+  canCreateFolder(item: any): boolean {
+    return this.folder == null && item != null && !item.folder;
+  }
+
+  /** Edit a playlist or folder */
+  edit(item: any): void {
+    if (item.folder) {
+      let modal = this.modalService.open(PlaylistFolderModalComponent);
+      let comp = modal.componentInstance;
+
+      comp.id = item.id;
+      comp.name = item.name;
+    } else {
+      let modal = this.modalService.open(PlaylistModalComponent);
+      let comp = modal.componentInstance;
+
+      comp.id = item.id;
+      comp.name = item.name;
+      comp.description = item.description;
+      comp.hidden = item.hidden;
+
+      if (item.image) {
+        comp.imageURL = '/static/i/' + item.image.id + '/full';  // todo: get catalog size instead
+      }
+    }
+  }
+
+  /** Delete a playlist or folder */
+  delete(item: any): void {
+    this.playlistService.delete(item)
+      .subscribe(
+        () => {},
+        (err: any) => this.handleError(err)
+      );
   }
 
   private setPlaylists(playlists: object[]): void {
     this.initialized = true;
-    this.pending = false;
-    this.playlists.push(...playlists);
+    this.playlists = playlists;
   }
 
   private handleError(err: any): void {
     // todo: show error
     console.log('error occurred while getting folder:', err);
+  }
+
+  get folderId(): number {
+    return this.folder ? this.folder['id'] : 0;
+  }
+
+  get collapseId(): string {
+    return 'collapse' + this.folderId;
+  }
+
+  get listClass(): string {
+    return this.folder ? 'submenu' : 'nav sidebar-nav flex-column';
+  }
+
+  get isRoot(): boolean {
+    return this.folder == null;
   }
 }

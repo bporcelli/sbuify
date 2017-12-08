@@ -1,0 +1,66 @@
+<ng-container *ngIf="isRoot; else folderName">
+  <h6 class="nav-title">
+    <span>Playlists</span>
+    <a class="create-playlist float-right" title="Create New Playlist" (click)="openPlaylistModal()">
+      <i class="fa fa-plus-square-o"></i>
+    </a>
+  </h6>
+</ng-container>
+
+<ng-template #folderName>
+  <a class="nav-link toggle-collapse" [href]="'#' + collapseId" [ngClass]="isCollapsed ? 'collapsed' : 'expanded'" (click)="toggleCollapse($event)">
+    {{ folder.name }}
+  </a>
+</ng-template>
+
+<ul [id]="collapseId" [ngbCollapse]="isCollapsed && !isRoot" [ngClass]="listClass">
+  <ng-container *ngIf="playlists.length > 0 || !initialized; else noPlaylists">
+    <li *ngFor="let playlist of playlists" class="nav-item" [contextMenu]="playlistMenu" [contextMenuSubject]="playlist">
+      <ng-container *ngIf="playlist.folder; else playlistTemplate">
+        <playlist-folder [folder]="playlist"></playlist-folder>
+      </ng-container>
+      <ng-template #playlistTemplate>
+        <a class="nav-link" [routerLink]="['playlist', playlist.id]" routerLinkActive="active">{{ playlist.name }}</a>
+      </ng-template>
+    </li>
+  </ng-container>
+  <li class="nav-link" [hidden]="initialized">
+    Loading...
+  </li>
+</ul>
+
+<ng-template #noPlaylists>
+  <li class="nav-item nav-link" *ngIf="isRoot; else emptyFolder">
+    <div class="text-center mt-3">
+      <p>
+        You don't have any playlists yet.
+      </p>
+      <button class="btn btn-primary btn-wide" (click)="openPlaylistModal()">
+        Create a Playlist
+      </button>
+    </div>
+  </li>
+  <ng-template id="no-playlists-message" class="text-center mt-4" #emptyFolder>
+    <li class="nav-item nav-link">Folder is empty.</li>
+  </ng-template>
+</ng-template>
+
+<context-menu #playlistMenu>
+  <ng-template contextMenuItem [visible]="isUserOwnedBound" (execute)="edit($event.item)">
+    Edit
+  </ng-template>
+  <ng-template contextMenuItem [visible]="isUserOwnedBound" (execute)="delete($event.item)">
+    Delete
+  </ng-template>
+  <ng-template contextMenuItem divider="true" [visible]="isFollowedBound"></ng-template>
+  <ng-template contextMenuItem [visible]="isFollowedBound" (execute)="unfollow($event.item)">
+    Unfollow
+  </ng-template>
+  <ng-template contextMenuItem divider="true"></ng-template>
+  <ng-template contextMenuItem (execute)="openPlaylistModal($event.item)">
+    Create Playlist
+  </ng-template>
+  <ng-template contextMenuItem [visible]="canCreateFolderBound" (execute)="openFolderModal()">
+    Create Folder
+  </ng-template>
+</context-menu>
