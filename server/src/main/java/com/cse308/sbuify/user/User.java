@@ -3,6 +3,7 @@ package com.cse308.sbuify.user;
 import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.customer.Customer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -23,9 +24,10 @@ import java.util.Collection;
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Customer.class, name = "customer"),
-        @JsonSubTypes.Type(value = Admin.class, name = "admin")
+    @JsonSubTypes.Type(value = Customer.class, name = "customer"),
+    @JsonSubTypes.Type(value = Admin.class, name = "admin")
 })
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class User implements Serializable, UserDetails {
 
 	@Id

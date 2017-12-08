@@ -230,6 +230,7 @@ public class Customer extends User implements Followable {
 	}
 
 	@Override
+    @JsonIgnore(false)
 	public String getName() {
 		return this.firstName + " " + this.lastName;
 	}
