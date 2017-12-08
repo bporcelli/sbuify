@@ -26,10 +26,11 @@ import { GenreService } from "./browse/genres/genre.service";
 import { AlbumModule } from "./album/album.module";
 import { PlayerModule } from "./player/player.module";
 import { PlayerService } from "./player/player.service";
-import { PlayQueueService } from "./player/play-queue.service";
+import { PlayQueueService } from "./play-queue/play-queue.service";
 import { LibraryService } from "./library/library.service";
 import { LibraryModule } from "./library/library.module";
 import { StreamService } from "./player/stream.service";
+import { PlayQueueModule } from "./play-queue/play-queue.module";
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { StreamService } from "./player/stream.service";
     LibraryModule,
     SearchModule,
     PlayerModule,
+    PlayQueueModule,
     GuestModule,
     ConcertsModule,
     SettingsModule,

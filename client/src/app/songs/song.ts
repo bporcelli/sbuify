@@ -2,7 +2,7 @@ import { CatalogItem } from "../common/catalog-item";
 import { Image } from "../common/image";
 import { Album } from "../album/album";
 import { User } from "../user/user";
-import { Queueable } from "../player/queueable";
+import { Queueable } from "../play-queue/queueable";
 import { Playable } from "../player/playable";
 
 /**

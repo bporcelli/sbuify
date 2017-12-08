@@ -1,5 +1,5 @@
 import { Song } from "../songs/song";
-import { Playable } from "./playable";
+import { Playable } from "../player/playable";
 
 export class PlayQueue implements Playable {
   constructor(public id: number,

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { PlayQueueService } from "./play-queue.service";
-import { PlayerService } from "./player.service";
+import { PlayerService } from "../player/player.service";
 import { Song } from "../songs/song";
 import { Observable } from "rxjs/Rx";
 import { PlayQueue } from "./play-queue";
-import { Playable } from "./playable";
+import { Playable } from "../player/playable";
 import { SongList } from "../songs/song-list";
 
 @Component({

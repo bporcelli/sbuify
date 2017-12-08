@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { APIClient } from "../api/api-client.service";
-import { Queueable } from "../player/queueable";
+import { Queueable } from "../play-queue/queueable";
 import { Observable } from "rxjs/Rx";
 import { PlaylistSong } from "../playlist/playlist-song";
 import { Album } from "../album/album";

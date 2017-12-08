@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { Album } from "./album";
 import { PlayerService } from "../player/player.service";
-import { PlayQueueService } from "../player/play-queue.service";
+import { PlayQueueService } from "../play-queue/play-queue.service";
 import { LibraryService } from "../library/library.service";
 
 @Component({

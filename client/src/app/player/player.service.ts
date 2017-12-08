@@ -5,9 +5,9 @@ import 'rxjs/operators/merge';
 
 import { Song } from "../songs/song";
 import { tokenGetter } from "../auth/helpers";
-import { PlayQueueService } from "./play-queue.service";
+import { PlayQueueService } from "../play-queue/play-queue.service";
 import { Playable } from "./playable";
-import { PlayQueue } from "./play-queue";
+import { PlayQueue } from "../play-queue/play-queue";
 import { RepeatMode } from "./repeat-mode";
 import { PreferencesService } from "../user/preferences.service";
 import { StreamService } from "./stream.service";

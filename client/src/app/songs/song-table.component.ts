@@ -3,8 +3,8 @@ import { Router } from "@angular/router";
 import { Song } from "./song";
 import { PlayerService } from "../player/player.service";
 import { Playable } from "../player/playable";
-import { PlayQueueService } from "../player/play-queue.service";
-import { PlayQueue } from "../player/play-queue";
+import { PlayQueueService } from "../play-queue/play-queue.service";
+import { PlayQueue } from "../play-queue/play-queue";
 import { SongList } from "./song-list";
 import { LibraryService } from "../library/library.service";
 

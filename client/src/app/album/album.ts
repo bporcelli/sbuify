@@ -3,7 +3,7 @@ import { Image } from "../common/image";
 import { Song } from "../songs/song";
 import { Artist } from "../artist/artist";
 import { User } from "../user/user";
-import { Queueable } from "../player/queueable";
+import { Queueable } from "../play-queue/queueable";
 import { Playable } from "../player/playable";
 
 /**
