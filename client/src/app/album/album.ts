@@ -1,5 +1,5 @@
-import { CatalogItem } from "../common/catalog-item";
-import { Image } from "../common/image";
+import { CatalogItem } from "../shared/catalog-item";
+import { Image } from "../shared/image";
 import { Song } from "../songs/song";
 import { Artist } from "../artist/artist";
 import { User } from "../user/user";

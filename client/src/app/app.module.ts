@@ -8,7 +8,7 @@ import { TruncateModule } from "ng2-truncate";
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { CommonModule } from './common/common.module';
+import { SharedModule } from './shared/shared.module';
 import { BrowseModule } from './browse/browse.module';
 import { ArtistModule } from './artist/artist.module';
 import { PlaylistModule } from './playlist/playlist.module';
@@ -36,7 +36,7 @@ import { NavbarComponent } from "./navbar.component";
 import { PlaybarComponent } from "./playbar.component";
 import { LyricsToHtmlPipe } from "./lyrics-to-html.pipe";
 import { LyricsModalComponent } from "./lyrics-modal.component";
-import { APIClient } from "./common/api-client.service";
+import { APIClient } from "./shared/api-client.service";
 
 @NgModule({
   declarations: [
@@ -53,7 +53,7 @@ import { APIClient } from "./common/api-client.service";
   imports: [
     NgbModule.forRoot(),
     BrowserModule,
-    CommonModule,
+    SharedModule,
     HttpClientModule,
     FormsModule,
     TruncateModule,

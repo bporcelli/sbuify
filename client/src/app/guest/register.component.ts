@@ -5,8 +5,8 @@ import { HttpResponse } from '@angular/common/http';
 import { Config } from '../config';
 
 import { Customer } from "../user/customer";
-import { FormComponent } from "../common/form.component";
-import { APIClient } from "../common/api-client.service";
+import { FormComponent } from "../shared/form.component";
+import { APIClient } from "../shared/api-client.service";
 import { UserEndpoints } from "../user/endpoints";
 import { Observable } from "rxjs/Rx";
 

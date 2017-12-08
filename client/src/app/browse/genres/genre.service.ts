@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Genre } from "./genre";
 import { Observable } from "rxjs/Rx";
-import { APIClient } from "../../common/api-client.service";
+import { APIClient } from "../../shared/api-client.service";
 import { Album } from "../../album/album";
 
 @Injectable()

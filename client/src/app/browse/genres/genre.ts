@@ -1,4 +1,4 @@
-import { Image } from "../../common/image";
+import { Image } from "../../shared/image";
 
 /**
  * Represents a musical genre.

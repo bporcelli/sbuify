@@ -1,5 +1,5 @@
-import { CatalogItem } from "../common/catalog-item";
-import { Image } from "../common/image";
+import { CatalogItem } from "../shared/catalog-item";
+import { Image } from "../shared/image";
 import { Album } from "../album/album";
 import { User } from "../user/user";
 import { Queueable } from "../play-queue/queueable";

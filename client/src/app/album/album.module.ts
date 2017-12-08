@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TruncateModule } from 'ng2-truncate';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { CommonModule as ACommonModule } from "../common/common.module";
+import { SharedModule } from "../shared/shared.module";
 import { AlbumListComponent } from "./album-list.component";
 import { AlbumService } from "./album.service";
 
@@ -14,7 +14,7 @@ import { AlbumService } from "./album.service";
     TruncateModule,
     NgbModule,
     ContextMenuModule,
-    ACommonModule,
+    SharedModule,
     InfiniteScrollModule
   ],
   declarations: [

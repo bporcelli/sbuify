@@ -5,8 +5,8 @@ export class Image {
   type: string = 'image';
 
   constructor(
-    id: number,
-    width: number,
-    height: number
+    public id: number,
+    public width: number,
+    public height: number
   ) {}
 }

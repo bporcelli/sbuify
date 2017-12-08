@@ -1,10 +1,10 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormComponent } from "../common/form.component";
+import { FormComponent } from "../shared/form.component";
 import { Config } from "../config";
-import { Base64Image } from "../common/base64-image";
-import { Image } from "../common/image";
+import { Base64Image } from "../shared/base64-image";
+import { Image } from "../shared/image";
 import { PlaylistService } from "./playlist.service";
 
 @Component({

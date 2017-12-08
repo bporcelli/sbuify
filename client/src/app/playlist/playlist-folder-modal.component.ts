@@ -2,7 +2,7 @@ import { Component, ViewChild, Input } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlaylistService } from "./playlist.service";
-import { FormComponent } from "../common/form.component";
+import { FormComponent } from "../shared/form.component";
 
 @Component({
   templateUrl: './playlist-folder-modal.component.html'

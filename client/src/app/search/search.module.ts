@@ -4,7 +4,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SearchComponent } from "./search.component";
 import { SearchRoutingModule } from './search-routing.module';
-import { CommonModule as ACommonModule } from "../common/common.module";
+import { SharedModule } from "../shared/shared.module";
 import { SongsModule } from "../songs/songs.module";
 import { AlbumModule } from "../album/album.module";
 import { ArtistModule } from "../artist/artist.module";
@@ -13,7 +13,7 @@ import { ArtistModule } from "../artist/artist.module";
   imports: [
     SearchRoutingModule,
     CommonModule,
-    ACommonModule,
+    SharedModule,
     NgbModule,
     InfiniteScrollModule,
     SongsModule,

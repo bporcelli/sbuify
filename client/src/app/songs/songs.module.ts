@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { CommonModule as ACommonModule } from "../common/common.module";
+import { SharedModule } from "../shared/shared.module";
 import { SongTableComponent } from "./song-table.component";
 import { ToSongListPipe } from "./to-song-list.pipe";
 
 @NgModule({
   imports: [
     CommonModule,
-    ACommonModule,
+    SharedModule,
     ContextMenuModule,
     InfiniteScrollModule,
     RouterModule

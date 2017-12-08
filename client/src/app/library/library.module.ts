@@ -6,9 +6,9 @@ import { SongsComponent } from "./songs.component";
 import { AlbumsComponent } from "./albums.component";
 import { AlbumModule } from "../album/album.module";
 import { SongsModule } from "../songs/songs.module";
-import { FilterBoxComponent } from "./filter-box.component";
 import { ArtistsComponent } from "./artists.component";
 import { ArtistModule } from "../artist/artist.module";
+import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
   imports: [
@@ -17,12 +17,12 @@ import { ArtistModule } from "../artist/artist.module";
     CommonModule,
     AlbumModule,
     SongsModule,
-    ArtistModule
+    ArtistModule,
+    SharedModule
   ],
   declarations: [
     SongsComponent,
     AlbumsComponent,
-    FilterBoxComponent,
     ArtistsComponent
   ]
 })

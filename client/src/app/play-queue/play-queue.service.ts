@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PlayQueue } from "./play-queue";
-import { APIClient } from "../common/api-client.service";
+import { APIClient } from "../shared/api-client.service";
 import { Queueable } from "./queueable";
 import { Song } from "../songs/song";
 import { Observable } from "rxjs/Rx";

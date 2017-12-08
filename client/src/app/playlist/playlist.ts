@@ -1,10 +1,10 @@
-import { CatalogItem } from "../common/catalog-item";
-import { Image } from "../common/image";
+import { CatalogItem } from "../shared/catalog-item";
+import { Image } from "../shared/image";
 import { PlaylistSong } from "./playlist-song";
 import { Customer } from "../user/customer";
 import { Playable } from "../playback/playable";
 import { Song } from "../songs/song";
-import { Base64Image } from "../common/base64-image";
+import { Base64Image } from "../shared/base64-image";
 
 /**
  * Playlist model.
