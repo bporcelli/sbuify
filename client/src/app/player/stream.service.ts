@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Song } from "../songs/song";
-import {Stream, TimeRange} from "./stream";
+import { Stream, TimeRange } from "./stream";
 import { Playlist } from "../playlist/playlist";
 import { APIClient } from "../api/api-client.service";
 

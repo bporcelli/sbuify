@@ -19,7 +19,7 @@
                 <a class="btn btn-outline-gray" title="Upgrade to Premium" [routerLink]="[{ outlets: { modal: 'upgrade' } }]">Upgrade</a>
             </li>
             <li ngbDropdown class="nav-item">
-                <a class="nav-link pl-4" id="accountDropdownLink" ngbDropdownToggle><i class="fa fa-lg fa-fw fa-user-circle-o mr-1"></i> username</a>
+                <a class="nav-link pl-4" id="accountDropdownLink" ngbDropdownToggle><i class="fa fa-lg fa-fw fa-user-circle-o mr-1"></i> {{ user.email }}</a>
 
                 <div ngbDropdownMenu class="dropdown-menu-right">
                     <a class="dropdown-item" [routerLink]="[{ outlets: { modal: 'upgrade' } }]">Upgrade Account</a>
