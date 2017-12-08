@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -76,26 +77,17 @@ public class LibraryControllerTest extends AuthenticatedTest {
      * Get customer's saved artists.
      */
     @Test
+    @Transactional
     public void getSavedArtists() {
         Customer customer = (Customer) user;
         Playlist library = customer.getLibrary();
 
         // start with a clean slate
-        ArrayList<Song> toRemove = new ArrayList<>();
-
-        for (PlaylistSong s: library.getSongs()) {
-            Song song = s.getSong();
-            Album album = song.getAlbum();
-            Artist artist = album.getArtist();
-            if (artist.getId() == SAVED_ARTIST_ID) {
-                toRemove.add(song);
-            }
-        }
-        toRemove.forEach(song -> library.remove(song));
+        playlistSongRepo.deleteAllByPlaylistAndSong_Album_Artist_Id(library, SAVED_ARTIST_ID);
 
         // save a song by the artist to the user's library (we should query for these, but i'll cheat)
-        library.add(getSongById(SAVED_SONG_ID));
-        playlistRepository.save(library);
+        PlaylistSong playlistSong = new PlaylistSong(library, getSongById(SAVED_SONG_ID));
+        playlistSongRepo.save(playlistSong);
 
         // get saved artists
         ResponseEntity<Set<Artist>> response =
@@ -156,7 +148,8 @@ public class LibraryControllerTest extends AuthenticatedTest {
         Playlist library = customer.getLibrary();
 
         // check: are all songs on the album saved in the user's library?
-        List<Song> librarySongs = library.getSongs()
+        List<PlaylistSong> savedSongs = playlistSongRepo.getAllByPlaylistAndSong_Album(library, album);
+        List<Song> librarySongs = savedSongs
                 .stream()
                 .map(playlistSong -> playlistSong.getSong())
                 .collect(Collectors.toList());
@@ -185,17 +178,9 @@ public class LibraryControllerTest extends AuthenticatedTest {
 
         Customer customer = getCustomerById(user.getId());
         Playlist library = customer.getLibrary();
-        List<PlaylistSong> playlistLibrarySong = library.getSongs();
+        List<PlaylistSong> savedAlbumSongs = playlistSongRepo.getAllByPlaylistAndSong_Album(library, album);
 
-        boolean found = false;
-        for (PlaylistSong playlistSong: playlistLibrarySong){
-            Song librarySong = playlistSong.getSong();
-            if (album.equals(librarySong.getAlbum())){
-                found = true;
-                break;
-            }
-        }
-        assertEquals(false, found);
+        assertTrue(savedAlbumSongs.isEmpty());
     }
 
     public Album getAlbumById(Integer id){

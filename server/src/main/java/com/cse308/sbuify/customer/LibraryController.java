@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -162,9 +163,9 @@ public class LibraryController {
         List<Song> unsavedSongs = songRepo.getUnsavedSongsFromAlbum(customer.getId(), albumId);
 
         for (Song song: unsavedSongs) {
-            customerLibrary.add(song);
+            PlaylistSong playlistSong = new PlaylistSong(customerLibrary, song);
+            playlistSongRepo.save(playlistSong);
         }
-        playlistRepo.save(customerLibrary);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -174,6 +175,7 @@ public class LibraryController {
      * @return an empty 200 response on success, otherwise a 404 if the album ID is invalid.
      */
     @DeleteMapping(path = "/albums/{albumId}")
+    @Transactional
     public ResponseEntity<?> removeAlbum(@PathVariable Integer albumId) {
         Album album = getAlbumById(albumId);
 
@@ -183,11 +185,13 @@ public class LibraryController {
 
         Customer customer = getCurrentCustomer();
         Playlist customerLibrary = customer.getLibrary();
-        Collection<Song> albumSongs = album.getSongs();
+//        Collection<Song> albumSongs = album.getSongs();
 
-        for (Song song: albumSongs) {
-            customerLibrary.remove(song);
-        }
+//        playlistSongRepo.removeAlbumFromPlaylist(customerLibrary.getId(), album.getId());
+        playlistSongRepo.deleteAllByPlaylistAndSong_Album(customerLibrary, album);
+//        for (Song song: albumSongs) {
+//            customerLibrary.remove(song);
+//        }
         playlistRepo.save(customerLibrary);
         return new ResponseEntity<>(HttpStatus.OK);
     }

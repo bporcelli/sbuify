@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.cse308.sbuify.playlist.PlaylistSongRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -42,6 +43,9 @@ public class PlaylistControllerTest extends AuthenticatedTest {
 
     @Autowired
     private PlaylistRepository playlistRepository;
+
+    @Autowired
+    private PlaylistSongRepository playlistSongRepo;
 
     /**
      * Test to get playlist by ID
@@ -106,7 +110,7 @@ public class PlaylistControllerTest extends AuthenticatedTest {
         List<Playlist> owningPlaylists = playlistRepository.findAllByOwner_Id(customer.getId());
         assertEquals(true, owningPlaylists.size() > 0);
         Playlist target = owningPlaylists.get(0);
-        int previousSize = target.getSongs().size();
+        int previousSize = playlistSongRepo.countAllByPlaylist(target);
 
         // adding song starts here
         Optional<Song> newSong = songRepository.findById(3);
@@ -117,11 +121,10 @@ public class PlaylistControllerTest extends AuthenticatedTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         
-        // get the updated version
-        owningPlaylists = playlistRepository.findAllByOwner_Id(customer.getId());
-        target = owningPlaylists.get(0);
+        // get updated song count
+        int newSize = playlistSongRepo.countAllByPlaylist(target);
 
-        assertEquals(target.getSongs().size(), previousSize + 1);
+        assertEquals(previousSize + 1, newSize);
     }
 
     /**
@@ -131,14 +134,14 @@ public class PlaylistControllerTest extends AuthenticatedTest {
     public void updatePlaylistTest() {
         Customer customer = (Customer) user;
 
-        String name = "NewName Playlist";
-        String description = "This is for testing. Lets see if it works";
-
         Playlist reqObj = customer.getLibrary();
-        reqObj.setName(name);
-        reqObj.setDescription(description);
 
-        HttpEntity<Playlist> request = new HttpEntity<>(reqObj);
+        Playlist updated = new Playlist();
+
+        updated.setName("NewName Playlist");
+        updated.setDescription("This is for testing. Lets see if it works");
+
+        HttpEntity<Playlist> request = new HttpEntity<>(updated);
         ResponseEntity<Void> response = restTemplate.exchange(
                 String.format("/api/playlists/%d", reqObj.getId()), HttpMethod.PATCH, request,
                 Void.class);
@@ -146,8 +149,8 @@ public class PlaylistControllerTest extends AuthenticatedTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         Playlist playlist = customer.getLibrary();
-        assertEquals(name, playlist.getName());
-        assertEquals(description, playlist.getDescription());
+        assertEquals(updated.getName(), playlist.getName());
+        assertEquals(updated.getDescription(), playlist.getDescription());
     }
 
     // @Test

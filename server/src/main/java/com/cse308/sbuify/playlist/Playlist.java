@@ -34,7 +34,7 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     private Boolean hidden;
 
     /** Songs in playlist (zero or more). */
-    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaylistSong> songs = new ArrayList<>();
 
     /** Playlist followers */
