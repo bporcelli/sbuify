@@ -11,7 +11,7 @@ import { PlayQueue } from "./play-queue";
 import { RepeatMode } from "./repeat-mode";
 import { PreferencesService } from "../user/preferences.service";
 import { StreamService } from "./stream.service";
-import {Playlist} from "../playlist/playlist";
+import { Playlist } from "../playlist/playlist";
 
 @Injectable()
 export class PlayerService {

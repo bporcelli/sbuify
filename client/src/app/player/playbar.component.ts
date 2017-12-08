@@ -1,65 +1,76 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Song } from "../songs/song";
 import { PlayerService } from "./player.service";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import {RepeatMode} from "./repeat-mode";
+import { RepeatMode } from "./repeat-mode";
+import { LyricsModalComponent } from "./lyrics-modal.component";
 
 @Component({
     selector: 'playbar',
     templateUrl: './playbar.component.html'
 })
-export class PlaybarComponent {
+export class PlaybarComponent implements OnInit {
 
-  // todo: can we avoid susbcribing to song multiple times in the template?
-
-  // progress bar
+  /** Progress bar */
   @ViewChild('progressbar') progress: ElementRef;
 
-  constructor(private ps: PlayerService) {}
+  /** Current song */
+  song: Song = null;
+
+  constructor(
+    private playerService: PlayerService,
+    private modalService: NgbModal
+  ) {}
+
+  ngOnInit(): void {
+    this.playerService.song
+      .subscribe((song) => this.song = song);
+  }
 
   togglePlayback(): void {
-    this.ps.toggle();
+    this.playerService.toggle();
   }
 
   next(): void {
-    return this.ps.next();
+    return this.playerService.next();
   }
 
   previous(): void {
-    return this.ps.prev();
+    return this.playerService.prev();
   }
 
   hasNext(): boolean {
-    return this.ps.hasNext();
+    return this.playerService.hasNext();
   }
 
   hasPrev(): boolean {
-    return this.ps.hasPrev();
+    return this.playerService.hasPrev();
   }
 
   hasSong(): boolean {
-    return this.song.getValue() != null;
+    return this.song != null;
   }
 
   setVolume(volume: number): void {
-    this.ps.volume = volume;
+    this.playerService.volume = volume;
   }
 
   toggleMute(e: Event): void {
     e.preventDefault();
-    this.ps.muted = !this.ps.muted;
+    this.playerService.muted = !this.playerService.muted;
   }
 
   toggleShuffle(): void {
-    this.ps.toggleShuffle();
+    this.playerService.toggleShuffle();
   }
 
   isShuffled(): boolean {
-    return this.ps.shuffled;
+    return this.playerService.shuffled;
   }
 
   toggleRepeat(): void {
-    this.ps.toggleRepeat();
+    this.playerService.toggleRepeat();
   }
 
   getPlayButtonClass(): string {
@@ -68,32 +79,28 @@ export class PlaybarComponent {
   }
 
   getRepeatButtonClass(): string {
-    if (this.ps.repeat == RepeatMode.REPEAT) {
+    if (this.playerService.repeat == RepeatMode.REPEAT) {
       return 'active';
-    } else if (this.ps.repeat == RepeatMode.REPEAT_ONE) {
+    } else if (this.playerService.repeat == RepeatMode.REPEAT_ONE) {
       return 'active repeat-one';
     }
     return '';
   }
 
-  get song(): BehaviorSubject<Song> {
-    return this.ps.song;
-  }
-
   get time(): BehaviorSubject<number> {
-    return this.ps.time;
+    return this.playerService.time;
   }
 
   get duration(): BehaviorSubject<number> {
-    return this.ps.duration;
+    return this.playerService.duration;
   }
 
   get playing(): BehaviorSubject<boolean> {
-    return this.ps.playing;
+    return this.playerService.playing;
   }
 
   get muted(): boolean {
-    return this.ps.muted;
+    return this.playerService.muted;
   }
 
   get sliderWidth(): string {
@@ -123,7 +130,7 @@ export class PlaybarComponent {
       let duration = that.duration.getValue()
       let newTime = Math.min(((e.clientX - leftX) / barWidth) * duration, duration);
 
-      that.ps.setTime(Math.max(newTime, 0));
+      that.playerService.setTime(Math.max(newTime, 0));
     };
   }
 
@@ -134,5 +141,11 @@ export class PlaybarComponent {
       document.removeEventListener('mousemove', moveHandler);
       document.removeEventListener('mouseup', handleEndSeek);
     };
+  }
+
+  /** Open the Lyrics modal for the current song */
+  openLyricsModal(): void {
+    let modal = this.modalService.open(LyricsModalComponent);
+    modal.componentInstance.song = this.song;
   }
 }

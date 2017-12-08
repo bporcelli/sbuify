@@ -1,77 +1,79 @@
-<!-- BEGIN PLAYBAR -->
 <div class="navbar fixed-bottom navbar-dark bg-dark" id="play-bar">
-    <div id="now-playing" *ngIf="song | async as song">
-      <a class="navbar-brand"> <!-- todo: get thumbnail size image instead -->
-        <img width="55" height="55" src="/static/i/{{ song.image ? song.image.id : 1 }}/catalog" alt="{{ song.album.name }}" title="{{ song.album.name }}">
-      </a>
+  <div id="now-playing" *ngIf="song != null">
+    <a class="navbar-brand"> <!-- todo: get thumbnail size image instead -->
+      <img width="55" height="55" src="/static/i/{{ song.image ? song.image.id : 1 }}/catalog" alt="{{ song.album.name }}" title="{{ song.album.name }}">
+    </a>
+    <ul class="song-details">
+      <li class="song-title">
+        <a href="#" title="{{ song.name }}">{{ song.name | truncate:20 }}</a>
+      </li>
+      <li>
+        <a [routerLink]="['/artist', song.album.artist.id]" title="{{ song.album.artist.name }}">{{ song.album.artist.name | truncate:20 }}</a>
+      </li>
+    </ul>
+  </div>
 
-      <ul class="song-details">
-        <li class="song-title">
-          <a href="#" title="{{ song.name }}">{{ song.name | truncate:20 }}</a>
-        </li>
-        <li>
-          <a [routerLink]="['/artist', song.album.artist.id]" title="{{ song.album.artist.name }}">{{ song.album.artist.name | truncate:20 }}</a>
-        </li>
-      </ul>
-    </div>
-
-    <div class="mx-auto form-inline flex-column" id="playback-controls-wrap">
-        <ul class="flex-row" id="playback-controls">
-            <li>
-                <button class="btn btn-link" title="Shuffle" id="toggle-shuffle" (click)="toggleShuffle()" [ngClass]="{ 'active': isShuffled() }">
-                    <i class="fa fa-fw fa-random"></i>
-                </button>
-            </li>
-            <li>
-                <button class="btn btn-link" title="Previous" id="prev-track" [disabled]="!hasPrev()" (click)="previous()">
-                    <i class="fa fa-fw fa-step-backward"></i>
-                </button>
-            </li>
-            <li>
-                <button class="btn btn-link" title="Play/Pause" id="play" (click)="togglePlayback()" [disabled]="!hasSong()">
-                    <i class="fa fa-fw fa-2x" [ngClass]="getPlayButtonClass()"></i>
-                </button>
-            </li>
-            <li>
-                <button class="btn btn-link" title="Next" id="next-track" [disabled]="!hasNext()" (click)="next()">
-                    <i class="fa fa-fw fa-step-forward"></i>
-                </button>
-            </li>
-            <li>
-                <button class="btn btn-link" title="Repeat" id="toggle-repeat" (click)="toggleRepeat()" [ngClass]="getRepeatButtonClass()">
-                    <i class="fa fa-fw fa-repeat"></i>
-                </button>
-            </li>
-        </ul>
-
-        <div class="flex-row" id="playback-progress">
-            <span id="current-time" *ngIf="hasSong()">{{ time | async | formatDuration:'s' }}</span>
-
-            <div id="playback-track" (mousedown)="startSeek()" #progressbar>
-                <div id="playback-slider" [style.width]="sliderWidth"></div>
-            </div>
-
-            <span id="total-time" *ngIf="hasSong()">{{ duration | async | formatDuration:'s' }}</span>
-        </div>
-    </div>
-
-    <ul class="nav">
-        <li class="nav-item">
-            <a class="nav-link px-0" title="Play Queue" routerLink="/play-queue" routerLinkActive="active">
-                <i class="fa fa-lg fa-fw fa-list-ul"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link pr-0 pl-2" href="#" id="mute-toggle" title="Mute" (click)="toggleMute($event)">
-                <i class="fa fa-lg fa-fw" [ngClass]="{ 'fa-volume-off': muted, 'fa-volume-up': !muted }"></i>
-            </a>
-        </li>
+  <div class="mx-auto form-inline flex-column" id="playback-controls-wrap">
+    <ul class="flex-row" id="playback-controls">
+      <li>
+        <button class="btn btn-link" title="Shuffle" id="toggle-shuffle" (click)="toggleShuffle()" [ngClass]="{ 'active': isShuffled() }">
+          <i class="fa fa-fw fa-random"></i>
+        </button>
+      </li>
+      <li>
+        <button class="btn btn-link" title="Previous" id="prev-track" [disabled]="!hasPrev()" (click)="previous()">
+          <i class="fa fa-fw fa-step-backward"></i>
+        </button>
+      </li>
+      <li>
+        <button class="btn btn-link" title="Play/Pause" id="play" (click)="togglePlayback()" [disabled]="!hasSong()">
+          <i class="fa fa-fw fa-2x" [ngClass]="getPlayButtonClass()"></i>
+        </button>
+      </li>
+      <li>
+        <button class="btn btn-link" title="Next" id="next-track" [disabled]="!hasNext()" (click)="next()">
+          <i class="fa fa-fw fa-step-forward"></i>
+        </button>
+      </li>
+      <li>
+        <button class="btn btn-link" title="Repeat" id="toggle-repeat" (click)="toggleRepeat()" [ngClass]="getRepeatButtonClass()">
+          <i class="fa fa-fw fa-repeat"></i>
+        </button>
+      </li>
     </ul>
 
-    <div class="form-inline">
-        <input type="range" class="nav-link px-0 ml-2" id="volume-control" min="0" max="1" step="0.01"
-               (input)="setVolume($event.target.value)"
-               [hidden]="muted">
+    <div class="flex-row" id="playback-progress">
+      <span id="current-time" *ngIf="song != null">{{ time | async | formatDuration:'s' }}</span>
+
+      <div id="playback-track" (mousedown)="startSeek()" #progressbar>
+        <div id="playback-slider" [style.width]="sliderWidth"></div>
+      </div>
+
+      <span id="total-time" *ngIf="song != null">{{ duration | async | formatDuration:'s' }}</span>
     </div>
+  </div>
+
+  <ul class="nav">
+    <li class="nav-item" *ngIf="song && song.lyrics != ''">
+      <button class="btn btn-link nav-link pl-0 pr-2" title="View Lyrics" (click)="openLyricsModal()">
+        <i class="fa fa-lg fa-fw fa-music"></i>
+      </button>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link px-0" title="Play Queue" routerLink="/play-queue" routerLinkActive="active">
+        <i class="fa fa-lg fa-fw fa-list-ul"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link pr-0 pl-2" href="#" id="mute-toggle" title="Mute" (click)="toggleMute($event)">
+        <i class="fa fa-lg fa-fw" [ngClass]="{ 'fa-volume-off': muted, 'fa-volume-up': !muted }"></i>
+      </a>
+    </li>
+  </ul>
+
+  <div class="form-inline">
+    <input type="range" class="nav-link px-0 ml-2" id="volume-control" min="0" max="1" step="0.01"
+           (input)="setVolume($event.target.value)"
+           [hidden]="muted">
+  </div>
 </div>
-<!-- END PLAYBAR -->
