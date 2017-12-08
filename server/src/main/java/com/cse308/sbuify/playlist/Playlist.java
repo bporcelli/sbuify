@@ -25,19 +25,21 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
 
     // todo: refactor to eliminate eager fetching of followers
 
-    /** Playlist description. */
     private String description;
 
-    /** Is the playlist hidden from public view? */
+    @NotNull
+    private Integer length = 0;
+
+    @NotNull
+    private Integer numSongs = 0;
+
     @NotNull
     @Field
     private Boolean hidden;
 
-    /** Songs in playlist (zero or more). */
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaylistSong> songs = new ArrayList<>();
 
-    /** Playlist followers */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
     private Set<Customer> followers = new HashSet<>();
@@ -53,56 +55,67 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     }
 
     /**
-     * Followable methods.
-     */
-    @Override
-    public void addFollower(Customer customer) {
-        this.followers.add(customer);
-    }
-
-    @Override
-    public void removeFollower(Customer customer) {
-        this.followers.remove(customer);
-    }
-
-    @Override
-    public Boolean isFollowedBy(Customer customer) {
-        return this.followers.contains(customer);
-    }
-
-    /**
-     * Getters and setters.
+     * Playlist description.
      */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * {@link #getDescription()}
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Is the playlist hidden from public view?
+     */
     public Boolean isHidden() {
         return hidden;
     }
 
+    /**
+     * {@link #isHidden()}
+     */
     public void setHidden(Boolean hidden) {
         this.hidden = hidden;
     }
 
+    /**
+     * The songs in the playlist.
+     */
     public List<PlaylistSong> getSongs() {
         return songs;
     }
 
-    @Override
-    public Boolean isFolder() {
-        return false;
-    }
-
+    /**
+     * {@link #getSongs()}
+     */
     public void setSongs(List<PlaylistSong> songs) {
         if (songs != null){
             this.songs.clear();
             this.songs.addAll(songs);
         }
+    }
+
+    /**
+     * The length of the playlist in seconds.
+     */
+    public Integer getLength() {
+        return length;
+    }
+
+    /**
+     * The number of songs in the playlist.
+     */
+    public Integer getNumSongs() {
+        return numSongs;
+    }
+
+    @Override
+    public Boolean isFolder() {
+        return false;
     }
 
     /**
@@ -129,5 +142,23 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
             }
         }
         return null;
+    }
+
+    /**
+     * Followable methods.
+     */
+    @Override
+    public void addFollower(Customer customer) {
+        this.followers.add(customer);
+    }
+
+    @Override
+    public void removeFollower(Customer customer) {
+        this.followers.remove(customer);
+    }
+
+    @Override
+    public Boolean isFollowedBy(Customer customer) {
+        return this.followers.contains(customer);
     }
 }
