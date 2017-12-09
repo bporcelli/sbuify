@@ -38,12 +38,12 @@ public class AdminController {
 
     /**
      * Get admin by Id
-     * @param adminId
+     * @param id
      * @return Http.OK successful, Http.NOT_FOUND not found
      */
 	@GetMapping(path = "{id}")
-	public ResponseEntity<?> findById(@PathVariable Integer adminId) {
-		Admin admin = getAdminById(adminId);
+	public ResponseEntity<?> findById(@PathVariable Integer id) {
+		Admin admin = getAdminById(id);
 		if (admin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -81,12 +81,12 @@ public class AdminController {
 
     /**
      * Delete an admin given Id
-     * @param adminId
+     * @param id
      * @return Http.OK successful, Http.FORBIDDEN, no permission, Http.NOT_FOUND, invalid id
      */
 	@DeleteMapping(path = "{id}")
-	public ResponseEntity<?> deleteAdmin(@PathVariable Integer adminId) {
-	    Admin admin = getAdminById(adminId);
+	public ResponseEntity<?> deleteAdmin(@PathVariable Integer id) {
+	    Admin admin = getAdminById(id);
 	    if (admin == null) {
 	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -100,13 +100,13 @@ public class AdminController {
 
     /**
      * Update an admin
-     * @param adminId
+     * @param id
      * @param partialAdmin
      * @return Http.OK successful, Http.FORBIDDEN, no permission, Http.NOT_FOUND, invalid id
      */
 	@PatchMapping(path = "{id}")
-	public ResponseEntity<?> updateAdmin(@PathVariable Integer adminId, @RequestBody Admin partialAdmin) {
-	    Admin admin = getAdminById(adminId);
+	public ResponseEntity<?> updateAdmin(@PathVariable Integer id, @RequestBody Admin partialAdmin) {
+	    Admin admin = getAdminById(id);
 
 	    if (admin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
