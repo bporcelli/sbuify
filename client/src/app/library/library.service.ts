@@ -10,7 +10,7 @@ import { Artist } from "../artist/artist";
 @Injectable()
 export class LibraryService {
 
-  /** Dictionary for keeping track of saved albums and songs (initial values taken from server response) */
+  /** Dictionary for keeping track of saved songs (initial values taken from server response) */
   private saved: object = {};
 
   constructor(private client: APIClient) {}
@@ -26,11 +26,25 @@ export class LibraryService {
 
   /** Determine whether a song or album is saved. */
   isSaved(queueable: Queueable): boolean {
-    let key = this.getKey(queueable);
-    if (!(key in this.saved)) {
-      this.saved[key] = queueable['saved'];
+    if (queueable['type'] == 'song') {
+      let key = this.getKey(queueable);
+
+      if (!(key in this.saved)) {
+        this.saved[key] = queueable['saved'];
+      }
+      return this.saved[key];
+    } else {
+      // albums are saved if all of their songs are saved
+      let saved = true;
+
+      for (let song of queueable['songs']) {
+        if (!this.isSaved(song)) {
+          saved = false;
+          break;
+        }
+      }
+      return saved;
     }
-    return this.saved[key];
   }
 
   private remove(queueable: Queueable) {
@@ -55,6 +69,7 @@ export class LibraryService {
 
   private setSaved(queueable: Queueable, saved: boolean = true) {
     let key = this.getKey(queueable);
+
     this.saved[key] = saved;
     delete queueable['saved'];  // unused after entry is in saved map
 
@@ -65,10 +80,6 @@ export class LibraryService {
         this.saved[sKey] = saved;
         delete song['saved'];
       });
-    } else if (queueable['type'] == 'song' && !saved) {
-      // if one or more songs from an album is removed, it is no longer saved
-      let aKey = this.getKey(queueable['album']);
-      this.saved[aKey] = false;
     }
   }
 
