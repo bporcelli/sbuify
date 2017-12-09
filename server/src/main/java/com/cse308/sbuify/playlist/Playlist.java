@@ -2,9 +2,13 @@ package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Followable;
+import com.cse308.sbuify.common.api.Decorable;
 import com.cse308.sbuify.image.ImageI;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
@@ -12,13 +16,15 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type")
 @Indexed
-public class Playlist extends CatalogItem implements PlaylistComponent, Followable {
+public class Playlist extends CatalogItem implements PlaylistComponent, Followable, Decorable {
 
     private String description;
 
@@ -33,7 +39,11 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     private Boolean hidden;
 
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<PlaylistSong> songs = new ArrayList<>();
+
+    @Transient
+    private Map<String, Object> properties = new HashMap<>();
 
     public Playlist() {
     }
@@ -107,6 +117,29 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     @Override
     public Boolean isFolder() {
         return false;
+    }
+
+    /**
+     * Get the transient properties of this playlist.
+     */
+    @JsonAnyGetter
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    /**
+     * Get a specific transient property of this playlist.
+     */
+    public Object get(String key) {
+        return properties.get(key);
+    }
+
+    /**
+     * Set a transient property of this playlist.
+     */
+    @JsonAnySetter
+    public void set(String key, Object value) {
+        properties.put(key, value);
     }
 
     /**

@@ -106,6 +106,7 @@ public class PlaylistController {
      */
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    @DecorateResponse(type = Playlist.class)
     public ResponseEntity<?> getPlaylistById(@PathVariable Integer id) {
         Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
 

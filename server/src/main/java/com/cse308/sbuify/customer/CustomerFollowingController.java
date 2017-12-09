@@ -3,6 +3,8 @@ package com.cse308.sbuify.customer;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.common.TypedCollection;
+import com.cse308.sbuify.common.api.DecoratorRegistry;
+import com.cse308.sbuify.common.api.ResponseDecorator;
 import com.cse308.sbuify.playlist.*;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.user.User;
@@ -63,11 +65,15 @@ public class CustomerFollowingController {
 
         // add playlists
         List<FollowedPlaylist> playlists = followedPlaylistRepo.findByCustomerAndParent(customer, null);
+        ResponseDecorator<Playlist> decorator = DecoratorRegistry.getDecorator(Playlist.class);
 
         for (FollowedPlaylist savedPlaylist: playlists) {
             Playlist playlist = savedPlaylist.getPlaylist();
             Integer sortKey = savedPlaylist.getPosition() != null ? savedPlaylist.getPosition() : playlist.getId();
             componentMap.put(sortKey, playlist);
+
+            // decorate with user-specific data
+            decorator.decorate(playlist);
         }
 
         // convert to list
