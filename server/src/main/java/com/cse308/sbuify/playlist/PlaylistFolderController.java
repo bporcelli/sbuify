@@ -2,6 +2,8 @@ package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.customer.FollowedPlaylist;
 import com.cse308.sbuify.customer.FollowedPlaylistRepository;
+import com.cse308.sbuify.image.StorageService;
+import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class PlaylistFolderController {
 
     @Autowired
     private FollowedPlaylistRepository followedPlaylistRepo;
+
+    @Autowired
+    private StorageService storageService;
 
     /**
      * Create a playlist folder.
@@ -86,7 +91,16 @@ public class PlaylistFolderController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        followedPlaylistRepo.deleteAllByParent(folder);  // todo: ensure that playlist images are deleted
+        List<FollowedPlaylist> savedPlaylistByParent = followedPlaylistRepo.findByParent(folder);
+
+        for (FollowedPlaylist followedPlaylist: savedPlaylistByParent){
+            Playlist playlist = followedPlaylist.getPlaylist();
+            if (playlist.getImage() != null){
+                storageService.delete((Image)playlist.getImage());
+            }
+        }
+
+        followedPlaylistRepo.deleteAllByParent(folder);  // todo: ensure that playlist images are deleted -- PLEASE TEST
         folderRepo.delete(folder);
 
         return new ResponseEntity<>(HttpStatus.OK);

@@ -2,6 +2,7 @@ package com.cse308.sbuify;
 
 import com.cse308.sbuify.album.AlbumProperties;
 import com.cse308.sbuify.customer.CustomerProperties;
+import com.cse308.sbuify.customer.LibraryProperties;
 import com.cse308.sbuify.image.ImageProperties;
 import com.cse308.sbuify.image.StorageService;
 import com.cse308.sbuify.playlist.PlaylistProperties;
@@ -15,7 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ImageProperties.class, PlaylistProperties.class, AlbumProperties.class,CustomerProperties.class})
+@EnableConfigurationProperties({ImageProperties.class, PlaylistProperties.class, AlbumProperties.class, LibraryProperties.class, CustomerProperties.class})
 public class SBUifyApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(SBUifyApplication.class);

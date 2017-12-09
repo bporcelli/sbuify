@@ -21,7 +21,7 @@ public class TypedCollectionDecorator implements ResponseDecorator<TypedCollecti
         if (decorator == null) {
             return;
         }
-        for (Object obj: (Collection<Object>) original.getCollection()) {  // fixme: add type param to collection
+        for (Object obj: (Collection) original.getCollection()) {  // fixme: add type param to collection
             decorator.decorate((T) obj);
         }
     }

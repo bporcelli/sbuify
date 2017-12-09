@@ -224,6 +224,10 @@ public class PlaylistController {
         }
 
         // todo: delete playlist
+        if (playlist.getImage() != null) {
+            Image image = (Image)playlist.getImage();
+            this.storageService.delete(image);
+        }
         followedPlaylistRepo.deleteAllByPlaylist(playlist);
         playlistRepository.deleteById(id);
 
