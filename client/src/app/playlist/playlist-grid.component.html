@@ -26,6 +26,6 @@
     Go to Playlist
   </ng-template>
   <ng-template contextMenuItem let-playlist (execute)="followOrUnfollow($event.item)">
-    {{ isFollowed(playlist) ? 'Unfollow' : 'Follow' }}
+    {{ playlist['isFollowed'] ? 'Unfollow' : 'Follow' }}
   </ng-template>
 </context-menu>

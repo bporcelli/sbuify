@@ -9,6 +9,8 @@ import { Playable } from "../playback/playable";
  * Represents a song in the music catalog.
  */
 export class Song extends CatalogItem implements Queueable, Playable {
+  public type: string = 'song';
+
   constructor(
     public id: number,
     public name: string,

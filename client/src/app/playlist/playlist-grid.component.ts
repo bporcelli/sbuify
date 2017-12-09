@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Router } from "@angular/router";
 import { Playlist } from "./playlist";
 import { PlayerService } from "../playback/player.service";
+import { PlaylistService } from "./playlist.service";
 
 @Component({
   selector: '[playlist-grid]',
@@ -17,6 +18,7 @@ export class PlaylistGridComponent {
 
   constructor(
     private playService: PlayerService,
+    private playlistService: PlaylistService,
     private router: Router
   ) {}
 
@@ -37,11 +39,6 @@ export class PlaylistGridComponent {
     return this.isQueued(playlist) && this.playService.playing.value;
   }
 
-  /** Check: is the given playlist followed by the user? */
-  isFollowed(playlist: Playlist) {
-    console.log('would check whether', playlist, 'is followed');
-  }
-
   /** Open a playlist */
   openPlaylistPage(playlist: Playlist): void {
     this.router.navigate(['/playlist', playlist.id]);
@@ -49,7 +46,7 @@ export class PlaylistGridComponent {
 
   /** Follow/unfollow a playlist */
   followOrUnfollow(playlist: Playlist): void {
-    console.log('would follow or unfollow', playlist);
+    this.playlistService.followOrUnfollow(playlist);
   }
 
   private isQueued(playlist: Playlist): boolean {

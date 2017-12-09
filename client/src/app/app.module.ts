@@ -37,6 +37,7 @@ import { PlaybarComponent } from "./playbar.component";
 import { LyricsToHtmlPipe } from "./lyrics-to-html.pipe";
 import { LyricsModalComponent } from "./lyrics-modal.component";
 import { APIClient } from "./shared/api-client.service";
+import { FollowingService } from "./user/following.service";
 
 @NgModule({
   declarations: [
@@ -83,6 +84,7 @@ import { APIClient } from "./shared/api-client.service";
     PlayQueueService,
     LibraryService,
     StreamService,
+    FollowingService,
     APIClient,
     {
       provide: HTTP_INTERCEPTORS,

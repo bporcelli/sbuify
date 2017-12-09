@@ -4,7 +4,7 @@ import { JwtService } from "../auth/jwt.service";
 import { User } from "./user";
 
 /**
- * Service to get
+ * Service to get information about the authenticated user.
  */
 @Injectable()
 export class UserService {
