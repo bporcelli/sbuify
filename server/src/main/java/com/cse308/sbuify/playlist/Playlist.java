@@ -2,7 +2,6 @@ package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Followable;
-import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.image.ImageI;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.user.User;
@@ -13,17 +12,13 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type")
 @Indexed
-public class Playlist extends CatalogItem implements PlaylistComponent, Followable { 
-
-    // todo: refactor to eliminate eager fetching of followers
+public class Playlist extends CatalogItem implements PlaylistComponent, Followable {
 
     private String description;
 
@@ -39,10 +34,6 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
 
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaylistSong> songs = new ArrayList<>();
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
-    private Set<Customer> followers = new HashSet<>();
 
     public Playlist() {
     }
@@ -142,23 +133,5 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
             }
         }
         return null;
-    }
-
-    /**
-     * Followable methods.
-     */
-    @Override
-    public void addFollower(Customer customer) {
-        this.followers.add(customer);
-    }
-
-    @Override
-    public void removeFollower(Customer customer) {
-        this.followers.remove(customer);
-    }
-
-    @Override
-    public Boolean isFollowedBy(Customer customer) {
-        return this.followers.contains(customer);
     }
 }

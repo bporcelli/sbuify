@@ -1,6 +1,8 @@
 package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.common.Queueable;
+import com.cse308.sbuify.common.TypedCollection;
+import com.cse308.sbuify.common.api.DecorateResponse;
 import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.customer.SavedPlaylist;
 import com.cse308.sbuify.customer.SavedPlaylistRepository;
@@ -9,6 +11,8 @@ import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.security.SecurityUtils;
 import com.cse308.sbuify.song.Song;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -39,11 +44,17 @@ public class PlaylistController {
     @Autowired
     private PlaylistFolderRepository folderRepository;
 
+    @Autowired
+    private PlaylistSongRepository playlistSongRepo;
+
     private final Integer MAX_SONGS;
+
+    private final Integer SONGS_PER_PAGE;
 
     @Autowired
     public PlaylistController(PlaylistProperties playlistProperties) {
         MAX_SONGS = playlistProperties.getMaxSongs();
+        SONGS_PER_PAGE = playlistProperties.getSongsPerPage();
     }
 
     /**
@@ -111,6 +122,31 @@ public class PlaylistController {
 
         // if we reach this point, the user can access the playlist
         return new ResponseEntity<>(playlist, HttpStatus.OK);
+    }
+
+    /**
+     * Get the songs in a playlist.
+     * @param id Playlist ID.
+     * @param page Page index.
+     * @return a 200 response containing a list of PlaylistSong objects on success.
+     */
+    @GetMapping(path = "/{id}/songs")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    @DecorateResponse(type = TypedCollection.class)
+    public ResponseEntity<?> getPlaylistSongs(@PathVariable Integer id, @RequestParam(defaultValue = "0") Integer page) {
+        Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
+
+        if (!optionalPlaylist.isPresent()) { // playlist not found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Page<PlaylistSong> songs = playlistSongRepo.findAllByPlaylist_Id(id, PageRequest.of(page, SONGS_PER_PAGE));
+        List<PlaylistSong> songList = new ArrayList<>();
+
+        for (PlaylistSong song: songs) {
+            songList.add(song);
+        }
+        return new ResponseEntity<>(new TypedCollection(songList, PlaylistSong.class), HttpStatus.OK);
     }
 
     /**

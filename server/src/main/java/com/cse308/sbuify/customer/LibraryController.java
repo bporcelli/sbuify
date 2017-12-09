@@ -6,10 +6,7 @@ import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.common.TypedCollection;
 import com.cse308.sbuify.common.api.DecorateResponse;
-import com.cse308.sbuify.playlist.Playlist;
-import com.cse308.sbuify.playlist.PlaylistRepository;
-import com.cse308.sbuify.playlist.PlaylistSong;
-import com.cse308.sbuify.playlist.PlaylistSongRepository;
+import com.cse308.sbuify.playlist.*;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.song.SongRepository;
@@ -23,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +28,7 @@ import java.util.Optional;
 public class LibraryController {
 
     // todo: avoid grabbing entire library at once; should attempt to add song twice really be a 400?
-    private static final Integer ITEMS_PER_PAGE = 25;  // todo: make configurable
+    private final Integer ITEMS_PER_PAGE;
 
     @Autowired
     private PlaylistRepository playlistRepo;
@@ -51,6 +47,11 @@ public class LibraryController {
 
     @Autowired
     private PlaylistSongRepository playlistSongRepo;
+
+    @Autowired
+    public LibraryController(PlaylistProperties properties) {
+        ITEMS_PER_PAGE = properties.getSongsPerPage();
+    }
 
     /**
      * Get the songs in the customer's library.
@@ -184,15 +185,9 @@ public class LibraryController {
         }
 
         Customer customer = getCurrentCustomer();
-        Playlist customerLibrary = customer.getLibrary();
-//        Collection<Song> albumSongs = album.getSongs();
 
-//        playlistSongRepo.removeAlbumFromPlaylist(customerLibrary.getId(), album.getId());
-        playlistSongRepo.deleteAllByPlaylistAndSong_Album(customerLibrary, album);
-//        for (Song song: albumSongs) {
-//            customerLibrary.remove(song);
-//        }
-        playlistRepo.save(customerLibrary);
+        playlistSongRepo.deleteAllByPlaylistAndSong_Album(customer.getLibrary(), album);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

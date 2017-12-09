@@ -4,8 +4,9 @@ import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.album.AlbumRepository;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
-import com.cse308.sbuify.common.Followable;
 import com.cse308.sbuify.customer.Customer;
+import com.cse308.sbuify.customer.FollowedArtistRepository;
+import com.cse308.sbuify.customer.FollowedCustomerRepository;
 import com.cse308.sbuify.customer.preferences.Language;
 import com.cse308.sbuify.customer.preferences.PreferenceService;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
@@ -13,10 +14,12 @@ import com.cse308.sbuify.user.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -38,67 +41,72 @@ public class CustomerControllerTest extends AuthenticatedTest {
     @Autowired
     private PreferenceService prefService;
 
-    @Test
-    public void follow() {
-        Followable toFollow;
-        RequestEntity<Followable> request;
-        ResponseEntity<Void> response;
-        URI requestURI;
+    @Autowired
+    private FollowedArtistRepository followedArtistRepo;
 
-        try {
-            requestURI = new URI("http://localhost:" + port + "/api/customer/following");
-        } catch (URISyntaxException e) {
-            fail();
-            return;
-        }
+    @Autowired
+    private FollowedCustomerRepository followedCustomerRepo;
+
+    @Test
+    @Transactional
+    public void follow() {
+        ResponseEntity<Void> response;
+
+        // start with a clean slate
+        followedArtistRepo.deleteByCustomerAndArtist_Id(user, FOLLOWED_ARTIST_ID);
+        followedCustomerRepo.deleteByCustomerAndFriend_Id(user, FOLLOWED_CUSTOMER_ID);
 
         // test: following customers
-        toFollow = getCustomerById(FOLLOWED_CUSTOMER_ID);
-        request = RequestEntity.put(requestURI).body(toFollow, Followable.class);
-        response = restTemplate.exchange(request, Void.class);
+        Map<String, Object> params = new HashMap<>();
 
+        params.put("type", "customer");
+        params.put("id", FOLLOWED_CUSTOMER_ID);
+
+        response = restTemplate.exchange("/api/customer/following?type={type}&id={id}", HttpMethod.PUT,
+                null, Void.class, params);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-        // test: following artists
-        toFollow = getArtistById(FOLLOWED_ARTIST_ID);
-        request = RequestEntity.put(requestURI).body(toFollow, Followable.class);
-        response = restTemplate.exchange(request, Void.class);
+        params.clear();
 
+        // test: following artists
+        params.put("type", "artist");
+        params.put("id", FOLLOWED_ARTIST_ID);
+
+        response = restTemplate.exchange("/api/customer/following?type={type}&id={id}", HttpMethod.PUT,
+                null, Void.class, params);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
+    @Transactional
     public void unfollow() {
-        Followable toUnfollow;
-        HttpEntity<Followable> request;
         ResponseEntity<Void> response;
-        URI requestURI;
-
-        try {
-            requestURI = new URI("http://localhost:" + port + "/api/customer/following");
-        } catch (URISyntaxException e) {
-            fail();
-            return;
-        }
 
         follow();
 
         // check: can unfollow customer
-        toUnfollow = getCustomerById(FOLLOWED_CUSTOMER_ID);
-        request = new HttpEntity<>(toUnfollow);
-        response = restTemplate.exchange(requestURI, HttpMethod.DELETE, request, Void.class);
+        Map<String, Object> params = new HashMap<>();
 
+        params.put("type", "customer");
+        params.put("id", FOLLOWED_CUSTOMER_ID);
+
+        response = restTemplate.exchange("/api/customer/following?type={type}&id={id}", HttpMethod.DELETE,
+                null, Void.class, params);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-        // check: can unfollow artist
-        toUnfollow = getArtistById(FOLLOWED_ARTIST_ID);
-        request = new HttpEntity<>(toUnfollow);
-        response = restTemplate.exchange(requestURI, HttpMethod.DELETE, request, Void.class);
+        params.clear();
 
+        // check: can unfollow artist
+        params.put("type", "artist");
+        params.put("id", FOLLOWED_ARTIST_ID);
+
+        response = restTemplate.exchange("/api/customer/following?type={type}&id={id}", HttpMethod.DELETE,
+                null, Void.class, params);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
+    @Transactional
     public void isFollowing() {
         String requestURI = "http://localhost:" + port + "/api/customer/following/contains?type={type}&id={id}";
         Map<String, Object> requestParams = new HashMap<>();
@@ -135,6 +143,7 @@ public class CustomerControllerTest extends AuthenticatedTest {
     }
 
     @Test
+    @Transactional
     public void getFollowedArtists() {
         follow();
 
@@ -155,6 +164,7 @@ public class CustomerControllerTest extends AuthenticatedTest {
     }
 
     @Test
+    @Transactional
     public void getFriends() {
         follow();
 
