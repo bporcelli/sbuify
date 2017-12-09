@@ -19,8 +19,8 @@ export class PlaylistFolderComponent implements OnInit {
 
   /** Required to reference 'this' in ngx-contextmenu visible functions */
   public isUserOwnedBound = this.isUserOwned.bind(this);
-  public isFollowedBound = this.isFollowed.bind(this);
   public canCreateFolderBound = this.canCreateFolder.bind(this);
+  public isNotUserOwnedBound = this.isNotUserOwned.bind(this);
 
   /** Is the folder collapsed? */
   isCollapsed: boolean = true;
@@ -76,15 +76,14 @@ export class PlaylistFolderComponent implements OnInit {
     return this.user != null && item != null && this.user.email == item.owner.email;
   }
 
-  /** Check whether a playlist is followed by the current user */
-  isFollowed(item: any): boolean {
-    // todo
-    return !item.folder && false;
+  /** Check whether a playlist or folder is NOT owned by the current user */
+  isNotUserOwned(item: any): boolean {
+    return !this.isUserOwned(item);
   }
 
   /** Unfollow a playlist */
   unfollow(item: Playlist): void {
-    console.log('would unfollow', item);
+    this.playlistService.followOrUnfollow(item);
   }
 
   /** Can we create a folder at this level of the playlist folder hierarchy? */
@@ -117,11 +116,19 @@ export class PlaylistFolderComponent implements OnInit {
 
   /** Delete a playlist or folder */
   delete(item: any): void {
-    this.playlistService.delete(item)
-      .subscribe(
-        () => {},
-        (err: any) => this.handleError(err)
-      );
+    let message = 'Are you sure you want to delete this playlist?';
+
+    if (item.folder) {
+      message = 'Are you sure you want to delete this folder and all playlists it contains?';
+    }
+
+    if (confirm(message)) {
+      this.playlistService.delete(item)
+        .subscribe(
+          () => {},
+          (err: any) => this.handleError(err)
+        );
+    }
   }
 
   private setPlaylists(playlists: object[]): void {

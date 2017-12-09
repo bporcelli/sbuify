@@ -52,11 +52,11 @@
   <ng-template contextMenuItem [visible]="isUserOwnedBound" (execute)="delete($event.item)">
     Delete
   </ng-template>
-  <ng-template contextMenuItem divider="true" [visible]="isFollowedBound"></ng-template>
-  <ng-template contextMenuItem [visible]="isFollowedBound" (execute)="unfollow($event.item)">
+  <ng-template contextMenuItem divider="true" [visible]="isUserOwnedBound"></ng-template>
+  <ng-template contextMenuItem [visible]="isNotUserOwnedBound" (execute)="unfollow($event.item)">
     Unfollow
   </ng-template>
-  <ng-template contextMenuItem divider="true"></ng-template>
+  <ng-template contextMenuItem divider="true" [visible]="isNotUserOwnedBound"></ng-template>
   <ng-template contextMenuItem (execute)="openPlaylistModal($event.item)">
     Create Playlist
   </ng-template>
