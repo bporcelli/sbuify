@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(path = "/api/playlists")
@@ -251,16 +252,18 @@ public class PlaylistController {
         }
 
         Collection<Song> newSongs = toAdd.getItems();
-        List<PlaylistSong> existingSongs = playlist.getSongs();
 
-        if (existingSongs.size() + newSongs.size() > MAX_SONGS) {
+        int numSongs = playlistSongRepo.countAllByPlaylist(playlist);
+
+        if (numSongs + newSongs.size() > MAX_SONGS) {
             return new ResponseEntity<>("Maximum playlist size exceeded.", HttpStatus.BAD_REQUEST);
         }
 
-        for (Song song: newSongs) {
-            playlist.add(song);
-        }
-        playlistRepository.save(playlist);
+        List<PlaylistSong> newSongsList = newSongs.stream()
+                .map(song -> new PlaylistSong(playlist, song))
+                .collect(Collectors.toList());
+
+        playlistSongRepo.saveAll(newSongsList);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -272,6 +275,7 @@ public class PlaylistController {
      *         provided song list is invalid, or a 403 otherwise.
      */
     @PostMapping(path = "/{id}/remove")
+    @Transactional
     public ResponseEntity<?> removeFromPlaylist(@PathVariable Integer id, @RequestBody Queueable toDelete) {
         Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
 
@@ -281,20 +285,19 @@ public class PlaylistController {
         Playlist playlist = optionalPlaylist.get();
 
         Collection<Song> songs = toDelete.getItems();
-        List<PlaylistSong> existingSongs = playlist.getSongs();
 
-        if (existingSongs.size() - songs.size() < 0) {
+        int numSongs = playlistSongRepo.countAllByPlaylist(playlist);
+
+        if (numSongs - songs.size() < 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         if (!SecurityUtils.userCanEdit(playlist)) {  // can't edit playlist
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         for (Song song: songs) {
-            playlist.remove(song);
+            playlistSongRepo.deleteByPlaylistAndSong(playlist, song);
         }
-        playlistRepository.save(playlist);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

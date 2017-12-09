@@ -141,30 +141,4 @@ public class Playlist extends CatalogItem implements PlaylistComponent, Followab
     public void set(String key, Object value) {
         properties.put(key, value);
     }
-
-    /**
-     * Add a song to this playlist.
-     * @param song Song to add to the playlist
-     * @return a PlaylistSong instance wrapping the song.
-     */
-    public PlaylistSong add(Song song) {
-        PlaylistSong ss = new PlaylistSong(this, song);
-        songs.add(ss);
-        return ss;
-    }
-
-    /**
-     * Remove a song from this playlist.
-     * @param song Song to remove.
-     * @return null if the song does not exists in the list, otherwise a PlaylistSong instance.
-     */
-    public PlaylistSong remove(Song song) {
-        for (PlaylistSong ss : songs) {
-            if (ss.getSong().equals(song)) {
-                songs.remove(ss);
-                return ss;
-            }
-        }
-        return null;
-    }
 }

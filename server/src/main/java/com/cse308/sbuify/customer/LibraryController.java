@@ -27,11 +27,7 @@ import java.util.Optional;
 @RequestMapping(path = "/api/customer/library")
 public class LibraryController {
 
-    // todo: avoid grabbing entire library at once; should attempt to add song twice really be a 400?
     private final Integer ITEMS_PER_PAGE;
-
-    @Autowired
-    private PlaylistRepository playlistRepo;
 
     @Autowired
     private SongRepository songRepo;
@@ -88,16 +84,17 @@ public class LibraryController {
         if (!optionalSong.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Song song = optionalSong.get();
 
-        Playlist lib = customer.getLibrary();
-        // song already in customer library
-        if(containsSong(lib.getSongs(), id)){
+        Song song = optionalSong.get();
+        Playlist library = customer.getLibrary();
+
+        if (playlistSongRepo.existsByPlaylistAndSong(library, song)) {  // song is already saved
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        PlaylistSong saved = lib.add(song);
 
-        playlistRepo.save(lib);
+        PlaylistSong saved = new PlaylistSong(library, song);
+        saved = playlistSongRepo.save(saved);
+
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
@@ -107,6 +104,7 @@ public class LibraryController {
      * @return an empty 200 response on success, otherwise a 404.
      */
     @DeleteMapping(path = "/songs/{id}")
+    @Transactional
     public ResponseEntity<?> removeSong(@PathVariable Integer id) {
         Customer customer = getCurrentCustomer();
         Playlist library = customer.getLibrary();
@@ -117,13 +115,12 @@ public class LibraryController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        PlaylistSong deleted = library.remove(optionalSong.get());
+        Song song = optionalSong.get();
 
-        if (deleted == null) {  // song wasn't in library
+        if (!playlistSongRepo.existsByPlaylistAndSong(library, song)) {  // song wasn't in library
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        playlistRepo.save(library);
+        playlistSongRepo.deleteByPlaylistAndSong(library, song);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -208,10 +205,6 @@ public class LibraryController {
             artists.add(artist);
         }
         return new TypedCollection(artists, Artist.class);
-    }
-
-    protected static boolean containsSong(List<PlaylistSong> list, Integer songId){
-        return list.stream().anyMatch(object -> ((Song) object.getSong()).getId().equals(songId));
     }
 
     private Album getAlbumById(Integer Id){
