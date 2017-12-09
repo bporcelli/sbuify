@@ -27,7 +27,7 @@ export class PlayQueueService {
   }
 
   add(item: Queueable): void {
-    this.client.post("/api/customer/play-queue/save", item, { responseType: 'text' }).subscribe(
+    this.client.post("/api/customer/play-queue/add", item, { responseType: 'text' }).subscribe(
       () => {
         let songs = item['type'] == 'song' ? [<Song>item] : item.songs;
 
