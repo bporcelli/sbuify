@@ -12,6 +12,7 @@ import { AlbumService } from "./album.service";
 import { AlbumDetailComponent } from "./album-detail.component";
 import { AuthGuard } from "../auth/auth-guard.service";
 import { AlbumDetailResolver } from "./album-resolver.service";
+import { SongsModule } from "../songs/songs.module";
 
 const routes: Routes = [
   {
@@ -33,7 +34,8 @@ const routes: Routes = [
     ContextMenuModule,
     SharedModule,
     InfiniteScrollModule,
-    MomentModule
+    MomentModule,
+    SongsModule
   ],
   declarations: [
     AlbumListComponent,

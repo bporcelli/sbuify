@@ -6,6 +6,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SharedModule } from "../shared/shared.module";
 import { SongTableComponent } from "./song-table.component";
 import { ToSongListPipe } from "./to-song-list.pipe";
+import { SongContextMenuComponent } from "./song-context-menu.component";
 
 @NgModule({
   imports: [
@@ -17,11 +18,13 @@ import { ToSongListPipe } from "./to-song-list.pipe";
   ],
   declarations: [
     SongTableComponent,
-    ToSongListPipe
+    ToSongListPipe,
+    SongContextMenuComponent
   ],
   exports: [
     SongTableComponent,
-    ToSongListPipe
+    ToSongListPipe,
+    SongContextMenuComponent
   ]
 })
 export class SongsModule {}

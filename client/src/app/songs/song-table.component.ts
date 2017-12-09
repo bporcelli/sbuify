@@ -1,11 +1,11 @@
-import { Component, Input } from '@angular/core';
-import { Router } from "@angular/router";
+import { Component, Input, ViewChild } from '@angular/core';
 import { Song } from "./song";
 import { PlayerService } from "../playback/player.service";
 import { Playable } from "../playback/playable";
 import { PlayQueueService } from "../play-queue/play-queue.service";
 import { PlayQueue } from "../play-queue/play-queue";
 import { SongList } from "./song-list";
+import { SongContextMenuComponent } from "./song-context-menu.component";
 import { LibraryService } from "../library/library.service";
 
 @Component({
@@ -13,6 +13,8 @@ import { LibraryService } from "../library/library.service";
   templateUrl: './song-table.component.html'
 })
 export class SongTableComponent {
+
+  @ViewChild(SongContextMenuComponent) menu: SongContextMenuComponent;
 
   /** Playlist to display */
   @Input() playlist: Playable = null;
@@ -26,7 +28,6 @@ export class SongTableComponent {
   constructor(
     private ps: PlayerService,
     private pqs: PlayQueueService,
-    private router: Router,
     private libService: LibraryService
   ) {}
 
@@ -70,21 +71,6 @@ export class SongTableComponent {
     }
   }
 
-  /** Enqueue a song. */
-  addToQueue(song: Song): void {
-    this.pqs.add(song);
-  }
-
-  /** Remove an enqueued song. */
-  removeFromQueue(song: Song): void {
-    this.pqs.remove(song);
-  }
-
-  /** Check whether a song is enqueued */
-  isEnqueued(item: any): boolean {
-    return item != null && item['queued'];
-  }
-
   /** Save a song to or remove a song from the customer's library. */
   saveOrRemove(song: Song): void {
     this.libService.saveOrRemove(song);
@@ -95,14 +81,9 @@ export class SongTableComponent {
     return item != null && this.libService.isSaved(item);
   }
 
-  /** Open the album page for a song */
-  openAlbumPage(song: Song): void {
-    this.router.navigate(['/album', song.album.id]);
-  }
-
-  /** Open the artist page for a song */
-  openArtistPage(song: Song): void {
-    this.router.navigate(['/artist', song.album.artist.id]);
+  /** Open the songs context menu */
+  onContextMenu(event: MouseEvent, item: any): void {
+    this.menu.open(event, item);
   }
 
   get songs(): Array<Song> {

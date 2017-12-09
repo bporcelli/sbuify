@@ -1,0 +1,20 @@
+<context-menu>
+  <ng-template contextMenuItem (execute)="addToQueue($event.item)">
+    Add to Play Queue
+  </ng-template>
+  <ng-template contextMenuItem [divider]="true"></ng-template>
+  <ng-template contextMenuItem (execute)="openArtistPage($event.item)">
+    Go to Artist
+  </ng-template>
+  <ng-template contextMenuItem (execute)="openAlbumPage($event.item)">
+    Go to Album
+  </ng-template>
+  <ng-template contextMenuItem [divider]="true"></ng-template>
+  <ng-template contextMenuItem let-song (execute)="saveOrRemove($event.item)">
+    {{ isSaved(song) ? 'Remove from Library' : 'Save to Library' }}
+  </ng-template>
+  <ng-template contextMenuItem [divider]="true" [visible]="isEnqueued"></ng-template>
+  <ng-template contextMenuItem [visible]="isEnqueued" (execute)="removeFromQueue($event.item)">
+    Remove from Play Queue
+  </ng-template>
+</context-menu>

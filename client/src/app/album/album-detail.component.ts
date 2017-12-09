@@ -1,17 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Album } from "./album";
 import { PlayQueueService } from "../play-queue/play-queue.service";
 import { PlayerService } from "../playback/player.service";
-import {Song} from "../songs/song";
-import {Playable} from "app/playback/playable";
-import {Queueable} from "../play-queue/queueable";
-import {LibraryService} from "../library/library.service";
+import { Song} from "../songs/song";
+import { Playable } from "app/playback/playable";
+import { Queueable } from "../play-queue/queueable";
+import { LibraryService } from "../library/library.service";
+import { SongContextMenuComponent } from "../songs/song-context-menu.component";
 
 @Component({
   templateUrl: './album-detail.component.html'
 })
 export class AlbumDetailComponent implements OnInit {
+
+  @ViewChild(SongContextMenuComponent) menu: SongContextMenuComponent;
 
   /** Album being displayed */
   album: Album;
@@ -31,8 +34,9 @@ export class AlbumDetailComponent implements OnInit {
 
   /** Toggle playback of the album */
   togglePlayback(songIndex?: number): void {
-    if (!this.isCurrentPlaylist(this.album) || songIndex != null) {
-      songIndex = songIndex == null ? 0 : songIndex;
+    let target = songIndex == null ? this.album : this.album.songs[songIndex];
+
+    if (!this.isNowPlaying(target)) {
       this.playService.play(this.album, songIndex);
     } else {
       this.playService.toggle();
@@ -54,17 +58,12 @@ export class AlbumDetailComponent implements OnInit {
     this.queueService.add(queueable);
   }
 
-  /** Remove a song from the play queue */
-  removeFromQueue(song: Song): void {
-    this.queueService.remove(song);
-  }
-
   /** Determine whether the given album or song is playing */
   isPlaying(playable: Playable): boolean {
-    return this.isCurrentPlaylist(playable) && this.playService.playing.value;
+    return this.isNowPlaying(playable) && this.playService.playing.value;
   }
 
-  private isCurrentPlaylist(playable: Playable): boolean {
+  private isNowPlaying(playable: Playable): boolean {
     return this.playService.isPlaying(playable);
   }
 
@@ -73,9 +72,9 @@ export class AlbumDetailComponent implements OnInit {
     return this.libService.isSaved(queueable);
   }
 
-  /** Check whether a song is enqueued */
-  isEnqueued(item: any): boolean {
-    return item != null && item['queued'];
+  /** Open the song context menu */
+  onContextMenu(event: MouseEvent, item: any): void {
+    this.menu.open(event, item);
   }
 
   get songs(): Song[] {

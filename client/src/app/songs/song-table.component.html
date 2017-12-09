@@ -11,7 +11,7 @@
   </tr>
   </thead>
   <tbody *ngIf="songs.length > 0 || pending; else emptyTableTemplate">
-    <tr *ngFor="let song of songs; index as i" [ngClass]="{ 'now-playing': isPlaying(song) }" [contextMenu]="songMenu" [contextMenuSubject]="song">
+    <tr *ngFor="let song of songs; index as i" [ngClass]="{ 'now-playing': isPlaying(song) }" (contextmenu)="onContextMenu($event, song)">
       <td class="actions">
         <button type="button" class="btn btn-link play-button" title="Play" (click)="togglePlayback(i)">
           <i class="fa fa-lg fa-fw" [ngClass]="getPlayButtonClass(song)"></i>
@@ -39,23 +39,5 @@
   </ng-template>
 </table>
 
-<context-menu #songMenu>
-  <ng-template contextMenuItem (execute)="addToQueue($event.item)">
-    Add to Play Queue
-  </ng-template>
-  <ng-template contextMenuItem [divider]="true"></ng-template>
-  <ng-template contextMenuItem (execute)="openArtistPage($event.item)">
-    Go to Artist
-  </ng-template>
-  <ng-template contextMenuItem (execute)="openAlbumPage($event.item)">
-    Go to Album
-  </ng-template>
-  <ng-template contextMenuItem [divider]="true"></ng-template>
-  <ng-template contextMenuItem let-song (execute)="saveOrRemove($event.item)">
-    {{ isSaved(song) ? 'Remove from Library' : 'Save to Library' }}
-  </ng-template>
-  <ng-template contextMenuItem [divider]="true" [visible]="isEnqueued"></ng-template>
-  <ng-template contextMenuItem [visible]="isEnqueued" (execute)="removeFromQueue($event.item)">
-    Remove from Play Queue
-  </ng-template>
-</context-menu>
+<song-context-menu></song-context-menu>
+
