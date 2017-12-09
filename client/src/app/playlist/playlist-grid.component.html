@@ -1,0 +1,31 @@
+<div *ngIf="playlists.length > 0 || pending; else noResultsTemplate" class="row">
+  <div *ngFor="let playlist of playlists" class="col-sm-6 col-lg-4 col-xl-2 playlist"
+       [contextMenu]="playlistMenu"
+       [contextMenuSubject]="playlist">
+    <a class="playlist-image" [routerLink]="['/playlist', playlist.id]">
+      <img class="img-fluid" [src]="playlist.image | toImageSrc:'catalog'" alt="{{ playlist.name }}" width="500" height="500">
+      <div class="hover-actions" *ngIf="playlist.numSongs > 0">
+        <button type="button" class="btn btn-link" title="Play" (click)="togglePlayback($event, playlist)">
+          <i class="fa fa-3x fa-fw" [ngClass]="isPlaying(playlist) ? 'fa-pause-circle-o' : 'fa-play-circle-o'"></i>
+        </button>
+      </div>
+    </a>
+    <h3 class="h6">
+      <a [routerLink]="['/playlist', playlist.id]">{{ playlist.name }}</a>
+    </h3>
+    <p>{{ playlist.description | truncate:60 }}</p>
+  </div>
+</div>
+
+<ng-template #noResultsTemplate>
+  <p>No results found.</p>
+</ng-template>
+
+<context-menu #playlistMenu>
+  <ng-template contextMenuItem (execute)="openPlaylistPage($event.item)">
+    Go to Playlist
+  </ng-template>
+  <ng-template contextMenuItem let-playlist (execute)="followOrUnfollow($event.item)">
+    {{ isFollowed(playlist) ? 'Unfollow' : 'Follow' }}
+  </ng-template>
+</context-menu>

@@ -32,19 +32,7 @@
     </ngb-tab>
     <ngb-tab id="playlist" title="Playlists">
       <ng-template ngbTabContent>
-        <div *ngIf="results | async">
-          <div *ngIf="results.value.length > 0 || pending; else noResultsTemplate" class="row">
-            <div *ngFor="let playlist of results.value" class="col-sm-6 col-lg-4 col-xl-3 playlist">
-              <a class="playlist-image" href="#">
-                <img class="img-fluid" [src]="playlist.image | toImageSrc:'catalog'" alt="{{ playlist.name }}" width="500" height="500">
-              </a>
-              <h3 class="h6">
-                <a href="#">{{ playlist.name }}</a>
-              </h3>
-              <p>{{ playlist.description }}</p>
-            </div>
-          </div>
-        </div>
+        <div playlist-grid [playlists]="results | async" [pending]="pending"></div>
       </ng-template>
     </ngb-tab>
     <ngb-tab id="profile" title="Profiles">

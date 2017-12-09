@@ -5,12 +5,17 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MomentModule } from 'angular2-moment';
 import { ContextMenuModule } from 'ngx-contextmenu';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { TruncateModule } from 'ng2-truncate';
 import { PlaylistDetailComponent } from './playlist-detail.component';
 import { PlaylistDetailResolver } from './playlist-resolver.service';
 import { AuthGuard } from '../auth/auth-guard.service';
 import { PlaylistModalComponent } from "./playlist-modal.component";
 import { PlaylistFolderModalComponent } from "./playlist-folder-modal.component";
 import { PlaylistFolderComponent } from "./playlist-folder.component";
+import { SongsModule } from "../songs/songs.module";
+import { SharedModule } from "../shared/shared.module";
+import { PlaylistGridComponent } from "./playlist-grid.component";
 
 const routes: Routes = [
   {
@@ -30,16 +35,22 @@ const routes: Routes = [
     NgbModule,
     MomentModule,
     FormsModule,
-    ContextMenuModule
+    ContextMenuModule,
+    InfiniteScrollModule,
+    TruncateModule,
+    SongsModule,
+    SharedModule
   ],
   exports: [
-    PlaylistFolderComponent
+    PlaylistFolderComponent,
+    PlaylistGridComponent
   ],
   declarations: [
     PlaylistDetailComponent,
     PlaylistModalComponent,
     PlaylistFolderModalComponent,
-    PlaylistFolderComponent
+    PlaylistFolderComponent,
+    PlaylistGridComponent
   ],
   entryComponents: [
     PlaylistModalComponent,
