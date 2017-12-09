@@ -4,7 +4,6 @@ import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Followable;
 import com.cse308.sbuify.common.api.Decorable;
-import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -58,12 +57,6 @@ public class Artist extends CatalogItem implements Followable, Decorable, Clonea
 
     @Transient
     private Map<String, Object> properties = new HashMap<>();
-
-    /** Followers. */
-    @ManyToMany
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
-    @JsonIgnore
-    private Set<Customer> followers = new HashSet<>();
 
     public Artist() {
     }
@@ -133,21 +126,6 @@ public class Artist extends CatalogItem implements Followable, Decorable, Clonea
             this.aliases.clear();
             this.aliases.addAll(aliases);
         }
-    }
-
-    @Override
-    public void addFollower(Customer customer) {
-        this.followers.add(customer);
-    }
-
-    @Override
-    public void removeFollower(Customer customer) {
-        this.followers.remove(customer);
-    }
-
-    @Override
-    public Boolean isFollowedBy(Customer customer) {
-        return this.followers.contains(customer);
     }
 
     /**

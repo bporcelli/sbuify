@@ -5,19 +5,16 @@ import com.cse308.sbuify.playlist.PlaylistFolder;
 import com.cse308.sbuify.user.User;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * Represents a playlist saved in a customer's library.
+ * Represents a followed playlist. This includes playlists that are owned by a user.
  */
 @Entity
-@IdClass(SavedPlaylist.PK.class)
-public class SavedPlaylist implements Serializable {
+@IdClass(FollowedPlaylist.PK.class)
+public class FollowedPlaylist implements Serializable {
 
     @Id
     @ManyToOne(targetEntity = Customer.class)
@@ -26,30 +23,20 @@ public class SavedPlaylist implements Serializable {
 
     @Id
     @ManyToOne
-    @JsonUnwrapped
     @NotNull
+    @JsonUnwrapped
     private Playlist playlist;
 
-    /** Sort position. */
     private Integer position = null;  // playlists with position null will be displayed last
 
-    /** Parent folder, if any. */
     @ManyToOne
     private PlaylistFolder parent;
 
-    public SavedPlaylist() {
+    public FollowedPlaylist() {
     }
 
-    public SavedPlaylist(@NotNull Customer customer, @NotNull Playlist playlist) {
+    public FollowedPlaylist(User customer, Playlist playlist) {
         this.customer = customer;
-        this.playlist = playlist;
-    }
-
-    public @NotNull Playlist getPlaylist() {
-        return playlist;
-    }
-
-    public void setPlaylist(@NotNull Playlist playlist) {
         this.playlist = playlist;
     }
 
@@ -69,7 +56,23 @@ public class SavedPlaylist implements Serializable {
         this.parent = parent;
     }
 
-    /** Composite primary key for SavedPlaylist */
+    public User getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(User customer) {
+        this.customer = customer;
+    }
+
+    public Playlist getPlaylist() {
+        return playlist;
+    }
+
+    public void setPlaylist(Playlist playlist) {
+        this.playlist = playlist;
+    }
+
+    /** Primary key */
     public static class PK implements Serializable {
         private Integer customer;
         private Integer playlist;

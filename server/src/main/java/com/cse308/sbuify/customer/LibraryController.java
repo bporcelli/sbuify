@@ -6,10 +6,7 @@ import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.common.TypedCollection;
 import com.cse308.sbuify.common.api.DecorateResponse;
-import com.cse308.sbuify.playlist.Playlist;
-import com.cse308.sbuify.playlist.PlaylistRepository;
-import com.cse308.sbuify.playlist.PlaylistSong;
-import com.cse308.sbuify.playlist.PlaylistSongRepository;
+import com.cse308.sbuify.playlist.*;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.song.SongRepository;
@@ -23,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,11 +27,7 @@ import java.util.Optional;
 @RequestMapping(path = "/api/customer/library")
 public class LibraryController {
 
-    // todo: avoid grabbing entire library at once; should attempt to add song twice really be a 400?
-    private static final Integer ITEMS_PER_PAGE = 25;  // todo: make configurable
-
-    @Autowired
-    private PlaylistRepository playlistRepo;
+    private final Integer ITEMS_PER_PAGE;
 
     @Autowired
     private SongRepository songRepo;
@@ -51,6 +43,11 @@ public class LibraryController {
 
     @Autowired
     private PlaylistSongRepository playlistSongRepo;
+
+    @Autowired
+    public LibraryController(PlaylistProperties properties) {
+        ITEMS_PER_PAGE = properties.getSongsPerPage();
+    }
 
     /**
      * Get the songs in the customer's library.
@@ -87,16 +84,17 @@ public class LibraryController {
         if (!optionalSong.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Song song = optionalSong.get();
 
-        Playlist lib = customer.getLibrary();
-        // song already in customer library
-        if(containsSong(lib.getSongs(), id)){
+        Song song = optionalSong.get();
+        Playlist library = customer.getLibrary();
+
+        if (playlistSongRepo.existsByPlaylistAndSong(library, song)) {  // song is already saved
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        PlaylistSong saved = lib.add(song);
 
-        playlistRepo.save(lib);
+        PlaylistSong saved = new PlaylistSong(library, song);
+        saved = playlistSongRepo.save(saved);
+
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
@@ -106,6 +104,7 @@ public class LibraryController {
      * @return an empty 200 response on success, otherwise a 404.
      */
     @DeleteMapping(path = "/songs/{id}")
+    @Transactional
     public ResponseEntity<?> removeSong(@PathVariable Integer id) {
         Customer customer = getCurrentCustomer();
         Playlist library = customer.getLibrary();
@@ -116,13 +115,12 @@ public class LibraryController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        PlaylistSong deleted = library.remove(optionalSong.get());
+        Song song = optionalSong.get();
 
-        if (deleted == null) {  // song wasn't in library
+        if (!playlistSongRepo.existsByPlaylistAndSong(library, song)) {  // song wasn't in library
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        playlistRepo.save(library);
+        playlistSongRepo.deleteByPlaylistAndSong(library, song);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -184,15 +182,9 @@ public class LibraryController {
         }
 
         Customer customer = getCurrentCustomer();
-        Playlist customerLibrary = customer.getLibrary();
-//        Collection<Song> albumSongs = album.getSongs();
 
-//        playlistSongRepo.removeAlbumFromPlaylist(customerLibrary.getId(), album.getId());
-        playlistSongRepo.deleteAllByPlaylistAndSong_Album(customerLibrary, album);
-//        for (Song song: albumSongs) {
-//            customerLibrary.remove(song);
-//        }
-        playlistRepo.save(customerLibrary);
+        playlistSongRepo.deleteAllByPlaylistAndSong_Album(customer.getLibrary(), album);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -213,10 +205,6 @@ public class LibraryController {
             artists.add(artist);
         }
         return new TypedCollection(artists, Artist.class);
-    }
-
-    protected static boolean containsSong(List<PlaylistSong> list, Integer songId){
-        return list.stream().anyMatch(object -> ((Song) object.getSong()).getId().equals(songId));
     }
 
     private Album getAlbumById(Integer Id){

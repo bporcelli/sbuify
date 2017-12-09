@@ -1,7 +1,9 @@
 package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.album.Album;
+import com.cse308.sbuify.song.Song;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -34,4 +36,11 @@ public interface PlaylistSongRepository extends CrudRepository<PlaylistSong, Int
     void deleteAllByPlaylistAndSong_Album_Artist_Id(Playlist playlist, Integer artistId);
 
     Integer countAllByPlaylist(Playlist playlist);
+
+    Page<PlaylistSong> findAllByPlaylist_Id(Integer playlistId, Pageable pageable);
+
+    boolean existsByPlaylistAndSong(Playlist playlist, Song song);
+
+    @Modifying
+    void deleteByPlaylistAndSong(Playlist playlist, Song song);
 }

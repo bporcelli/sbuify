@@ -5,11 +5,14 @@ import { Customer } from "../user/customer";
 import { Playable } from "../playback/playable";
 import { Song } from "../songs/song";
 import { Base64Image } from "../shared/base64-image";
+import { SongList } from "../songs/song-list";
 
 /**
  * Playlist model.
  */
-export class Playlist extends CatalogItem implements Playable {
+export class Playlist extends CatalogItem implements Playable, SongList {
+  public type: string = 'playlist';
+
   constructor(
     public id: number,
     public name: string,
@@ -19,13 +22,11 @@ export class Playlist extends CatalogItem implements Playable {
     public owner: Customer,
     public description: string,
     public hidden: boolean,
-    private _songs: Array<PlaylistSong>  // todo: will this be an issue when decoding playlists?
+    public length: number,
+    public numSongs: number,
+    private _songs: Array<PlaylistSong>
   ) {
     super(id, name, createdDate, active, image, owner);
-  }
-
-  get length(): number {
-    return this.songs.map(song => song.length).reduce((acc, curVal) => acc + curVal);
   }
 
   get songs(): Array<Song> {

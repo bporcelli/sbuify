@@ -1,12 +1,12 @@
 <div class="row" *ngIf="albums.length > 0 || pending; else noResults">
   <div *ngFor="let album of albums" class="col-sm-6 col-lg-4 col-xl-2 playlist" [contextMenu]="albumMenu" [contextMenuSubject]="album">
-    <a class="playlist-image" href="#">
-      <img class="img-fluid" src="/static/i/{{ album.image ? album.image.id : 1 }}/catalog" alt="{{ album.name }}" width="500" height="500">
+    <a class="playlist-image" [routerLink]="['/album', album.id]">
+      <img class="img-fluid" [src]="album.image | toImageSrc:'catalog'" alt="{{ album.name }}" width="500" height="500">
       <div class="hover-actions">
         <button type="button" class="btn btn-link"
                 [title]="isSaved(album) ? 'Remove' : 'Save'"
                 [ngClass]="isSaved(album) ? 'remove-song' : 'add-song'"
-                (click)="$event.preventDefault(); saveOrRemove(album)">
+                (click)="$event.preventDefault(); $event.stopPropagation(); saveOrRemove(album)">
           <i class="fa fa-3x fa-fw" [ngClass]="isSaved(album) ? 'fa-check' : 'fa-plus'"></i>
         </button>
         <button type="button" class="btn btn-link" title="Play" (click)="toggleAlbumPlayback($event, album)">
@@ -15,7 +15,7 @@
       </div>
     </a>
     <h3 class="h6">
-        <a href="#" title="{{ album.name }}">{{ album.name | truncate:25 }}</a>
+        <a [routerLink]="['/album', album.id]" title="{{ album.name }}">{{ album.name | truncate:25 }}</a>
     </h3>
     <span class="text-muted">{{ album.releaseDate | date:"y" }}</span>
   </div>

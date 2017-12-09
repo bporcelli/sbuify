@@ -1,7 +1,7 @@
 <div class="navbar fixed-bottom navbar-dark bg-dark" id="play-bar">
   <div id="now-playing" *ngIf="song != null">
     <a class="navbar-brand"> <!-- todo: get thumbnail size image instead -->
-      <img width="55" height="55" src="/static/i/{{ song.image ? song.image.id : 1 }}/catalog" alt="{{ song.album.name }}" title="{{ song.album.name }}">
+      <img width="55" height="55" [src]="song.image | toImageSrc:'catalog'" alt="{{ song.album.name }}" title="{{ song.album.name }}">
     </a>
     <ul class="song-details">
       <li class="song-title">

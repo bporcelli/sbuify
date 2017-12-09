@@ -1,17 +1,18 @@
 package com.cse308.sbuify.album;
 
 import com.cse308.sbuify.common.TypedCollection;
+import com.cse308.sbuify.common.api.DecorateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/api/albums")
@@ -41,5 +42,22 @@ public class AlbumController {
             albums.add(album);
         }
         return new TypedCollection(albums, Album.class);
+    }
+
+    /**
+     * Get information about an album.
+     * @param id Album ID.
+     * @return a 200 response containing the album with the given ID, otherwise a 404 if the album ID
+     *         is invalid.
+     */
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @DecorateResponse(type = Album.class)
+    public @ResponseBody ResponseEntity<?> getAlbum(@PathVariable Integer id) {
+        Optional<Album> optionalAlbum = albumRepo.findById(id);
+        if (!optionalAlbum.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(optionalAlbum.get(), HttpStatus.OK);
     }
 }

@@ -1,14 +1,16 @@
 package com.cse308.sbuify.playlist;
 
 import com.cse308.sbuify.common.Queueable;
-import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.customer.SavedPlaylist;
-import com.cse308.sbuify.customer.SavedPlaylistRepository;
+import com.cse308.sbuify.common.TypedCollection;
+import com.cse308.sbuify.common.api.DecorateResponse;
+import com.cse308.sbuify.customer.*;
 import com.cse308.sbuify.image.*;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.security.SecurityUtils;
 import com.cse308.sbuify.song.Song;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,9 +18,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(path = "/api/playlists")
@@ -28,7 +32,7 @@ public class PlaylistController {
     private PlaylistRepository playlistRepository;
 
     @Autowired
-    private SavedPlaylistRepository savedPlaylistRepo;
+    private FollowedPlaylistRepository followedPlaylistRepo;
 
     @Autowired
     private AuthFacade authFacade;
@@ -39,11 +43,17 @@ public class PlaylistController {
     @Autowired
     private PlaylistFolderRepository folderRepository;
 
+    @Autowired
+    private PlaylistSongRepository playlistSongRepo;
+
     private final Integer MAX_SONGS;
+
+    private final Integer SONGS_PER_PAGE;
 
     @Autowired
     public PlaylistController(PlaylistProperties playlistProperties) {
         MAX_SONGS = playlistProperties.getMaxSongs();
+        SONGS_PER_PAGE = playlistProperties.getSongsPerPage();
     }
 
     /**
@@ -75,17 +85,17 @@ public class PlaylistController {
         Playlist saved = playlistRepository.save(playlist);
 
         // save the playlist in the user's library
-        SavedPlaylist savedPlaylist = new SavedPlaylist(customer, saved);
+        FollowedPlaylist followedPlaylist = new FollowedPlaylist(customer, saved);
 
         if (folderId != null) {
             Optional<PlaylistFolder> optionalFolder = folderRepository.findById(folderId);
             if (!optionalFolder.isPresent()) {
                 return new ResponseEntity<>("Invalid folder ID.", HttpStatus.BAD_REQUEST);
             }
-            savedPlaylist.setParent(optionalFolder.get());
+            followedPlaylist.setParent(optionalFolder.get());
         }
 
-        savedPlaylistRepo.save(savedPlaylist);
+        followedPlaylistRepo.save(followedPlaylist);
 
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -97,6 +107,7 @@ public class PlaylistController {
      */
     @GetMapping(path = "/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    @DecorateResponse(type = Playlist.class)
     public ResponseEntity<?> getPlaylistById(@PathVariable Integer id) {
         Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
 
@@ -111,6 +122,31 @@ public class PlaylistController {
 
         // if we reach this point, the user can access the playlist
         return new ResponseEntity<>(playlist, HttpStatus.OK);
+    }
+
+    /**
+     * Get the songs in a playlist.
+     * @param id Playlist ID.
+     * @param page Page index.
+     * @return a 200 response containing a list of PlaylistSong objects on success.
+     */
+    @GetMapping(path = "/{id}/songs")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    @DecorateResponse(type = TypedCollection.class)
+    public ResponseEntity<?> getPlaylistSongs(@PathVariable Integer id, @RequestParam(defaultValue = "0") Integer page) {
+        Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
+
+        if (!optionalPlaylist.isPresent()) { // playlist not found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Page<PlaylistSong> songs = playlistSongRepo.findAllByPlaylist_Id(id, PageRequest.of(page, SONGS_PER_PAGE));
+        List<PlaylistSong> songList = new ArrayList<>();
+
+        for (PlaylistSong song: songs) {
+            songList.add(song);
+        }
+        return new ResponseEntity<>(new TypedCollection(songList, PlaylistSong.class), HttpStatus.OK);
     }
 
     /**
@@ -188,7 +224,7 @@ public class PlaylistController {
         }
 
         // todo: delete playlist
-        savedPlaylistRepo.deleteAllByPlaylist(playlist);
+        followedPlaylistRepo.deleteAllByPlaylist(playlist);
         playlistRepository.deleteById(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -216,16 +252,18 @@ public class PlaylistController {
         }
 
         Collection<Song> newSongs = toAdd.getItems();
-        List<PlaylistSong> existingSongs = playlist.getSongs();
 
-        if (existingSongs.size() + newSongs.size() > MAX_SONGS) {
+        int numSongs = playlistSongRepo.countAllByPlaylist(playlist);
+
+        if (numSongs + newSongs.size() > MAX_SONGS) {
             return new ResponseEntity<>("Maximum playlist size exceeded.", HttpStatus.BAD_REQUEST);
         }
 
-        for (Song song: newSongs) {
-            playlist.add(song);
-        }
-        playlistRepository.save(playlist);
+        List<PlaylistSong> newSongsList = newSongs.stream()
+                .map(song -> new PlaylistSong(playlist, song))
+                .collect(Collectors.toList());
+
+        playlistSongRepo.saveAll(newSongsList);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -237,6 +275,7 @@ public class PlaylistController {
      *         provided song list is invalid, or a 403 otherwise.
      */
     @PostMapping(path = "/{id}/remove")
+    @Transactional
     public ResponseEntity<?> removeFromPlaylist(@PathVariable Integer id, @RequestBody Queueable toDelete) {
         Optional<Playlist> optionalPlaylist = playlistRepository.findById(id);
 
@@ -246,20 +285,19 @@ public class PlaylistController {
         Playlist playlist = optionalPlaylist.get();
 
         Collection<Song> songs = toDelete.getItems();
-        List<PlaylistSong> existingSongs = playlist.getSongs();
 
-        if (existingSongs.size() - songs.size() < 0) {
+        int numSongs = playlistSongRepo.countAllByPlaylist(playlist);
+
+        if (numSongs - songs.size() < 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         if (!SecurityUtils.userCanEdit(playlist)) {  // can't edit playlist
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         for (Song song: songs) {
-            playlist.remove(song);
+            playlistSongRepo.deleteByPlaylistAndSong(playlist, song);
         }
-        playlistRepository.save(playlist);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

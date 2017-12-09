@@ -8,6 +8,7 @@ import { SharedModule } from "../shared/shared.module";
 import { SongsModule } from "../songs/songs.module";
 import { AlbumModule } from "../album/album.module";
 import { ArtistModule } from "../artist/artist.module";
+import { PlaylistModule } from "../playlist/playlist.module";
 
 @NgModule({
   imports: [
@@ -18,7 +19,8 @@ import { ArtistModule } from "../artist/artist.module";
     InfiniteScrollModule,
     SongsModule,
     AlbumModule,
-    ArtistModule
+    ArtistModule,
+    PlaylistModule
   ],
   declarations: [
     SearchComponent

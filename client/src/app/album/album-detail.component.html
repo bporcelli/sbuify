@@ -1,0 +1,86 @@
+<section id="playlist-heading">
+  <div class="row">
+    <div class="col-3">
+      <img [src]="album.image | toImageSrc:'catalog'" class="playlist-image img-fluid" title="{{ album.name }}" alt="{{ album.name }}">
+    </div>
+    <div class="col-9 content-wrapper">
+      <h1 class="display-4 page-heading">{{ album.name }}</h1>
+      <p>By <a [routerLink]="['/artist', album.artist.id]">{{ album.artist.name }}</a>. {{ album.numSongs }} songs, {{ album.length | amDuration:'milliseconds' }}.</p>
+      <ul class="nav button-list">
+        <li class="nav-item">
+          <button type="button" class="btn btn-wide btn-primary play-playlist" title="Play Album" [disabled]="album.numSongs == 0" (click)="togglePlayback()">
+            {{ isPlaying(album) ? 'Pause' : 'Play' }}
+          </button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="btn btn-outline-secondary unfollow-playlist" title="{{ isSaved(album) ? 'Remove' : 'Save' }}" (click)="toggleSaved(album)">
+            {{ isSaved(album) ? 'Remove' : 'Save' }}
+          </button>
+        </li>
+        <li ngbDropdown class="nav-item">
+          <button type="button" class="btn btn-outline-secondary no-arrow" id="more_menu_button" title="More" ngbDropdownToggle>
+            <i class="fa fa-lg fa-ellipsis-h"></i>
+            <span class="sr-only">More</span>
+          </button>
+          <div ngbDropdownMenu aria-labelledby="more_menu_button">
+            <a class="dropdown-item" (click)="openArtistPage()">Go to Artist</a>
+            <a class="dropdown-item" (click)="addToQueue(album)">Add to Queue</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<table class="table table-hover mt-4" id="songs_table">
+  <thead class="thead-inverse">
+  <tr>
+    <th></th>
+    <th>#</th>
+    <th>Title</th>
+    <th>
+      <i class="fa fa-lg fa-clock-o" title="Duration"></i>
+    </th>
+  </tr>
+  </thead>
+  <tbody *ngIf="songs.length > 0; else emptyTableTemplate">
+    <tr *ngFor="let song of songs; index as i" [ngClass]="{ 'now-playing': isCurrentPlaylist(song) }" [contextMenu]="songMenu" [contextMenuSubject]="song">
+      <td class="actions">
+        <button type="button" class="btn btn-link play-button" title="Play" (click)="togglePlayback(i)">
+          <i class="fa fa-lg fa-fw" [ngClass]="isPlaying(song) ? 'fa-pause-circle-o' : 'fa-play-circle-o'"></i>
+        </button>
+        <button type="button" class="btn btn-link" [title]="isSaved(song) ? 'Remove' : 'Save'" [ngClass]="isSaved(song) ? 'remove-song' : 'add-song'" (click)="toggleSaved(song)">
+          <i class="fa fa-lg fa-fw" [ngClass]="isSaved(song) ? 'fa-check' : 'fa-plus'"></i>
+        </button>
+      </td>
+      <td>{{ song.trackNumber }}</td>
+      <td>{{ song.name }}</td>
+      <td>
+        {{ song.length | formatDuration }}
+      </td>
+    </tr>
+  </tbody>
+  <ng-template #emptyTableTemplate>
+    <tr>
+      <td colspan="4">Nothing to see here...</td>
+    </tr>
+  </ng-template>
+</table>
+
+<context-menu #songMenu>
+  <ng-template contextMenuItem (execute)="addToQueue($event.item)">
+    Add to Play Queue
+  </ng-template>
+  <ng-template contextMenuItem [divider]="true"></ng-template>
+  <ng-template contextMenuItem (execute)="openArtistPage()">
+    Go to Artist
+  </ng-template>
+  <ng-template contextMenuItem [divider]="true"></ng-template>
+  <ng-template contextMenuItem let-song (execute)="toggleSaved($event.item)">
+    {{ isSaved(song) ? 'Remove from Library' : 'Save to Library' }}
+  </ng-template>
+  <ng-template contextMenuItem [divider]="true" [visible]="isEnqueued"></ng-template>
+  <ng-template contextMenuItem [visible]="isEnqueued" (execute)="removeFromQueue($event.item)">
+    Remove from Play Queue
+  </ng-template>
+</context-menu>

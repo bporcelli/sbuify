@@ -1,6 +1,5 @@
 package com.cse308.sbuify.customer;
 
-import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.Followable;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.playlist.Playlist;
@@ -9,10 +8,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 
 @Entity
 public class Customer extends User implements Followable {
@@ -53,30 +57,6 @@ public class Customer extends User implements Followable {
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Image profileImage;
 
-	/** Customers that follow this customer. */
-	@ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "follower_id"))
-    @JsonIgnore
-	private Set<Customer> followers = new HashSet<>();
-
-	/** Playlists followed by this customer. */
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "playlist_id"))
-    @JsonIgnore
-    private Set<Playlist> playlists = new HashSet<>();
-
-	/** Customers followed by this customer. */
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "friend_id"))
-    @JsonIgnore
-    private Set<Customer> friends = new HashSet<>();
-
-    /** Artists followed by this customer. */
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "artist_id"))
-    @JsonIgnore
-    private Set<Artist> artists = new HashSet<>();
-
 	public Customer() {
 	}
 
@@ -95,75 +75,6 @@ public class Customer extends User implements Followable {
 		this.setLibrary(new Playlist(getName(), this, null, true));
 		this.setPlayQueue(new PlayQueue());
 	}
-
-    /**
-     * Followable methods.
-     */
-    @Override
-    public void addFollower(Customer customer) {
-        this.followers.add(customer);
-    }
-
-    @Override
-    public void removeFollower(Customer customer) {
-        this.followers.remove(customer);
-    }
-
-    @Override
-    public Boolean isFollowedBy(Customer customer) {
-        return this.followers.contains(customer);
-    }
-
-    /**
-     * Does the customer follow the given followable?
-     *
-     * @param followable
-     * @return boolean indicating whether the customer follows the followable.
-     */
-    public Boolean isFollowing(Followable followable) {
-        if (followable instanceof Playlist) {
-            return this.playlists.contains(followable);
-        } else if (followable instanceof Customer) {
-            return this.friends.contains(followable);
-        } else if (followable instanceof Artist) {
-            return this.artists.contains(followable);
-        }
-        return false;
-    }
-
-    /**
-     * Follow a playlist or customer.
-     *
-     * @param followable
-     */
-    public void follow(Followable followable) {
-        followable.addFollower(this);
-
-        if (followable instanceof Customer) {
-            this.friends.add((Customer) followable);
-        } else if (followable instanceof Playlist) {
-            this.playlists.add((Playlist) followable);
-        } else if (followable instanceof Artist) {
-        	this.artists.add((Artist) followable);
-		}
-    }
-
-    /**
-     * Unfollow a playlist or customer.
-     *
-     * @param followable
-     */
-    public void unfollow(Followable followable) {
-        followable.removeFollower(this);
-
-        if (followable instanceof Customer) {
-            this.friends.remove(followable);
-        } else if (followable instanceof Playlist) {
-            this.playlists.remove(followable);
-        } else if (followable instanceof Artist) {
-            this.artists.remove(followable);
-        }
-    }
 
     /**
 	 * Getters and setters.
@@ -239,20 +150,4 @@ public class Customer extends User implements Followable {
 	public boolean isPremium() {
 		return subscription != null;
 	}
-
-    public Set<Customer> getFollowers() {
-        return followers;
-    }
-
-    public Set<Playlist> getPlaylists() {
-        return playlists;
-    }
-
-    public Set<Customer> getFriends() {
-        return friends;
-    }
-
-    public Set<Artist> getArtists() {
-        return artists;
-    }
 }

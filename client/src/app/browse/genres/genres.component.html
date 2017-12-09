@@ -3,7 +3,7 @@
 <div class="row">
   <div *ngFor="let genre of genres" class="col-sm-6 col-lg-4 col-xl-2 genre">
     <a [routerLink]="['/browse/genres', genre.id]">
-      <img class="img-fluid" src="/static/i/{{ genre.image.id }}/catalog" alt="{{ genre.name }}">
+      <img class="img-fluid" [src]="genre.image | toImageSrc:'catalog'" alt="{{ genre.name }}">
       <span>{{ genre.name }}</span>
     </a>
   </div>
