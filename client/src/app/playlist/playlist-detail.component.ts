@@ -139,6 +139,12 @@ export class PlaylistDetailComponent implements OnInit {
     this.playlistService.followOrUnfollow(this.playlist);
   }
 
+  /** Handle song removal */
+  onSongRemoved(song: Song): void {
+    this.unfiltered = this.unfiltered.filter(item => item.id != song.id);
+    this.onFilterChange();
+  }
+
   private nextPage() {
     if (this.pending) {  // already waiting for next page
       return;

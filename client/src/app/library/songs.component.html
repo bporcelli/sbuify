@@ -13,7 +13,7 @@
      [infiniteScrollContainer]="'main'"
      [fromRoot]="true"
      (scrolled)="nextPage()">
-  <div song-table [playlist]="songs" [pending]="pending"></div>
+  <div song-table [songList]="songs" [pending]="pending" (onRemoved)="onSongRemoved($event)"></div>
   <div class="results-spinner mt-3" [hidden]="!pending">
     <i class="fa fa-spinner fa-spin"></i>
     <span>Loading...</span>

@@ -17,7 +17,7 @@
   <ngb-tabset (tabChange)="onTabChange($event)">
     <ngb-tab id="song" title="Songs">
       <ng-template ngbTabContent>
-        <div song-table [playlist]="results | async | toSongList" [pending]="pending"></div>
+        <div song-table [songList]="results | async | toSongList" [pending]="pending"></div>
       </ng-template>
     </ngb-tab>
     <ngb-tab id="album" title="Albums">

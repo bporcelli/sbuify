@@ -2,11 +2,22 @@
   <ng-template contextMenuItem (execute)="addToQueue($event.item)">
     Add to Play Queue
   </ng-template>
+  <ng-template contextMenuItem [subMenu]="playlistSubMenu" [visible]="!isPlaylist">
+    Add to...
+  </ng-template>
+  <context-menu #playlistSubMenu>
+    <ng-template *ngFor="let playlist of userOwnedPlaylists" contextMenuItem (execute)="addToPlaylist($event.item, playlist)">
+      {{ playlist.name }}
+    </ng-template>
+  </context-menu>
+  <ng-template contextMenuItem [visible]="isUserOwnedPlaylist" (execute)="removeFromPlaylist($event.item)">
+    Remove from Playlist
+  </ng-template>
   <ng-template contextMenuItem [divider]="true"></ng-template>
   <ng-template contextMenuItem (execute)="openArtistPage($event.item)">
     Go to Artist
   </ng-template>
-  <ng-template contextMenuItem (execute)="openAlbumPage($event.item)">
+  <ng-template contextMenuItem (execute)="openAlbumPage($event.item)" [visible]="!album">
     Go to Album
   </ng-template>
   <ng-template contextMenuItem [divider]="true"></ng-template>

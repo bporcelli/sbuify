@@ -3,19 +3,19 @@
 <ng-container *ngIf="current | async as current; else playQueueEmpty">
   <div class="queue-section">
     <h2 class="h4">Now Playing</h2>
-    <div song-table [playlist]="current"></div>
+    <div song-table [songList]="current"></div>
   </div>
 
   <ng-container *ngIf="queued | async as queued">
     <div class="queue-section" *ngIf="queued.songs.length > 0">
       <h2 class="h4">Queued</h2>
-      <div song-table [playlist]="queued"></div>
+      <div song-table [songList]="queued"></div>
     </div>
   </ng-container>
 
   <div class="queue-section" *ngIf="hasNext()">
     <h2 class="h4">Up Next</h2>
-    <div song-table [playlist]="playlist" [offset]="songIndex + 1"></div>
+    <div song-table [songList]="playlist" [offset]="songIndex + 1"></div>
   </div>
 </ng-container>
 

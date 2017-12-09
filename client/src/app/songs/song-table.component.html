@@ -39,5 +39,5 @@
   </ng-template>
 </table>
 
-<song-context-menu></song-context-menu>
+<song-context-menu [playlist]="playlist" (onRemoved)="onSongRemoved($event)"></song-context-menu>
 

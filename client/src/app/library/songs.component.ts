@@ -68,6 +68,12 @@ export class SongsComponent implements OnInit {
     return this.isPlaylist() && this.playService.playing.value;
   }
 
+  /** Handle song removal */
+  onSongRemoved(song: Song): void {
+    this.unfiltered = this.unfiltered.filter(item => item.id != song.id);
+    this.onFilterChange();
+  }
+
   private isPlaylist(): boolean {
     return this.playService.isPlaying(this.songList);
   }

@@ -16,11 +16,11 @@ export class LibraryService {
   constructor(private client: APIClient) {}
 
   /** Save or remove a song from the authenticated customer's library. */
-  saveOrRemove(queueable: Queueable) {
+  saveOrRemove(queueable: Queueable): Observable<boolean> {
     if (this.isSaved(queueable)) {
-      this.remove(queueable);
+      return this.remove(queueable);
     } else {
-      this.save(queueable);
+      return this.save(queueable);
     }
   }
 
@@ -47,24 +47,26 @@ export class LibraryService {
     }
   }
 
-  private remove(queueable: Queueable) {
+  private remove(queueable: Queueable): Observable<boolean> {
     let endpoint = this.getEndpoint(queueable);
 
-    this.client.delete(endpoint)
-      .subscribe(
-        (resp: any) => this.setSaved(queueable, false),
-        (err: any) => this.handleError('remove', err)
-      );
+    return this.client.delete(endpoint)
+      .catch(this.handleError)
+      .map(() => {
+        this.setSaved(queueable, false);
+        return false;
+      });
   }
 
-  private save(queueable: Queueable) {
+  private save(queueable: Queueable): Observable<boolean> {
     let endpoint = this.getEndpoint(queueable);
 
-    this.client.post(endpoint, null)
-      .subscribe(
-        (resp: any) => this.setSaved(queueable),
-        (err: any) => this.handleError('save', err)
-      );
+    return this.client.post(endpoint, null)
+      .catch(this.handleError)
+      .map(() => {
+        this.setSaved(queueable);
+        return true;
+      });
   }
 
   private setSaved(queueable: Queueable, saved: boolean = true) {
@@ -95,9 +97,10 @@ export class LibraryService {
     return queueable['type'] + queueable['id'];
   }
 
-  private handleError(action: string, err: any) {
+  private handleError(err: any, caught: Observable<any>): Observable<any> {
     // todo: display error message
-    console.log(action, 'failed. error was:', err);
+    console.log('failed to save or remove queueable. error was:', err);
+    return Observable.throw(err);
   }
 
   getSongs(page: number): Observable<PlaylistSong[]> {

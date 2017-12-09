@@ -50,7 +50,7 @@ export class AlbumDetailComponent implements OnInit {
 
   /** Save or remove the album from the user's library */
   toggleSaved(queueable: Queueable): void {
-    this.libService.saveOrRemove(queueable);
+    this.libService.saveOrRemove(queueable).subscribe();
   }
 
   /** Add an album or song to the play queue */

@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { Song } from "./song";
 import { PlayerService } from "../playback/player.service";
 import { Playable } from "../playback/playable";
@@ -7,6 +7,7 @@ import { PlayQueue } from "../play-queue/play-queue";
 import { SongList } from "./song-list";
 import { SongContextMenuComponent } from "./song-context-menu.component";
 import { LibraryService } from "../library/library.service";
+import { Playlist } from "../playlist/playlist";
 
 @Component({
   selector: '[song-table]',
@@ -16,14 +17,20 @@ export class SongTableComponent {
 
   @ViewChild(SongContextMenuComponent) menu: SongContextMenuComponent;
 
-  /** Playlist to display */
-  @Input() playlist: Playable = null;
+  /** Playlist if the table is being displayed on a playlist page */
+  @Input() playlist: Playlist = null;
+
+  /** Songs to display */
+  @Input() songList: Playable = null;
 
   /** Offset to first song */
   @Input() offset: number = 0;
 
   /** Boolean flag to indicate whether the songs for the table are loading */
   @Input() pending: boolean;
+
+  /** Event emitted to parent components when a song is removed */
+  @Output() onRemoved: EventEmitter<any> = new EventEmitter();
 
   constructor(
     private ps: PlayerService,
@@ -59,21 +66,26 @@ export class SongTableComponent {
   togglePlayback(index: number): void {
     index += this.offset;
 
-    let song = this.playlist.songs[index];
+    let song = this.songList.songs[index];
 
     if (this.isPlaying(song)) {  // song is current song
       this.ps.toggle();
-    } else if (this.playlist instanceof PlayQueue) {  // song is being played in queue
+    } else if (this.songList instanceof PlayQueue) {  // song is being played in queue
       this.pqs.skip(index);
       this.ps.play(new SongList([song]));
     } else {
-      this.ps.play(this.playlist, index);
+      this.ps.play(this.songList, index);
     }
   }
 
   /** Save a song to or remove a song from the customer's library. */
   saveOrRemove(song: Song): void {
-    this.libService.saveOrRemove(song);
+    this.libService.saveOrRemove(song)
+      .subscribe((saved: boolean) => {
+        if (!saved) {
+          this.onRemoved.emit(song);
+        }
+      });
   }
 
   /** Check whether a song is saved */
@@ -86,7 +98,12 @@ export class SongTableComponent {
     this.menu.open(event, item);
   }
 
+  /** Remove a song from the table if required */
+  onSongRemoved(song: Song): void {
+    this.onRemoved.emit(song);
+  }
+
   get songs(): Array<Song> {
-    return this.playlist.songs.slice(this.offset);
+    return this.songList.songs.slice(this.offset);
   }
 }

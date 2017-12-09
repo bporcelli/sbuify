@@ -29,6 +29,14 @@
   <ng-template contextMenuItem (execute)="enqueue($event.item)">
     Add to Play Queue
   </ng-template>
+  <ng-template contextMenuItem [subMenu]="playlistSubmenu">
+    Add to...
+  </ng-template>
+  <context-menu #playlistSubmenu>
+    <ng-template *ngFor="let playlist of userOwnedPlaylists" contextMenuItem (execute)="addToPlaylist($event.item, playlist)">
+      {{ playlist.name }}
+    </ng-template>
+  </context-menu>
   <ng-template contextMenuItem divider="true"></ng-template>
   <ng-template contextMenuItem (execute)="openArtistPage($event.item)">
     Go to Artist

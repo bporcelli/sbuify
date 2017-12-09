@@ -7,9 +7,16 @@ import { APIClient } from "../shared/api-client.service";
 import { PlaylistSong } from "./playlist-song";
 import { Playlist } from "./playlist";
 import { FollowingService } from "../user/following.service";
+import { User } from "../user/user";
+import { UserService } from "../user/user.service";
+import { Song } from "../songs/song";
+import { Queueable } from "../play-queue/queueable";
 
 @Injectable()
 export class PlaylistService {
+
+  /** Current user */
+  private user: User = null;
 
   /** Flattened map of playlists */
   private playlists: object = {};
@@ -21,13 +28,17 @@ export class PlaylistService {
 
   constructor(
     private client: APIClient,
-    private followingService: FollowingService
+    private followingService: FollowingService,
+    private userService: UserService
   ) {
     this.client.get<any[]>('/api/customer/playlists')
       .subscribe(
         (resp: any[]) => this.save(resp),
         (err: any) => this.handleError(err)
       );
+
+    this.userService.currentUser
+      .subscribe((user) => this.user = user);
   }
 
   /** Get a playlist from the local cache or server */
@@ -42,26 +53,22 @@ export class PlaylistService {
       });
   }
 
-  /** Add a new playlist or list of playlists to the local cache */
-  private save(toAdd: object | object[]) {
-    let playlists: object[];
-
-    if (!Array.isArray(toAdd)) {
-      playlists = [toAdd];
-    } else {
-      playlists = <object[]>toAdd;
+  /** Get all playlists owned by the current user */
+  getUserOwned(): object[] {
+    if (this.user == null) {
+      return [];
     }
 
-    for (let playlist of playlists) {
-      this.playlists[playlist['id']] = playlist;
+    let filtered: object[] = [];
 
-      let folder = playlist['parent'] ? playlist['parent']['id'] : 0;
-
-      if (!(folder in this.folders)) {
-        this.folders[folder] = new BehaviorSubject([]);
+    for (let key in this.playlists) {
+      let playlist = this.playlists[key];
+      if (this.user.email == playlist.owner.email) {
+        filtered.push(playlist);
       }
-      this.addToFolder(folder, playlist);
     }
+
+    return filtered;
   }
 
   /** Create a playlist or folder. */
@@ -107,32 +114,6 @@ export class PlaylistService {
       });
   }
 
-  /** Sync local playlist with server copy */
-  private syncPlaylist(updated: object): void {
-    for (let fID in this.folders) {
-      let folder = this.folders[fID];
-      let playlists = folder.value;
-      let index = this.findPlaylist(updated['id'], playlists);
-
-      if (index >= 0) {
-        playlists[index] = updated;
-        this.folders[fID].next(playlists);
-        break;
-      }
-    }
-  }
-
-  /** Sync local folder with server copy */
-  private syncFolder(updated: object): void {
-    let index = this.findPlaylist(updated['id']);
-    let playlists = this.folders[0].value;
-
-    if (index >= 0) {
-      playlists[index]['name'] = updated['name'];
-      this.folders[0].next(playlists);
-    }
-  }
-
   /** Delete a playlist or folder. */
   delete(item: any) {
     let endpoint: string;
@@ -157,16 +138,6 @@ export class PlaylistService {
           this.folders[fID].next(playlists);
         }
       });
-  }
-
-  /** Find the index of the playlist with the given ID */
-  private findPlaylist(id, folder: object[] = null): number {
-    let playlists = folder == null ? this.folders[0].value : folder;
-    for (let i = 0; i < playlists.length; i++) {
-      if (id == playlists[i].id)
-        return i;
-    }
-    return -1;
   }
 
   /** Get the playlists in a folder. */
@@ -206,9 +177,78 @@ export class PlaylistService {
     }
   }
 
+  /** Add a song or album to a playlist */
+  add(item: Queueable, playlist: Playlist): void {
+    this.client.post('/api/playlists/' + playlist.id + '/add', item)
+      .subscribe(() => console.log('added', item, 'to', playlist));
+  }
+
+  /** Remove a song from a playlist */
+  remove(song: Song, playlist: Playlist): Observable<void> {
+    return this.client.post<void>('/api/playlists/' + playlist.id + '/remove', song);
+  }
+
   private handleError(err: any): void {
     // todo: show error
     console.log('error occurred while fetching playlists:', err);
+  }
+
+  /** Add a new playlist or list of playlists to the local cache */
+  private save(toAdd: object | object[]) {
+    let playlists: object[];
+
+    if (!Array.isArray(toAdd)) {
+      playlists = [toAdd];
+    } else {
+      playlists = <object[]>toAdd;
+    }
+
+    for (let playlist of playlists) {
+      this.playlists[playlist['id']] = playlist;
+
+      let folder = playlist['parent'] ? playlist['parent']['id'] : 0;
+
+      if (!(folder in this.folders)) {
+        this.folders[folder] = new BehaviorSubject([]);
+      }
+      this.addToFolder(folder, playlist);
+    }
+  }
+
+  /** Sync local playlist with server copy */
+  private syncPlaylist(updated: object): void {
+    for (let fID in this.folders) {
+      let folder = this.folders[fID];
+      let playlists = folder.value;
+      let index = this.findPlaylist(updated['id'], playlists);
+
+      if (index >= 0) {
+        playlists[index] = updated;
+        this.folders[fID].next(playlists);
+        break;
+      }
+    }
+  }
+
+  /** Sync local folder with server copy */
+  private syncFolder(updated: object): void {
+    let index = this.findPlaylist(updated['id']);
+    let playlists = this.folders[0].value;
+
+    if (index >= 0) {
+      playlists[index]['name'] = updated['name'];
+      this.folders[0].next(playlists);
+    }
+  }
+
+  /** Find the index of the playlist with the given ID */
+  private findPlaylist(id, folder: object[] = null): number {
+    let playlists = folder == null ? this.folders[0].value : folder;
+    for (let i = 0; i < playlists.length; i++) {
+      if (id == playlists[i].id)
+        return i;
+    }
+    return -1;
   }
 
   private addToFolder(id: number, playlist: object): void {

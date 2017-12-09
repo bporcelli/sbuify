@@ -33,6 +33,12 @@ export class AlbumsComponent implements OnInit {
     this.nextPage();
   }
 
+  /** Handle album removal */
+  onAlbumRemoved(album: Album): void {
+    this.unfiltered = this.unfiltered.filter(item => item.id != album.id);
+    this.onFilterChange();
+  }
+
   private nextPage() {
     if (this.pending) {  // request in flight
       return;
