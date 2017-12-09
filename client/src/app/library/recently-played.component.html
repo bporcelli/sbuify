@@ -1,0 +1,36 @@
+<h1 class="display-4 page-heading">Recently Played</h1>
+
+<section id="recently-played"
+  infiniteScroll
+  [infiniteScrollContainer]="'main'"
+  [infiniteScrollDistance]="1"
+  [infiniteScrollThrottle]="50"
+  [fromRoot]="true"
+  (scrolled)="nextPage()">
+  <ngb-tabset (tabChange)="onTabChange($event)">
+    <ngb-tab id="songs" title="Songs">
+      <ng-template ngbTabContent>
+        <div song-table [songList]="songs | toSongList" [pending]="pending"></div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="albums" title="Albums">
+      <ng-template ngbTabContent>
+        <div album-list [albums]="albums" [pending]="pending"></div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="artists" title="Artists">
+      <ng-template ngbTabContent>
+        <div artist-grid [artists]="artists" [pending]="pending"></div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="playlists" title="Playlists">
+      <ng-template ngbTabContent>
+        <div playlist-grid [playlists]="playlists" [pending]="pending"></div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+  <div class="results-spinner mt-3" [hidden]="!pending">
+    <i class="fa fa-spinner fa-spin"></i>
+    <span>Loading...</span>
+  </div>
+</section>

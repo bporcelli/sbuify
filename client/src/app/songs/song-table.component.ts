@@ -72,7 +72,7 @@ export class SongTableComponent {
       this.ps.toggle();
     } else if (this.songList instanceof PlayQueue) {  // song is being played in queue
       this.pqs.skip(index);
-      this.ps.play(new SongList([song]));
+      this.ps.play(new SongList([song], 'song'));
     } else {
       this.ps.play(this.songList, index);
     }

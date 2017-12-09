@@ -18,7 +18,7 @@ export class SongsComponent implements OnInit {
   private unfiltered: Song[] = [];
 
   /** Filtered songs. */
-  private songList: SongList = new SongList([]);
+  private songList: SongList = new SongList([], 'songs');
 
   /** Current page in songs list. */
   private page: number = 0;

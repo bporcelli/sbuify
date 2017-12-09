@@ -1,5 +1,7 @@
 package com.cse308.sbuify.song;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -129,4 +131,18 @@ public interface SongRepository  extends CrudRepository<Song, Integer> {
     List<Song> artistTriplet(@Param("artistId") Integer artistId,
                              @Param("artistId2") Integer artistId2,
                              @Param("artistId3") Integer artistId3);
+
+    @Query(
+            value = "SELECT s.* FROM song s, stream st " +
+                    "WHERE s.id = st.song_id " +
+                    "AND st.customer_id = :customerId " +
+                    "GROUP BY s.id " +
+                    "ORDER BY MAX(st.time) DESC\n -- #pageable\n",
+            countQuery = "SELECT COUNT(s.id) FROM song s, stream st " +
+                    "WHERE s.id = st.song_id " +
+                    "AND st.customer_id = :customerId " +
+                    "GROUP BY s.id ",
+            nativeQuery = true
+    )
+    Page<Song> getRecentlyPlayedByCustomer(@Param("customerId") Integer customerId, Pageable pageable);
 }

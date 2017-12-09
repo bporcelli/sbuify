@@ -38,6 +38,7 @@ import { LyricsToHtmlPipe } from "./lyrics-to-html.pipe";
 import { LyricsModalComponent } from "./lyrics-modal.component";
 import { APIClient } from "./shared/api-client.service";
 import { FollowingService } from "./user/following.service";
+import { RecentlyPlayedService } from "./library/recently-played.service";
 
 @NgModule({
   declarations: [
@@ -85,6 +86,7 @@ import { FollowingService } from "./user/following.service";
     LibraryService,
     StreamService,
     FollowingService,
+    RecentlyPlayedService,
     APIClient,
     {
       provide: HTTP_INTERCEPTORS,

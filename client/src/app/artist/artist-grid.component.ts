@@ -60,7 +60,7 @@ export class ArtistGridComponent {
   @Input()
   set artists(artists: Artist[]) {
     artists.forEach(artist => {
-      artist.popularSongs = new SongList(artist.popularSongs, 'artist-' + artist.id);
+      artist.popularSongs = new SongList(artist.popularSongs, 'artist', 'artist-' + artist.id);
     });
     this._artists = artists;
   }

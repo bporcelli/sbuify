@@ -19,7 +19,7 @@ export class PlayQueueComponent {
       if (song == null) {
         return Observable.of(null);
       }
-      return Observable.of(new SongList([song]));
+      return Observable.of(new SongList([song], 'song'));
     });
   }
 

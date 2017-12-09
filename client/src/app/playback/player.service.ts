@@ -179,8 +179,8 @@ export class PlayerService {
   setSong(song: Song): void {
     if (this.song.value && this.player.played) {
       // record stream of previous song
-      let playlist = this.playlist instanceof Playlist ? this.playlist : null;
-      this.streamService.create(this.song.value, this.player.played);
+      let playlist = this.playlist.type == 'playlist' ? this.playlist : null;
+      this.streamService.create(this.song.value, this.player.played, <Playlist>playlist);
     }
 
     this.song.next(song);

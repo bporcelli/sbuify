@@ -10,6 +10,6 @@ import { SongList } from "./song-list";
 })
 export class ToSongListPipe implements PipeTransform {
   transform(value: Array<Song>, ...args): any {
-    return new SongList(value);
+    return new SongList(value, 'piped');
   }
 }

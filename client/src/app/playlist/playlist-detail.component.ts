@@ -24,7 +24,7 @@ export class PlaylistDetailComponent implements OnInit {
   private unfiltered: Song[] = [];
 
   /** Filtered songs. */
-  private songList: SongList = new SongList([]);
+  private songList: SongList = null;
 
   /** Current page in songs list. */
   private page: number = 0;
@@ -65,7 +65,7 @@ export class PlaylistDetailComponent implements OnInit {
 
   private reset() {
     this.page = 0;
-    this.songList.songs = [];
+    this.songList = new SongList([], 'playlist', this.playlist.id);
     this.unfiltered = [];
     this.more = true;
   }

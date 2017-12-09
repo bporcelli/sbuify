@@ -65,4 +65,21 @@ public interface AlbumRepository extends PagingAndSortingRepository<Album, Integ
             "   AND a.id = ?2" +
             "   AND c.id = ?1", nativeQuery = true)
     Integer isSavedByUser(Integer userId, Integer albumId);
+
+
+    @Query(
+            value = "SELECT a.* FROM album a, song s, stream st " +
+                    "WHERE s.id = st.song_id " +
+                    "AND s.album_id = a.id " +
+                    "AND st.customer_id = :customerId " +
+                    "GROUP BY a.id " +
+                    "ORDER BY MAX(st.time) DESC\n -- #pageable\n",
+            countQuery = "SELECT COUNT(a.id) FROM album a, song s, stream st " +
+                    "WHERE s.id = st.song_id " +
+                    "AND s.album_id = a.id " +
+                    "AND st.customer_id = :customerId " +
+                    "GROUP BY a.id",
+            nativeQuery = true
+    )
+    Page<Album> getRecentlyPlayedByCustomer(@Param("customerId") Integer customerId, Pageable pageable);
 }

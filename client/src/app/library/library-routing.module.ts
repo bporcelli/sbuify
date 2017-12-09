@@ -4,6 +4,7 @@ import { AuthGuard } from "../auth/auth-guard.service";
 import { SongsComponent } from "./songs.component";
 import { AlbumsComponent } from "./albums.component";
 import { ArtistsComponent } from "./artists.component";
+import { RecentlyPlayedComponent } from "./recently-played.component";
 
 const routes: Routes = [
   {
@@ -13,11 +14,18 @@ const routes: Routes = [
   },
   {
     path: 'albums',
-    component: AlbumsComponent
+    component: AlbumsComponent,
+    canActivate: [ AuthGuard ]
   },
   {
     path: 'artists',
-    component: ArtistsComponent
+    component: ArtistsComponent,
+    canActivate: [ AuthGuard ]
+  },
+  {
+    path: 'recently-played',
+    component: RecentlyPlayedComponent,
+    canActivate: [ AuthGuard ]
   }
 ];
 
