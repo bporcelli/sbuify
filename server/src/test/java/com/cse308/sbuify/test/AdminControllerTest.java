@@ -15,10 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
 import com.cse308.sbuify.admin.Admin;
+import com.cse308.sbuify.admin.AdminRepository;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.song.SongRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
@@ -27,6 +30,9 @@ public class AdminControllerTest extends AuthenticatedTest {
 
     @Autowired
     private SongRepository songRepository;
+    
+    @Autowired
+    private AdminRepository adminRepository;
     
     /**
      * Test if getting all admin endpoint works
@@ -68,6 +74,34 @@ public class AdminControllerTest extends AuthenticatedTest {
         assertEquals("John", admin.getFirstName());
         assertEquals("Doe", admin.getLastName());
         assertEquals(false, admin.isSuperAdmin());
+    }
+    
+    /**
+     * Test creating admin.
+     * Update DB in order to pass this test: UPDATE Admin SET super_admin = 1 WHERE Admin.id = 4; 
+     */
+    @Test
+    public void createAdminTest() {
+        Admin admin = new Admin("newEmail@gmail.com", "newPassword", "NewAdmin", "TestNewAdmin", false);
+        long originalSize = adminRepository.count();
+        ResponseEntity<?> response = restTemplate.postForEntity("/api/admins/", admin, Admin.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(originalSize + 1, adminRepository.count());
+    }
+    
+    /**
+     * 
+     */
+    @Test
+    public void updateAdminTest() {
+        Optional<Admin> optionalAdmin = adminRepository.findById(4);
+        assertEquals(true, optionalAdmin.isPresent());
+        Admin admin = optionalAdmin.get();
+        Map<String, String> params = new HashMap<>();
+        params.put("id", Integer.toString(4));
+        HttpEntity<Admin> req = new HttpEntity<Admin>(admin); 
+        ResponseEntity<Void> response = restTemplate.exchange("/api/admins/{id}", HttpMethod.PATCH, req, Void.class, params);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     /**
