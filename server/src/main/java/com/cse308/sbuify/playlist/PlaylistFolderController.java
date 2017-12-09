@@ -32,6 +32,9 @@ public class PlaylistFolderController {
     @Autowired
     private StorageService storageService;
 
+    @Autowired
+    private PlaylistRepository playlistRepo;
+
     /**
      * Create a playlist folder.
      * @param folder The folder to create.
@@ -91,16 +94,22 @@ public class PlaylistFolderController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        List<FollowedPlaylist> savedPlaylistByParent = followedPlaylistRepo.findByParent(folder);
+        List<FollowedPlaylist> folderPlaylists = followedPlaylistRepo.findByParent(folder);
 
-        for (FollowedPlaylist followedPlaylist: savedPlaylistByParent){
+        for (FollowedPlaylist followedPlaylist: folderPlaylists) {
             Playlist playlist = followedPlaylist.getPlaylist();
-            if (playlist.getImage() != null){
-                storageService.delete((Image)playlist.getImage());
+
+            if (!SecurityUtils.userCanEdit(playlist)) {  // playlist isn't user owned -- don't delete it
+                continue;
             }
+            if (playlist.getImage() != null) {
+                storageService.delete((Image) playlist.getImage());
+            }
+
+            playlistRepo.delete(playlist);
         }
 
-        followedPlaylistRepo.deleteAllByParent(folder);  // todo: ensure that playlist images are deleted -- PLEASE TEST
+        followedPlaylistRepo.deleteAllByParent(folder);
         folderRepo.delete(folder);
 
         return new ResponseEntity<>(HttpStatus.OK);

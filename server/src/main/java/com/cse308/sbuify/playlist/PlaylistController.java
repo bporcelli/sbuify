@@ -217,15 +217,15 @@ public class PlaylistController {
         if (!optionalPlaylist.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
         Playlist playlist = optionalPlaylist.get();
 
         if (!SecurityUtils.userCanEdit(playlist)) {  // can't delete playlist
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        // todo: delete playlist
         if (playlist.getImage() != null) {
-            Image image = (Image)playlist.getImage();
+            Image image = (Image) playlist.getImage();
             this.storageService.delete(image);
         }
         followedPlaylistRepo.deleteAllByPlaylist(playlist);
