@@ -24,9 +24,6 @@ public class CustomerFollowingController {
     private AuthFacade authFacade;
 
     @Autowired
-    private SavedPlaylistRepository savedPlaylistRepo;
-
-    @Autowired
     private PlaylistFolderRepository playlistFolderRepo;
 
     @Autowired
@@ -65,9 +62,9 @@ public class CustomerFollowingController {
         }
 
         // add playlists
-        List<SavedPlaylist> playlists = savedPlaylistRepo.findByCustomerAndParent(customer, null);
+        List<FollowedPlaylist> playlists = followedPlaylistRepo.findByCustomerAndParent(customer, null);
 
-        for (SavedPlaylist savedPlaylist: playlists) {
+        for (FollowedPlaylist savedPlaylist: playlists) {
             Playlist playlist = savedPlaylist.getPlaylist();
             Integer sortKey = savedPlaylist.getPosition() != null ? savedPlaylist.getPosition() : playlist.getId();
             componentMap.put(sortKey, playlist);

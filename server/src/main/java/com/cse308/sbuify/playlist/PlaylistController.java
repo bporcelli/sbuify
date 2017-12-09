@@ -3,9 +3,7 @@ package com.cse308.sbuify.playlist;
 import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.common.TypedCollection;
 import com.cse308.sbuify.common.api.DecorateResponse;
-import com.cse308.sbuify.customer.Customer;
-import com.cse308.sbuify.customer.SavedPlaylist;
-import com.cse308.sbuify.customer.SavedPlaylistRepository;
+import com.cse308.sbuify.customer.*;
 import com.cse308.sbuify.image.*;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.security.SecurityUtils;
@@ -33,7 +31,7 @@ public class PlaylistController {
     private PlaylistRepository playlistRepository;
 
     @Autowired
-    private SavedPlaylistRepository savedPlaylistRepo;
+    private FollowedPlaylistRepository followedPlaylistRepo;
 
     @Autowired
     private AuthFacade authFacade;
@@ -86,17 +84,17 @@ public class PlaylistController {
         Playlist saved = playlistRepository.save(playlist);
 
         // save the playlist in the user's library
-        SavedPlaylist savedPlaylist = new SavedPlaylist(customer, saved);
+        FollowedPlaylist followedPlaylist = new FollowedPlaylist(customer, saved);
 
         if (folderId != null) {
             Optional<PlaylistFolder> optionalFolder = folderRepository.findById(folderId);
             if (!optionalFolder.isPresent()) {
                 return new ResponseEntity<>("Invalid folder ID.", HttpStatus.BAD_REQUEST);
             }
-            savedPlaylist.setParent(optionalFolder.get());
+            followedPlaylist.setParent(optionalFolder.get());
         }
 
-        savedPlaylistRepo.save(savedPlaylist);
+        followedPlaylistRepo.save(followedPlaylist);
 
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -224,7 +222,7 @@ public class PlaylistController {
         }
 
         // todo: delete playlist
-        savedPlaylistRepo.deleteAllByPlaylist(playlist);
+        followedPlaylistRepo.deleteAllByPlaylist(playlist);
         playlistRepository.deleteById(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
