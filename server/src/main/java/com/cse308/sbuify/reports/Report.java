@@ -28,7 +28,7 @@ public abstract class Report implements Serializable {
      * Returns the path to the report template.
      * @return String
      */
-    public abstract String getTemplate();
+    public abstract String getTemplatePath();
 
     /**
      * Getters and setters.
