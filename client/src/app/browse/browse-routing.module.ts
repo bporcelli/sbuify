@@ -12,6 +12,7 @@ import { AuthGuard } from '../auth/auth-guard.service';
 import { GenreResolver } from "./genres/genre-resolver.service";
 import { GenreComponent } from "./genres/genre.component";
 import { GenreDetailResolver } from "./genres/genre-detail-resolver.service";
+import { UserLocationResolver } from "../user/user-location-resolver.service";
 
 const browseRoutes: Routes = [
   {
@@ -48,7 +49,10 @@ const browseRoutes: Routes = [
       },
       {
         path: 'concerts',
-        component: ConcertsComponent
+        component: ConcertsComponent,
+        resolve: {
+          location: UserLocationResolver
+        }
       },
       {
         path: '',

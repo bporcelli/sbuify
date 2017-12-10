@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { UserService } from "./user.service";
 import { PreferencesService } from "./preferences.service";
 import { UpgradeAccountModalComponent } from "./upgrade-account-modal.component";
+import { UserLocationResolver } from "./user-location-resolver.service";
 
 @NgModule({
   imports: [
@@ -12,7 +13,8 @@ import { UpgradeAccountModalComponent } from "./upgrade-account-modal.component"
   ],
   providers: [
     UserService,
-    PreferencesService
+    PreferencesService,
+    UserLocationResolver
   ],
   declarations: [
     UpgradeAccountModalComponent

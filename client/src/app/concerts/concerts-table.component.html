@@ -1,0 +1,46 @@
+<ng-container *ngIf="concerts.length > 0 || loading; else noConcertsTemplate">
+  <table class="table table-striped mt-4">
+    <thead>
+      <tr>
+        <th>Artist</th>
+        <th>Date</th>
+        <th>Venue</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let concert of concerts" (click)="openConcertPage(concert)" class="concert-row" title="View concert details">
+        <td>
+          {{ concert.performance[0].displayName }}
+        </td>
+        <td>
+          {{ concert.start.date | date:'MMM. dd' }}
+        </td>
+        <td>
+          <ng-container *ngIf="concert.venue; else noVenueTemplate">
+            {{ concert.venue.displayName + ', ' + concert.venue.metroArea.displayName }}
+          </ng-container>
+          <ng-template #noVenueTemplate>
+            {{ concert.location.city }}
+          </ng-template>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="text-center mt-4" [hidden]="loading">
+    <a href="https://songkick.com" target="_blank">
+      <img src="assets/img/powered-by-songkick.png" title="Powered by Songkick" alt="Powered by Songkick">
+    </a>
+  </div>
+</ng-container>
+
+<ng-template #noConcertsTemplate>
+  <div class="text-center mt-4">
+    <h5>No concerts to display.</h5>
+    <a routerLink="/browse/concerts" class="btn btn-wide btn-primary" *ngIf="artist != null" id="browse-concerts">Browse all concerts</a>
+  </div>
+</ng-template>
+
+<div class="results-spinner mt-3" [hidden]="!loading">
+  <i class="fa fa-spinner fa-spin"></i>
+  <span>Loading...</span>
+</div>

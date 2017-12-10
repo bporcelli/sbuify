@@ -15,6 +15,8 @@ import { ProductModalComponent } from "./product-modal.component";
 import { AlbumModule } from "../album/album.module";
 import { ArtistDetailResolver } from "./artist-resolver.service";
 import { ArtistService } from "./artist.service";
+import { ConcertsModule } from "../concerts/concerts.module";
+import {ArtistConcertsComponent} from "./artist-concerts.component";
 
 @NgModule({
   imports: [
@@ -25,7 +27,8 @@ import { ArtistService } from "./artist.service";
     ContextMenuModule,
     SharedModule,
     TruncateModule,
-    AlbumModule
+    AlbumModule,
+    ConcertsModule
   ],
   declarations: [
     ArtistDetailComponent,
@@ -33,7 +36,8 @@ import { ArtistService } from "./artist.service";
     RelatedArtistsComponent,
     AboutComponent,
     ArtistGridComponent,
-    ProductModalComponent
+    ProductModalComponent,
+    ArtistConcertsComponent
   ],
   providers: [
     ArtistDetailResolver,
