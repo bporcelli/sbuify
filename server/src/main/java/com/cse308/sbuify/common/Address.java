@@ -1,13 +1,10 @@
 package com.cse308.sbuify.common;
 
-
 import java.io.Serializable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import com.cse308.sbuify.concert.Venue;
 
 @Entity
 public class Address implements Serializable {
