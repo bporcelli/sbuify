@@ -1,49 +1,26 @@
-<div class="row page-section">
-    <div class="col-md-9">
-        <img class="img-fluid" src="assets/img/seratones-image-lg.jpg" title="Seratones Image 1" alt="Seratones Image 1">
-    </div>
-    <div class="col-md-3">
-        <div class="row thumbs-row">
-            <div class="col-md-6">
-                <img class="img-fluid" src="assets/img/seratones-thumb-1.jpg" title="Seratones Image 2" alt="Seratones Image 2">
-            </div>
-            <div class="col-md-6">
-                <img class="img-fluid" src="assets/img/seratones-thumb-2.jpg" title="Seratones Image 3" alt="Seratones Image 3">
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6">
-                <img class="img-fluid" src="assets/img/seratones-thumb-3.jpg" title="Seratones Image 4" alt="Seratones Image 4">
-            </div>
-            <div class="col-md-6">
-                <img class="img-fluid" src="assets/img/seratones-thumb-4.jpg" title="Seratones Image 5" alt="Seratones Image 5">
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="row">
-    <div class="col-md-9">
-        <h2 class="h4">Bio</h2>
-        
-        <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque pharetra porta leo vitae tincidunt. Proin varius sem non iaculis pretium. Donec tempor elit a auctor aliquet. Suspendisse convallis nisl vel rutrum mollis. Nulla auctor, massa sed sodales malesuada, metus mi tempus eros, sed rutrum nunc sem sit amet sem.</p>
-        
-        <p>Proin ut tristique libero. Duis non nisl at enim pellentesque porttitor. Mauris at urna sed metus finibus lobortis in ut magna. Aliquam ut malesuada eros. Praesent imperdiet, ipsum vitae vulputate ornare, sem magna varius eros, eget vulputate metus augue et metus.</p>
-
-        <p>Sed semper mattis commodo. Nam ac facilisis nisl. In blandit erat est, in commodo neque eleifend at. Etiam semper lacus sem, et gravida diam tempus at. Aliquam est nunc, auctor et molestie eget, scelerisque non lorem. Vestibulum scelerisque arcu nunc, et pellentesque ligula maximus non. Etiam gravida sem in eros placerat, in efficitur ipsum convallis. Nullam maximus dignissim ante, sed aliquam nisl egestas sed. Nunc convallis, lorem vitae condimentum pretium, ex justo laoreet tortor, ut tempor diam sapien venenatis purus. Nunc mattis non diam nec ornare. Pellentesque porta, ipsum a pharetra tincidunt, quam lacus venenatis leo, nec tincidunt elit eros vitae tortor. Aliquam volutpat vitae odio at porta. Sed sollicitudin luctus diam dignissim molestie. Nam dapibus gravida orci eu consectetur.</p>
-        
-        <p>Donec ut sem velit. Ut sit amet vestibulum lectus. In hac habitasse platea dictumst. Maecenas nec tristique tellus. Pellentesque id semper eros. Curabitur quis leo nunc. In et euismod diam. Curabitur quam lacus, convallis vel posuere et, rhoncus at sem. Duis iaculis erat sem, quis volutpat ex consectetur vel.</p>
+  <div class="col-md-9">
+    <h2 class="h4">Bio</h2>
+    <ng-container class="bio-content" *ngIf="biography != null || loading; else noBioTemplate">
+      {{ biography.text }}
+    </ng-container>
+    <ng-template #noBioTemplate>
+      <p>{{ artist.name }} doesn't have a biography yet.</p>
+    </ng-template>
+    <div class="results-spinner mt-3" [hidden]="!loading">
+      <i class="fa fa-spinner fa-spin"></i>
+      <span>Loading...</span>
     </div>
-    <div class="col-md-3">
-        <div class="listener-count">
-            <span class="display-4">9,672</span> <br>
-            <span class="text-muted">Monthly Listeners</span>
-        </div>
-
-        <div class="listener-count">
-            <span class="display-4">7,389</span> <br>
-            <span class="text-muted">Followers</span>
-        </div>
+  </div>
+  <div class="col-md-3">
+    <div class="listener-count">
+      <span class="display-4">{{ artist?.monthlyListeners }}</span> <br>
+      <span class="text-muted">Monthly Listeners</span>
     </div>
+
+    <div class="listener-count">
+      <span class="display-4">{{ artist?.numFollowers }}</span> <br>
+      <span class="text-muted">Followers</span>
+    </div>
+  </div>
 </div>

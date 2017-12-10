@@ -1,31 +1,27 @@
 <section id="artist_header">
-    <div id="artist_details">
-        <h1 class="display-4 verified-artist">Seratones</h1>
+  <div id="artist_details">
+    <h1 class="display-4 verified-artist">{{ artist?.name }}</h1>
 
-        <ul class="nav button-list">
-            <li class="nav-item">
-                <button type="button" class="btn btn-primary play-artist" title="Play Artist">Play</button>
-            </li>
-            <li class="nav-item">
-                <button type="button" class="btn btn-light follow-artist" title="Follow">Follow</button>
-            </li>
-            <li ngbDropdown class="nav-item">
-                <button type="button" class="btn btn-light no-arrow" id="more_menu_button" title="More" ngbDropdownToggle>
-                    <i class="fa fa-lg fa-ellipsis-h"></i>
-                    <span class="sr-only">More</span>
-                </button>
-                <div ngbDropdownMenu aria-labelledby="more_menu_button">
-                    <a class="dropdown-item" href="#">Go to Artist Radio</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Follow</a>
-                    <a class="dropdown-item" href="#">Report</a>
-                    <a class="dropdown-item" href="#">Share</a>
-                </div>
-            </li>
-        </ul>
-    </div>
+    <ul class="nav button-list">
+      <li class="nav-item">
+        <button type="button"
+                class="btn btn-primary play-artist"
+                title="{{ isPlaying() ? 'Pause' : 'Play' }} Artist"
+                (click)="togglePlayback()">
+          {{ isPlaying() ? 'Pause' : 'Play' }}
+        </button>
+      </li>
+      <li class="nav-item">
+        <button type="button" class="btn btn-light follow-artist"
+                title="{{ artist?.followed ? 'Unfollow' : 'Follow' }}"
+                (click)="toggleFollowing()">
+          {{ artist?.followed ? 'Unfollow' : 'Follow' }}
+        </button>
+      </li>
+    </ul>
+  </div>
 
-    <img class="img-fluid" src="assets/img/seratones-image.jpg" alt="Seratones" title="Seratones">
+  <img class="img-fluid" src="{{ artist.image | toImageSrc:'cover' }}" alt="{{ artist.name }}" title="{{ artist.name }}">
 </section>
 
 <nav class="nav nav-tabs">

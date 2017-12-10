@@ -39,6 +39,7 @@ import { LyricsModalComponent } from "./lyrics-modal.component";
 import { APIClient } from "./shared/api-client.service";
 import { FollowingService } from "./user/following.service";
 import { RecentlyPlayedService } from "./library/recently-played.service";
+import { ArtistService } from "./artist/artist.service";
 
 @NgModule({
   declarations: [
@@ -87,6 +88,7 @@ import { RecentlyPlayedService } from "./library/recently-played.service";
     StreamService,
     FollowingService,
     RecentlyPlayedService,
+    ArtistService,
     APIClient,
     {
       provide: HTTP_INTERCEPTORS,

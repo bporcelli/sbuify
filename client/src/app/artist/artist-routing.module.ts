@@ -1,14 +1,12 @@
 import { NgModule } from '@angular/core';
-
 import { RouterModule, Routes } from '@angular/router';
-
 import { ArtistDetailComponent } from './artist-detail.component';
 import { OverviewComponent } from './overview.component';
 import { RelatedArtistsComponent } from './related-artists.component';
 import { AboutComponent } from './about.component';
 import { ConcertsComponent } from '../concerts/concerts.component';
-
 import { AuthGuard } from '../auth/auth-guard.service';
+import { ArtistDetailResolver } from "./artist-resolver.service";
 
 const routes: Routes = [
   {
@@ -16,6 +14,9 @@ const routes: Routes = [
     component: ArtistDetailComponent,
     canActivate: [ AuthGuard ],
     canActivateChild: [ AuthGuard ],
+    resolve: {
+      artist: ArtistDetailResolver
+    },
     children: [
       {
         path: 'overview',
