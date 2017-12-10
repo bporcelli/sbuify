@@ -81,6 +81,16 @@ export class UserService {
       });
   }
 
+  /** Change the user's password */
+  changePassword(oldPassword: string, newPassword: string): Observable<void> {
+    let user = this.currentUserSubject.value;
+    let request = {
+      oldPassword: oldPassword,
+      newPassword: newPassword
+    };
+    return this.apiClient.post<void>('/api/users/' + user['id'] + '/change-password/', request);
+  }
+
   get isAuthenticated(): Observable<boolean> {
     return this.isAuthenticatedSubject.asObservable();
   }

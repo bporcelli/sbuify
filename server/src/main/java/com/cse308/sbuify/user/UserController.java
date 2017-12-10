@@ -47,28 +47,33 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     /**
      * Change a user's password.
-     * @param userId ID of user.
-     * @param password New password for user.
+     * @param id ID of user.
+     * @param req Request object containing the old and new user password.
      * @return Http.OK successful, Http.FORBIDDEN, no permission, Http.NOT_FOUND, cannot find user
      */
     @PostMapping(path = "/{id}/change-password")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'LABEL', 'ADMIN')")
-    public ResponseEntity<?> changePassword(@PathVariable Integer userId, @RequestBody String password) {
-        // todo: surely we should require the user to enter a password verification. check verification here.
-        User user = getUserById(userId);
+    public ResponseEntity<?> changePassword(@PathVariable Integer id, @RequestBody PasswordChangeRequest req) {
+        User user = getUserById(id);
+
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         if (!SecurityUtils.userCanEdit(user)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        user.setPassword(passwordEncoder.encode(password));
+
+        // check: does old password match?
+        if (!passwordEncoder.matches(req.getOldPassword(), user.getPassword())) {
+            return new ResponseEntity<>("The password you entered is incorrect.", HttpStatus.FORBIDDEN);
+        }
+
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
         userRepository.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
