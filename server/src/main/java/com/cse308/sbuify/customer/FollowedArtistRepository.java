@@ -1,5 +1,6 @@
 package com.cse308.sbuify.customer;
 
+import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.user.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.CrudRepository;
@@ -16,4 +17,6 @@ public interface FollowedArtistRepository extends CrudRepository<FollowedArtist,
     boolean existsByCustomerAndArtist_Id(User customer, Integer artistId);
 
     List<FollowedArtist> findAllByCustomer(User customer);
+
+    Integer countByCustomerAndArtist(User customer, Artist artist);
 }

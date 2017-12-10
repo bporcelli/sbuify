@@ -74,10 +74,13 @@ public class ArtistController {
      * Get other artists related to an artist.
      * @param id ID of artist.
      * @param number Optional number of related artists to get (default: 5).
+     * @param offset Offset to first artist.
      */
     @GetMapping(path = {"/{id}/related", "/{id}/related/{number}"})
     @DecorateResponse(type = TypedCollection.class)
-    public ResponseEntity<?> getRelatedArtists(@PathVariable Integer id, @PathVariable Optional<Integer> number) {
+    public ResponseEntity<?> getRelatedArtists(@PathVariable Integer id,
+                                               @PathVariable Optional<Integer> number,
+                                               @RequestParam Integer offset) {
         Optional<Artist> optionalArtist = artistRepo.findById(id);
 
         if (!optionalArtist.isPresent()) {
@@ -91,7 +94,7 @@ public class ArtistController {
             numArtists = number.get();
         }
 
-        Page<Artist> related = artistRepo.getRelatedByArtistId(id, PageRequest.of(0, numArtists));
+        Page<Artist> related = artistRepo.getRelatedByArtistId(id, PageRequest.of(offset, numArtists));
         List<Artist> artistList = new ArrayList<>();
         for (Artist artist: related) {
             artistList.add(artist);

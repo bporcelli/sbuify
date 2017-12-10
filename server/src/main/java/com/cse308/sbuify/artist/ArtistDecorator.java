@@ -2,7 +2,6 @@ package com.cse308.sbuify.artist;
 
 import com.cse308.sbuify.common.api.DecoratorRegistry;
 import com.cse308.sbuify.common.api.ResponseDecorator;
-import com.cse308.sbuify.customer.FollowedArtist;
 import com.cse308.sbuify.customer.FollowedArtistRepository;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.song.Song;
@@ -61,5 +60,9 @@ public class ArtistDecorator implements ResponseDecorator<Artist> {
         // add followed flag
         Boolean followed = followedArtistRepo.existsByCustomerAndArtist_Id(user, artist.getId());
         artist.set("followed", followed);
+
+        // number of followers
+        Integer followerCount = followedArtistRepo.countByCustomerAndArtist(user, artist);
+        artist.set("numFollowers", followerCount);
     }
 }
