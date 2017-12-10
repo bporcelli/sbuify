@@ -46,6 +46,9 @@ public class PlaylistController {
     @Autowired
     private PlaylistSongRepository playlistSongRepo;
 
+    @Autowired
+    private OverviewPlaylistRepository overviewPlaylistRepository;
+
     private final Integer MAX_SONGS;
 
     private final Integer SONGS_PER_PAGE;
@@ -303,5 +306,19 @@ public class PlaylistController {
             playlistSongRepo.deleteByPlaylistAndSong(playlist, song);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/overview")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    public ResponseEntity<?> getOverviewPlaylists(){
+        Iterable<OverviewPlaylist> optionalPlaylist = overviewPlaylistRepository.findAll();
+        List<OverviewPlaylist> overviewPlaylists = new ArrayList<>();
+
+        optionalPlaylist.forEach( overviewPlaylist -> {overviewPlaylists.add(overviewPlaylist);
+        });
+
+        TypedCollection collection = new TypedCollection(overviewPlaylists, OverviewPlaylist.class);
+        return new ResponseEntity<>(collection, HttpStatus.OK);
+
     }
 }

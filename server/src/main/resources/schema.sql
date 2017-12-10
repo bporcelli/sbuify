@@ -601,6 +601,47 @@ INSERT INTO `followed_playlist` VALUES (1,3711,NULL,NULL),(1,3714,NULL,3713),(2,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `overview_playlist`
+--
+
+DROP TABLE IF EXISTS `overview_playlist`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `overview_playlist` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `overview_playlist`
+--
+
+LOCK TABLES `overview_playlist` WRITE;
+/*!40000 ALTER TABLE `overview_playlist` DISABLE KEYS */;
+INSERT INTO `overview_playlist` VALUES (3715,'Monthly Top 50 by Genre'),(3716,'Monthly Top 50 by Artist'),(3717,'Monthly Artist Duo Mix & Match'),(3718,'Monthly Artist Triplet Mix & Match'),(3719,'Monthly Genre Duo Mix & Match'),(3720,'Monthly Genre Triplet Mix & Match'),(3721,'SBUify Daily Trends');
+/*!40000 ALTER TABLE `overview_playlist` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `overview_playlist_list`
+--
+
+DROP TABLE IF EXISTS `overview_playlist_list`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `overview_playlist_list` (
+  `overview_playlist_id` int(11) NOT NULL,
+  `playlist_id` int(11) NOT NULL,
+  KEY `FKp9e8qcqr4l77645aw1wmpoli5` (`playlist_id`),
+  KEY `FKfx5nodurm005vhn1qjvh3kk7l` (`overview_playlist_id`),
+  CONSTRAINT `FKfx5nodurm005vhn1qjvh3kk7l` FOREIGN KEY (`overview_playlist_id`) REFERENCES `overview_playlist` (`id`),
+  CONSTRAINT `FKp9e8qcqr4l77645aw1wmpoli5` FOREIGN KEY (`playlist_id`) REFERENCES `playlist` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `genre`
 --
 
@@ -1546,5 +1587,6 @@ DELIMITER ;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
 
 -- Dump completed on 2017-12-08 21:45:07

@@ -1,10 +1,12 @@
 package com.cse308.sbuify;
 
+import com.cse308.sbuify.common.ScheduleTasksProperties;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.cse308.sbuify.album.AlbumProperties;
@@ -16,7 +18,8 @@ import com.cse308.sbuify.playlist.PlaylistProperties;
 import com.cse308.sbuify.reports.ReportProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ImageProperties.class, PlaylistProperties.class, AlbumProperties.class, LibraryProperties.class, CustomerProperties.class, ReportProperties.class})
+@EnableScheduling
+@EnableConfigurationProperties({ImageProperties.class, PlaylistProperties.class, AlbumProperties.class, LibraryProperties.class, CustomerProperties.class, ScheduleTasksProperties.class, ReportProperties.class})
 public class SBUifyApplication {
 
 	public static void main(String[] args) {

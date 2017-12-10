@@ -5,14 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import com.cse308.sbuify.playlist.OverviewPlaylist;
 import com.cse308.sbuify.playlist.PlaylistSongRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -29,7 +28,6 @@ import com.cse308.sbuify.playlist.PlaylistRepository;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.song.SongRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
-import com.cse308.sbuify.user.UserRepository;
 
 public class PlaylistControllerTest extends AuthenticatedTest {
 
@@ -153,10 +151,17 @@ public class PlaylistControllerTest extends AuthenticatedTest {
         assertEquals(updated.getDescription(), playlist.getDescription());
     }
 
-    // @Test
-    // public void deletePlaylistTest() {
-    // Customer customer = (Customer) userRepository.findByEmail(getEmail()).get();
-    // }
+    @Test
+    public void getOverviewPlaylist(){
+        ResponseEntity<ArrayList<OverviewPlaylist>> response = restTemplate.exchange("/api/playlists/overview",
+                HttpMethod.GET, null, new ParameterizedTypeReference<ArrayList<OverviewPlaylist>>() {});
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        ArrayList<OverviewPlaylist> overviewPlaylistsRes = response.getBody();
+        // 7 is fixed number
+        assertEquals(7 ,overviewPlaylistsRes.size());
+    }
 
     @Override
     public String getEmail() {
