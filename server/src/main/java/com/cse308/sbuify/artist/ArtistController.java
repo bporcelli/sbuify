@@ -1,7 +1,9 @@
 package com.cse308.sbuify.artist;
 
 import com.cse308.sbuify.album.Album;
+import com.cse308.sbuify.album.AlbumRepository;
 import com.cse308.sbuify.common.TypedCollection;
+import com.cse308.sbuify.common.api.DecorateResponse;
 import com.cse308.sbuify.image.Base64Image;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.image.StorageException;
@@ -11,6 +13,8 @@ import com.cse308.sbuify.song.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,11 +38,15 @@ public class ArtistController {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private AlbumRepository albumRepository;
+
     /**
      * Get basic information about an artist.
      * @param artistId ID of artist.
      */
     @GetMapping(path = "/{artistId}")
+    @DecorateResponse(type = Artist.class)
     public ResponseEntity<?> getArtistInfo(@PathVariable Integer artistId) {
         Optional<Artist> artist = artistRepo.findById(artistId);
         if (!artist.isPresent()) {
@@ -64,33 +72,32 @@ public class ArtistController {
 
     /**
      * Get other artists related to an artist.
-     * @param artistId ID of artist.
+     * @param id ID of artist.
+     * @param number Optional number of related artists to get (default: 5).
      */
-    @GetMapping(path = "{artistId}/related")
-    public ResponseEntity<?> getRelatedArtists(@PathVariable Integer artistId) {
-        Optional<Artist> optionalArtist = artistRepo.findById(artistId);
+    @GetMapping(path = {"/{id}/related", "/{id}/related/{number}"})
+    @DecorateResponse(type = TypedCollection.class)
+    public ResponseEntity<?> getRelatedArtists(@PathVariable Integer id, @PathVariable Optional<Integer> number) {
+        Optional<Artist> optionalArtist = artistRepo.findById(id);
+
         if (!optionalArtist.isPresent()) {
             LOGGER.warn("Artist not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // todo: precompute related artists; return artist.getRelatedArtists or result of DB query here.
-        Artist artist = optionalArtist.get();
-        Set<Artist> relatedArtist = new HashSet<>();
-        List<Album> artistAlbum = artist.getAlbums();
+        Integer numArtists = 5;
 
-        for (Album album: artistAlbum) {
-            Set<Song> songs = album.getSongs();
-            for (Song song: songs) {
-                Set<Artist> artists = song.getFeaturedArtists();
-                for (Artist featured: artists) {
-                    relatedArtist.add(featured);
-                }
-            }
+        if (number.isPresent()) {
+            numArtists = number.get();
         }
 
-        TypedCollection featuredArtist = new TypedCollection(relatedArtist, Artist.class);
-        return new ResponseEntity<>(featuredArtist, HttpStatus.OK);
+        Page<Artist> related = artistRepo.getRelatedByArtistId(id, PageRequest.of(0, numArtists));
+        List<Artist> artistList = new ArrayList<>();
+        for (Artist artist: related) {
+            artistList.add(artist);
+        }
+        TypedCollection relatedArtists = new TypedCollection(artistList, Artist.class);
+        return new ResponseEntity<>(relatedArtists, HttpStatus.OK);
     }
 
     /**
@@ -100,7 +107,7 @@ public class ArtistController {
      * @return an empty 200 response on success, otherwise a 404 if the artist is invalid or a 403 if the
      *         artist can't be edited by the current user.
      */
-    @PatchMapping(path = "{artistId}")
+    @PatchMapping(path = "/{artistId}")
     @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
     public ResponseEntity<?> updateArtist(@PathVariable Integer artistId, @RequestBody Artist updated) {
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
@@ -144,7 +151,7 @@ public class ArtistController {
      * @return a 200 response on success, otherwise a 404 if the artist ID is invalid or a 403 if the
      *         current user can't edit the artist.
      */
-    @PutMapping(path = "{artistId}/bio")
+    @PutMapping(path = "/{artistId}/bio")
     @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
     public ResponseEntity<?> updateBiography(@PathVariable Integer artistId, @RequestBody Biography bio) {
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
@@ -181,13 +188,46 @@ public class ArtistController {
     }
 
     /**
+     * Get the merchandise for an artist.
+     * @param id Artist ID.
+     */
+    @GetMapping(path = "/{id}/merchandise")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'LABEL', 'ADMIN')")
+    public ResponseEntity<?> getMerchandise(@PathVariable Integer id) {
+        Optional<Artist> optionalArtist = artistRepo.findById(id);
+        if (!optionalArtist.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<Product> products = productRepository.getAllByArtist(optionalArtist.get());
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    /**
+     * Get an artist's albums.
+     * @param id Artist ID.
+     */
+    @GetMapping(path = "/{id}/albums")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'LABEL', 'ADMIN')")
+    @DecorateResponse(type = TypedCollection.class)
+    public ResponseEntity<?> getAlbums(@PathVariable Integer id) {
+        Optional<Artist> optionalArtist = artistRepo.findById(id);
+        if (!optionalArtist.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<Album> albums = albumRepository.getAlbumsByArtist(optionalArtist.get());
+        // convert to TypedCollection so we can decorate the response
+        TypedCollection collection = new TypedCollection(albums, Album.class);
+        return new ResponseEntity<>(collection, HttpStatus.OK);
+    }
+
+    /**
      * Create a new merchandise item for an artist.
      * @param artistId ID of artist.
      * @param product New merchandise item.
      * @return a 201 response containing the saved product on success, otherwise a 404 if the artist ID is
      *         invalid or a 403 if the current user can't edit the artist.
      */
-    @PostMapping(path = "{artistId}/merchandise")
+    @PostMapping(path = "/{artistId}/merchandise")
     @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
     public ResponseEntity<?> addMerchandise(@PathVariable Integer artistId, @RequestBody Product product) {
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
@@ -214,7 +254,7 @@ public class ArtistController {
      * @return a 200 response on success, otherwise a 404 if the artist ID is invalid, or a 403 if the
      *         current user can't edit the merchandise item.
      */
-    @PutMapping(path = "{artistId]/merchandise/{itemId}")
+    @PutMapping(path = "/{artistId]/merchandise/{itemId}")
     @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
     public ResponseEntity<?> updateMerchandise(@PathVariable Integer artistId,
                                                @PathVariable Integer itemId,
@@ -254,7 +294,7 @@ public class ArtistController {
      * @return an empty 200 response on success, otherwise a 404 if the artist ID is invalid
      *         or a 403 if the current user can't delete the specified item.
      */
-    @DeleteMapping(path = "{artistId]/merchandise/{itemId}")
+    @DeleteMapping(path = "/{artistId]/merchandise/{itemId}")
     @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
     public ResponseEntity<?> deleteMerchandise(@PathVariable Integer artistId,
                                                @PathVariable Integer itemId) {
@@ -289,7 +329,7 @@ public class ArtistController {
      * @return a 200 response on success, otherwise a 404 if the artist ID is invalid or
      *         a 403 if the current user can't delete the specified artist.
      */
-    @DeleteMapping(path = "artists/{artistId}")
+    @DeleteMapping(path = "/artists/{artistId}")
     @PreAuthorize("hasAnyRole('LABEL', 'ADMIN')")
     public ResponseEntity<?> deleteArtist(@PathVariable Integer artistId) {
         Optional<Artist> optionalArtist = artistRepo.findById(artistId);
