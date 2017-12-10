@@ -2,17 +2,31 @@ package com.cse308.sbuify.artist;
 
 import com.cse308.sbuify.common.api.DecoratorRegistry;
 import com.cse308.sbuify.common.api.ResponseDecorator;
+import com.cse308.sbuify.customer.FollowedArtist;
+import com.cse308.sbuify.customer.FollowedArtistRepository;
+import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.song.SongRepository;
+import com.cse308.sbuify.user.User;
 
 import java.util.List;
 
 public class ArtistDecorator implements ResponseDecorator<Artist> {
 
+    private AuthFacade authFacade;
+
     private SongRepository songRepository;
 
-    public ArtistDecorator(SongRepository songRepository) {
+    private FollowedArtistRepository followedArtistRepo;
+
+    public ArtistDecorator(
+        SongRepository songRepository,
+        FollowedArtistRepository followedArtistRepo,
+        AuthFacade authFacade
+    ) {
         this.songRepository = songRepository;
+        this.followedArtistRepo = followedArtistRepo;
+        this.authFacade = authFacade;
     }
 
     @Override
@@ -22,6 +36,9 @@ public class ArtistDecorator implements ResponseDecorator<Artist> {
 
     @Override
     public void decorate(Artist artist) {
+        User user = authFacade.getCurrentUser();
+
+        // add popular songs
         List<Song> popularSongs = songRepository.getPopularByArtist(artist.getId());
 
         // fixme: come up with a better way to avoid infinite recursion during serialization
@@ -38,6 +55,11 @@ public class ArtistDecorator implements ResponseDecorator<Artist> {
             decorator.decorate(song);
             song.getAlbum().setArtist(artistClone);
         }
+
         artist.set("popularSongs", popularSongs);
+
+        // add followed flag
+        Boolean followed = followedArtistRepo.existsByCustomerAndArtist_Id(user, artist.getId());
+        artist.set("followed", followed);
     }
 }

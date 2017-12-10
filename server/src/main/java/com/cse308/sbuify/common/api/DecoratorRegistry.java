@@ -3,6 +3,7 @@ package com.cse308.sbuify.common.api;
 import com.cse308.sbuify.album.AlbumDecorator;
 import com.cse308.sbuify.album.AlbumRepository;
 import com.cse308.sbuify.artist.ArtistDecorator;
+import com.cse308.sbuify.customer.FollowedArtistRepository;
 import com.cse308.sbuify.customer.FollowedPlaylistRepository;
 import com.cse308.sbuify.customer.PlayQueueDecorator;
 import com.cse308.sbuify.playlist.PlaylistDecorator;
@@ -29,11 +30,12 @@ public class DecoratorRegistry {
         AuthFacade authFacade,
         SongRepository songRepo,
         AlbumRepository albumRepo,
-        FollowedPlaylistRepository followedPlRepo
+        FollowedPlaylistRepository followedPlRepo,
+        FollowedArtistRepository followedArtistRepo
     ) {
         decorators.add(new SongDecorator(songRepo, authFacade));
         decorators.add(new AlbumDecorator(albumRepo, authFacade));
-        decorators.add(new ArtistDecorator(songRepo));
+        decorators.add(new ArtistDecorator(songRepo, followedArtistRepo, authFacade));
         decorators.add(new TypedCollectionDecorator());
         decorators.add(new PlaylistSongDecorator());
         decorators.add(new PlayQueueDecorator());

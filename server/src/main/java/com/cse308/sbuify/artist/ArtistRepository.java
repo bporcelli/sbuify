@@ -1,6 +1,7 @@
 package com.cse308.sbuify.artist;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -52,4 +53,23 @@ public interface ArtistRepository extends CrudRepository<Artist, Integer> {
             nativeQuery = true
     )
     Page<Artist> getRecentlyPlayedByCustomer(@Param("customerId") Integer customerId, Pageable pageable);
+
+    @Query(
+            value = "SELECT a.* " +
+                    "FROM artist a LEFT JOIN (" +
+                    "   SELECT a2.id AS aid, COUNT(fa.song_id) AS cnt" +
+                    "   FROM artist a2, album al, song s, song_featured_artists fa" +
+                    "   WHERE fa.song_id = s.id" +
+                    "       AND s.album_id = al.id" +
+                    "       AND al.artist_id = :artistId" +
+                    "       AND fa.artist_id = a2.id" +
+                    "    GROUP BY a2.id " +
+                    ") AS b " +
+                    "ON a.id = b.aid " +
+                    "WHERE a.id != :artistId " +
+                    "ORDER BY b.cnt DESC\n -- #pageable\n",
+            countQuery = "SELECT COUNT(*) FROM artist WHERE id != :artistId",
+            nativeQuery = true
+    )
+    Page<Artist> getRelatedByArtistId(@Param("artistId") Integer artistId, Pageable pageable);
 }
