@@ -43,6 +43,10 @@ public class ReportRegistry {
                 return report;
             }
         }
+        
+        System.out.println("getReport(id)" + id); 
+        if(id.equals("[listeners-report]"))
+            return new ListenersReport();
 
         return null;
     }

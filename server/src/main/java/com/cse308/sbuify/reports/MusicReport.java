@@ -13,8 +13,8 @@ public class MusicReport extends TableReport {
     }
 
     @Override
-    public String getTemplate() {
+    public String getTemplatePath() {
         // todo
-        return super.getTemplate();
+        return super.getTemplatePath();
     }
 }
