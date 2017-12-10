@@ -1,6 +1,5 @@
 package com.cse308.sbuify.artist;
 
-import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.common.CatalogItem;
 import com.cse308.sbuify.common.Followable;
 import com.cse308.sbuify.common.api.Decorable;
@@ -15,21 +14,18 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Entity
 @Indexed
 public class Artist extends CatalogItem implements Followable, Decorable, Cloneable {
 
-    // todo: monthly listeners (does it really make sense to make this a property?)
-
     @NotNull
     @Column(unique = true)
     private String mbid;
-
-    @ManyToMany
-    @JsonIgnore
-    private Set<Artist> relatedArtists = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "alias")
@@ -50,11 +46,6 @@ public class Artist extends CatalogItem implements Followable, Decorable, Clonea
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Image coverImage;
 
-    @OneToMany
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "album_id"))
-    @JsonIgnore
-    private List<Album> albums = new ArrayList<>();
-
     @Transient
     private Map<String, Object> properties = new HashMap<>();
 
@@ -68,10 +59,6 @@ public class Artist extends CatalogItem implements Followable, Decorable, Clonea
 
     public String getMBID() {
         return mbid;
-    }
-
-    public Set<Artist> getRelatedArtists() {
-        return relatedArtists;
     }
 
     public Integer getMonthlyListeners() {
@@ -103,10 +90,6 @@ public class Artist extends CatalogItem implements Followable, Decorable, Clonea
 
     public void setCoverImage(Image coverImage) {
         this.coverImage = coverImage;
-    }
-
-    public List<Album> getAlbums() {
-        return albums;
     }
 
     public Set<String> getAliases() {
