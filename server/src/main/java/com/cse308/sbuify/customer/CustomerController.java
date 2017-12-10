@@ -12,10 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequestMapping(path = "/api/customer/")
@@ -28,7 +31,22 @@ public class CustomerController {
     private UserRepository userRepository;
 
     @Autowired
+    private SubscriptionRepository subscriptionRepo;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
     private StorageService storageService;
+
+    /**
+     * Get information about the authenticated customer.
+     * @return a 200 response with information about the authenticated customer in the body.
+     */
+    @GetMapping
+    public @ResponseBody Customer getCustomer() {
+        return (Customer) authFacade.getCurrentUser();
+    }
 
     /**
      * Update a customer.
@@ -36,16 +54,29 @@ public class CustomerController {
      * @param updated Updated customer, with fields that should be left unchanged set to null.
      * @return Http.OK successful, Http.FORBIDDEN, no permission, Http.NOT_FOUND, invalid Id
      */
-    @PatchMapping(path = "{id}")
+    @PatchMapping(path = {"", "{id}"})
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
-    public ResponseEntity<?> updateCustomer(@PathVariable Integer id, @RequestBody Customer updated) {
-        User user = getUserById(id);
+    public ResponseEntity<?> updateCustomer(@RequestBody Customer updated, @PathVariable Optional<Integer> id) {
+        // get the user to edit -- either the current user or the one with the given id
+        User user;
+
+        if (id.isPresent()) {
+            user = getUserById(id.get());
+        } else {
+            user = authFacade.getCurrentUser();
+        }
 
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         if (!SecurityUtils.userCanEdit(user)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        String password = updated.getPassword();
+
+        if (password == null || !bCryptPasswordEncoder.matches(password, user.getPassword())) {
+            return new ResponseEntity<>("Invalid password", HttpStatus.FORBIDDEN);
         }
 
         Customer customer = (Customer) user;
@@ -55,6 +86,13 @@ public class CustomerController {
         }
         if (updated.getLastName() != null) {
             customer.setLastName(updated.getLastName());
+        }
+        if (updated.getEmail() != null) {
+            Optional<User> optionalUser = userRepository.findByEmail(updated.getEmail());
+            if (optionalUser.isPresent() && !user.equals(optionalUser.get())) {  // email in use
+                return new ResponseEntity<>("The email address you entered is in use", HttpStatus.BAD_REQUEST);
+            }
+            customer.setEmail(updated.getEmail());
         }
         if (updated.getBirthday() != null) {
             customer.setBirthday(updated.getBirthday());
@@ -84,6 +122,57 @@ public class CustomerController {
         }
         customer.setProfileImage(image);
         userRepository.save(customer);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Upgrade the authenticated customer's account.
+     * @param card The credit card entered by the user.
+     * @return an empty 200 response on success.
+     */
+    @PostMapping(path = "subscription")
+    public ResponseEntity<?> upgradeAccount(@RequestBody CreditCard card) {
+        Customer customer = (Customer) authFacade.getCurrentUser();
+
+        if (customer.isPremium()) {
+            return new ResponseEntity<>("Customer is already a premium user.", HttpStatus.BAD_REQUEST);
+        }
+        if (!card.isValid()) {
+            return new ResponseEntity<>("Invalid credit card number.", HttpStatus.BAD_REQUEST);
+        }
+
+        /* In reality, we would use a third party API to save the customer's payment information and create
+         * their subscription; for our purposes, we just generate a dummy subscription. */
+        String subscriptionId = UUID.randomUUID().toString();
+        Subscription subscription = new Subscription(subscriptionId);
+        customer.setSubscription(subscription);
+
+        userRepository.save(customer);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Downgrade the authenticated customer's account.
+     * @return an empty 200 response on success.
+     */
+    @DeleteMapping(path = "subscription")
+    public ResponseEntity<?> downgradeAccount() {
+        Customer customer = (Customer) authFacade.getCurrentUser();
+
+        if (!customer.isPremium()) {
+            return new ResponseEntity<>("Customer doesn't have a subscription.", HttpStatus.BAD_REQUEST);
+        }
+
+        // set subscription end date
+        Subscription subscription = customer.getSubscription();
+        subscription.setEnd(LocalDateTime.now());
+        subscriptionRepo.save(subscription);
+
+        // unset customer subscription
+        customer.setSubscription(null);
+        userRepository.save(customer);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

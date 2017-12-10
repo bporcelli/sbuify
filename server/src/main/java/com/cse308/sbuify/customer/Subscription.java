@@ -1,17 +1,10 @@
 package com.cse308.sbuify.customer;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 public class Subscription implements Serializable {
@@ -28,12 +21,10 @@ public class Subscription implements Serializable {
     @Column(unique = true)
     private String stripeId;
 
-    // Subscription start date
     @NotNull
-    private LocalDateTime start;
+    private LocalDateTime start = LocalDateTime.now();
 
-    // Subscription end date
-    private LocalDateTime end; // todo: when/where to set?
+    private LocalDateTime end;
 
     public Subscription() {}
 
@@ -42,29 +33,58 @@ public class Subscription implements Serializable {
     }
 
     /**
-     * Set subscription start date when Subscription is persisted.
-     */
-    @PrePersist
-    private void onPrePersist() {
-        this.start = LocalDateTime.now();
-    }
-
-    /**
-     * Getters and setters.
+     * Internal subscription ID.
      */
     public Integer getId() {
         return id;
     }
 
+    /**
+     * {@link #getId}
+     */
     public void setId(Integer id) {
         this.id = id;
     }
 
+    /**
+     * Stripe subscription ID.
+     */
     public String getStripeId() {
         return stripeId;
     }
 
+    /**
+     * {@link #getStripeId()}
+     */
     public void setStripeId(String stripeId) {
         this.stripeId = stripeId;
+    }
+
+    /**
+     * Subscription start date.
+     */
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    /**
+     * {@link #getStart()}
+     */
+    public void setStart(LocalDateTime start) {
+        this.start = start;
+    }
+
+    /**
+     * Subscription end date.
+     */
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    /**
+     * {@link #getEnd()}
+     */
+    public void setEnd(LocalDateTime end) {
+        this.end = end;
     }
 }

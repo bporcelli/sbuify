@@ -15,18 +15,15 @@ import javax.persistence.PrePersist;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
 @Entity
 public class Customer extends User implements Followable {
 
-	// Authorities granted to customers
-	private final static Collection<GrantedAuthority> AUTHORITIES = new ArrayList<>();
-
-	static {
-		AUTHORITIES.add(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
-	}
+	/** Authorities granted to customers */
+	private final static Collection<GrantedAuthority> AUTHORITIES = Arrays.asList(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
 
 	@NotNull
 	@NotEmpty
@@ -53,7 +50,6 @@ public class Customer extends User implements Followable {
 	@JsonIgnore
 	private Playlist library;
 
-	// Profile image for customer. When customer is updated/deleted, cascade.
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Image profileImage;
 
@@ -68,7 +64,7 @@ public class Customer extends User implements Followable {
 	}
 
 	/**
-	 * Initialize the customer just after they are saved to the database.
+	 * Initialize the customer just before they are saved to the database.
 	 */
 	@PrePersist
 	private void initialize() {
@@ -77,63 +73,109 @@ public class Customer extends User implements Followable {
 	}
 
     /**
-	 * Getters and setters.
+	 * The customer's first name.
 	 */
 	public String getFirstName() {
 		return firstName;
 	}
 
+    /**
+     * {@link #getFirstName()}
+     */
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
+    /**
+     * The customer's last name.
+     */
 	public String getLastName() {
 		return lastName;
 	}
 
+    /**
+     * {@link #getLastName()}
+     */
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
 
+    /**
+     * The customer's birthday.
+     */
 	public Date getBirthday() {
 		return birthday;
 	}
 
+    /**
+     * {@link #getBirthday()
+     */
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
 	}
 
+    /**
+     * The customer's subscription, or null if the customer is not a subscriber.
+     */
 	public Subscription getSubscription() {
 		return subscription;
 	}
 
+    /**
+     * {@link #getSubscription()}
+     */
 	public void setSubscription(Subscription subscription) {
 		this.subscription = subscription;
 	}
 
+    /**
+     * The customer's play queue.
+     */
 	public PlayQueue getPlayQueue() {
 		return playQueue;
 	}
 
+    /**
+     * {@link #getPlayQueue()}
+     */
 	public void setPlayQueue(PlayQueue playQueue) {
 		this.playQueue = playQueue;
 	}
 
+    /**
+     * The customer's library of saved music.
+     */
 	public Playlist getLibrary() {
 		return library;
 	}
 
+    /**
+     * {@link #getLibrary()}
+     */
 	public void setLibrary(Playlist library) {
 		this.library = library;
 	}
 
+    /**
+     * The customer's profile image, or null if they haven't set one.
+     */
 	public Image getProfileImage() {
 		return profileImage;
 	}
 
+    /**
+     * {@link #getProfileImage()}
+     */
 	public void setProfileImage(Image profileImage) {
 		this.profileImage = profileImage;
 	}
+
+    /**
+     * A boolean flag indicating whether the customer is a premium user (subscriber).
+     */
+    public boolean isPremium() {
+        return subscription != null;
+    }
 
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
@@ -144,10 +186,5 @@ public class Customer extends User implements Followable {
     @JsonIgnore(false)
 	public String getName() {
 		return this.firstName + " " + this.lastName;
-	}
-
-	@JsonIgnore
-	public boolean isPremium() {
-		return subscription != null;
 	}
 }

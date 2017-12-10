@@ -1,68 +1,104 @@
-<form class="settings-form">
-    <fieldset class="form-group">
-        <legend>Email Address</legend>
-        <div class="form-row">
-            <div class="col-12 col-lg-7">
-                <label for="email" class="text-muted">Your email is used for account-related notifications</label>
-            </div>
-            <div class="col-12 col-lg-5">
-                <input type="email" class="form-control" name="email" id="email" value="" placeholder="Enter your email address." required>
-            </div>
-        </div>
-    </fieldset>
-
-    <fieldset class="form-group">
-        <legend>Date of Birth</legend>
-
-        <div class="form-row">
-          <div class="col-12 col-lg-7">
-            <label for="birthMonth" class="text-muted">You must be at least 13 years old to use SBUify.</label>
-          </div>
-          <div class="col-12 col-lg-5">
-            <div class="form-row">
-              <div class="col-5">
-                <label class="sr-only" for="birthMonth">Month</label>
-                <select class="form-control" name="birthMonth" id="birthMonth">
-                  <option value="1">January</option>
-                  <option value="2">February</option>
-                  <option value="3">March</option>
-                  <option value="4">April</option>
-                  <option value="5">May</option>
-                  <option value="6">June</option>
-                  <option value="7">July</option>
-                  <option value="8">August</option>
-                  <option value="9">September</option>
-                  <option value="10">October</option>
-                  <option value="11">November</option>
-                  <option value="12">December</option>
-                </select>
-              </div>
-              <div class="col-3">
-                <label class="sr-only" for="birthDate">Date</label>
-                <input type="number" class="form-control" name="birthDate" id="birthDate" placeholder="DD" min="1" max="31" required>
-              </div>
-              <div class="col-4">
-                <label class="sr-only" for="birthMonth">Year</label>
-                <input type="number" class="form-control" name="birthYear" id="birthYear" placeholder="YYYY" min="1900" max="2004" required>
-              </div>
-            </div>
-          </div>
-        </div>
-    </fieldset>
-
-    <fieldset class="form-group">
-        <legend>Verify Password</legend>
-        <div class="form-row">
-            <div class="col-12 col-lg-7">
-                <label for="password" class="text-muted">Please enter your current password</label>
-            </div>
-            <div class="col-12 col-lg-5">
-                <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password." required>
-            </div>
-        </div>
-    </fieldset>
-
-    <div class="form-group text-center">
-        <button type="submit" class="btn btn-wide btn-primary" title="Update Account">Save Changes</button>
+<form class="settings-form" #form="ngForm" (ngSubmit)="onSubmit()">
+  <fieldset class="form-group" *ngIf="user?.premium">
+    <legend>Subscription</legend>
+    <div class="form-row">
+      <div class="col-12 col-lg-7">
+        <label for="email" class="text-muted">You may cancel your SBUify premium subscription at any time</label>
+      </div>
+      <div class="col-12 col-lg-5">
+        <button type="button" class="btn btn-outline-secondary" (click)="doDowngrade()">Cancel Subscription</button>
+      </div>
     </div>
+  </fieldset>
+
+  <fieldset class="form-group">
+    <legend>Name</legend>
+    <div class="form-row">
+      <div class="col-12 col-lg-7">
+        <label for="email" class="text-muted">Your name is used to personalize your SBUify experience</label>
+      </div>
+      <div class="col-12 col-lg-5">
+        <div class="form-row">
+          <div class="col-6">
+            <input type="text" class="form-control" name="firstName" id="firstName" placeholder="First name" required [(ngModel)]="firstName">
+          </div>
+          <div class="col-6">
+            <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last name" required [(ngModel)]="lastName">
+          </div>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="form-group">
+    <legend>Email Address</legend>
+    <div class="form-row">
+      <div class="col-12 col-lg-7">
+        <label for="email" class="text-muted">Your email is used for account-related notifications</label>
+      </div>
+      <div class="col-12 col-lg-5">
+        <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email address." required [(ngModel)]="email">
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="form-group">
+    <legend>Date of Birth</legend>
+
+    <div class="form-row">
+      <div class="col-12 col-lg-7">
+        <label for="birthMonth" class="text-muted">You must be at least 13 years old to use SBUify.</label>
+      </div>
+      <div class="col-12 col-lg-5">
+        <div class="form-row">
+          <div class="col-5">
+            <label class="sr-only" for="birthMonth">Month</label>
+            <select class="form-control" name="birthMonth" id="birthMonth" [(ngModel)]="birthMonth">
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label class="sr-only" for="birthDate">Date</label>
+            <input type="number" class="form-control" name="birthDate" id="birthDate" placeholder="DD" min="1" max="31" required [(ngModel)]="birthDate">
+          </div>
+          <div class="col-4">
+            <label class="sr-only" for="birthMonth">Year</label>
+            <input type="number" class="form-control" name="birthYear" id="birthYear" placeholder="YYYY" min="minBirthYear" max="maxBirthYear" required [(ngModel)]="birthYear">
+          </div>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="form-group">
+    <legend>Verify Password</legend>
+    <div class="form-row">
+      <div class="col-12 col-lg-7">
+        <label for="password" class="text-muted">Please enter your current password</label>
+      </div>
+      <div class="col-12 col-lg-5">
+        <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password." required [(ngModel)]="password">
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="form-group" *ngIf="feedback">
+    <p class="mx-auto" [ngClass]="feedback.class">{{ feedback.text }}</p>
+  </div>
+
+  <div class="form-group text-center">
+    <button type="submit" class="btn btn-wide btn-primary" title="Update Account"
+          [disabled]="!form.form.valid || !form.form.dirty || disabled">Save Changes</button>
+  </div>
 </form>

@@ -1,0 +1,54 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="upgradeModalLabel">Upgrade Account</h5>
+  <button type="button" class="close" aria-label="Close" (click)="close()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form #form="ngForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="number">Card Number</label>
+      <input type="text" class="form-control" name="number" id="number" placeholder="4716868365708693457" minlength="8" maxlength="19" required pattern="\d+" [(ngModel)]="cardNumber">
+    </div>
+    <div class="form-row form-group">
+      <div class="col-4">
+        <label for="cvc">CVV</label>
+        <input type="text" class="form-control" name="cvc" id="cvc" placeholder="123" minlength="3" maxlength="4" required pattern="\d{3,4}" [(ngModel)]="cvc">
+      </div>
+      <div class="col-4">
+        <label for="exp_month">Expiration Month</label>
+        <select class="form-control" name="exp_month" id="exp_month" required [(ngModel)]="expMonth">
+          <option value="01">01</option>
+          <option value="02">02</option>
+          <option value="03">03</option>
+          <option value="04">04</option>
+          <option value="05">05</option>
+          <option value="06">06</option>
+          <option value="07">07</option>
+          <option value="08">08</option>
+          <option value="09">09</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </select>
+      </div>
+      <div class="col-4">
+        <label for="exp_year">Expiration Year</label>
+        <select class="form-control" name="exp_year" id="exp_year" required [(ngModel)]="expYear">
+          <option *ngFor="let year of validYears" [value]="year">{{ year }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row" *ngIf="feedback">
+      <p class="mx-auto" [ngClass]="feedback.class">{{ feedback.text }}</p>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+  <button type="button" class="btn btn-primary"
+    [disabled]="!form.form.valid || disabled"
+    (click)="doSubmit()">
+    Start Free Trial
+  </button>
+</div>

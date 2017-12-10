@@ -63,6 +63,8 @@ export class PlaylistModalComponent extends FormComponent {
 
   /** Handle form submissions. */
   onSubmit(): void {
+    super.onSubmit();
+
     // construct playlist
     let playlist = {
       type: 'playlist',  // type info, required for deserialization

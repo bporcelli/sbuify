@@ -1,15 +1,24 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from "@angular/forms";
+import { CommonModule } from '@angular/common';
 import { UserService } from "./user.service";
 import { PreferencesService } from "./preferences.service";
-import { UpgradeAccountComponent } from "./upgrade-account.component";
+import { UpgradeAccountModalComponent } from "./upgrade-account-modal.component";
 
 @NgModule({
+  imports: [
+    FormsModule,
+    CommonModule
+  ],
   providers: [
     UserService,
     PreferencesService
   ],
   declarations: [
-    UpgradeAccountComponent
+    UpgradeAccountModalComponent
+  ],
+  entryComponents: [
+    UpgradeAccountModalComponent
   ]
 })
 export class UserModule {}

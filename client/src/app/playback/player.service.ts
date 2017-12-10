@@ -211,7 +211,7 @@ export class PlayerService {
     }
 
     // sync with server
-    this.prefService.setPreference('shuffle', this.shuffled);
+    this.prefService.setPreference('shuffle', this.shuffled).subscribe();
   }
 
   /** Shuffle the songs in the current playlist, leaving the current song in place. */
@@ -286,7 +286,7 @@ export class PlayerService {
     }
 
     // sync with server
-    this.prefService.setPreference('repeat', this.repeat);
+    this.prefService.setPreference('repeat', this.repeat).subscribe();
   }
 
   /** Advance to the next song when playback of the current song ends */

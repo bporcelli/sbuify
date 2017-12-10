@@ -31,6 +31,8 @@ export class PlaylistFolderModalComponent extends FormComponent {
 
   /** Handle form submissions. */
   onSubmit(): void {
+    super.onSubmit();
+
     let folder = {
       name: this.name,
       folder: true
@@ -64,6 +66,7 @@ export class PlaylistFolderModalComponent extends FormComponent {
   }
 
   private handleError(err: any) {
+    this.disabled = false;
     this.showFeedback(err['error'] ? err['error'] : err);
   }
 }

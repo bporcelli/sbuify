@@ -1,36 +1,40 @@
-<form class="settings-form">
-    <fieldset class="form-group">
-        <legend>Language</legend>
-        <div class="form-row">
-            <div class="col-12 col-lg-7">
-                <label for="lang" class="text-muted">Choose your preferred language</label>
-            </div>
-            <div class="col-12 col-lg-5">
-                <select class="form-control custom-select" name="lang" id="lang">
-                    <option value="zh">Chinese</option>
-                    <option value="es">Spanish</option>
-                    <option value="en" selected>English</option>
-                    <option value="hi">Hindi</option>
-                    <option value="ar">Arabic</option>
-                </select>
-            </div>
-        </div>
-    </fieldset>
-    <fieldset class="form-group">
-        <legend>Playback</legend>
-        <div class="form-row">
-            <div class="col-12 col-lg-7">
-                <label for="hq" class="text-muted">Enable high quality streaming (Premium only)</label>
-            </div>
-            <div class="col-12 col-lg-5">
-                <label class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" name="hq" id="hq" disabled>
-                    <span class="custom-control-indicator"></span>
-                </label>
-            </div>
-        </div>
-    </fieldset>
-    <div class="form-group text-center">
-        <button type="submit" class="btn btn-wide btn-primary" title="Save Preferences">Save</button>
+<form class="settings-form" #form="ngForm" (ngSubmit)="onSubmit()">
+  <!--<fieldset class="form-group">-->
+    <!--<legend>Language</legend>-->
+    <!--<div class="form-row">-->
+      <!--<div class="col-12 col-lg-7">-->
+        <!--<label for="lang" class="text-muted">Choose your preferred language</label>-->
+      <!--</div>-->
+      <!--<div class="col-12 col-lg-5">-->
+        <!--<select class="form-control custom-select" name="lang" id="lang">-->
+          <!--<option value="zh">Chinese</option>-->
+          <!--<option value="es">Spanish</option>-->
+          <!--<option value="en" selected>English</option>-->
+          <!--<option value="hi">Hindi</option>-->
+          <!--<option value="ar">Arabic</option>-->
+        <!--</select>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</fieldset>-->
+  <fieldset class="form-group">
+    <legend>Playback</legend>
+    <div class="form-row">
+      <div class="col-12 col-lg-7">
+        <label for="hq" class="text-muted">Enable high quality streaming (Premium only)</label>
+      </div>
+      <div class="col-12 col-lg-5">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" name="hq" id="hq" [disabled]="!user?.premium" [(ngModel)]="hq">
+          <span class="custom-control-indicator"></span>
+        </label>
+      </div>
     </div>
+  </fieldset>
+  <div class="form-group" *ngIf="feedback">
+    <p class="mx-auto" [ngClass]="feedback.class">{{ feedback.text }}</p>
+  </div>
+  <div class="form-group text-center">
+    <button type="submit" class="btn btn-wide btn-primary" title="Save Preferences"
+        [disabled]="!form.form.valid || !form.form.dirty || disabled">Save</button>
+  </div>
 </form>

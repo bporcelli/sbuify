@@ -1,6 +1,8 @@
 import { User } from "./user";
 
 export class Customer extends User {
+  public premium: boolean;
+
   constructor(
     public email: string,
     public password: string,

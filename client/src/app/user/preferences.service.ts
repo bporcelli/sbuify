@@ -12,31 +12,37 @@ export class PreferencesService {
     this.client.get<object>("/api/customer/preferences")
       .subscribe(
         (preferences: object) => this.preferencesSubject.next(preferences),
-        (err: any) => console.log('failed to get preferences from server. error was:', err)
+        (err: any) => this.handleError(err, null)
       );
   }
 
-  setPreference(key: string, value: any): void {
-    this.client.put('/api/customer/preferences/' + key, value)
-      .subscribe(
-        () => {
-          let preferences = this.preferencesSubject.value || {};
-          preferences[key] = value;
-          this.preferencesSubject.next(preferences);
-        },
-        (err: any) => console.log('failed to set preference ' + key + ':', err)
-      );
+  setPreference(key: string, value: any): Observable<boolean> {
+    return this.client.put('/api/customer/preferences/' + key, value)
+      .catch(this.handleError)
+      .map(() => {
+        let preferences = this.preferencesSubject.value || {};
+        preferences[key] = value;
+        this.preferencesSubject.next(preferences);
+        return true;
+      });
   }
 
-  setPreferences(preferences: object): void {
-    this.client.put('/api/customer/preferences', preferences)
-      .subscribe(
-        (resp: any) => this.preferencesSubject.next(preferences),
-        (err: any) => console.log('failed to update preferences:', err)
-      );
+  setPreferences(preferences: object): Observable<boolean> {
+    return this.client.put('/api/customer/preferences', preferences)
+      .catch(this.handleError)
+      .map(() => {
+        this.preferencesSubject.next(preferences);
+        return true;
+      });
   }
 
   get preferences(): Observable<object> {
     return this.preferencesSubject.asObservable().distinctUntilChanged();
+  }
+
+  private handleError(err: any, caught: Observable<any>): Observable<any> {
+    // todo: show error message
+    console.log('error occurred while getting or setting preferences:', err);
+    return Observable.throw(err);
   }
 }

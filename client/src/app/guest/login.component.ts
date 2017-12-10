@@ -9,7 +9,7 @@ import { UserService } from "../user/user.service";
 import { Config } from "../config";
 
 @Component({
-    templateUrl: './login.component.html',
+  templateUrl: './login.component.html',
 })
 export class LoginComponent extends FormComponent implements OnInit {
 
@@ -47,15 +47,17 @@ export class LoginComponent extends FormComponent implements OnInit {
   }
 
   private handleSuccess(resp: any) {
-    this.userService.setAuth(resp.headers.get('Authorization'), this.remember);
+    this.userService
+      .authenticate(resp.headers.get('Authorization'), this.remember)
+      .subscribe(() => {
+        if ( !this.redirectURL ) {
+          this.redirectURL = Config.DEFAULT_REDIRECT;
+        } else {
+          this.redirectURL = decodeURIComponent(this.redirectURL);
+        }
 
-    if ( !this.redirectURL ) {
-      this.redirectURL = Config.DEFAULT_REDIRECT;
-    } else {
-      this.redirectURL = decodeURIComponent(this.redirectURL);
-    }
-
-    this.router.navigate([this.redirectURL]);
+        this.router.navigate([this.redirectURL]);
+      });
   }
 
   /** Handle form submissions */

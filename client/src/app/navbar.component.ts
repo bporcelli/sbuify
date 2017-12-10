@@ -1,20 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SearchService } from "./search/search.service";
 import { UserService } from "./user/user.service";
 import { User } from "./user/user";
+import { UpgradeAccountModalComponent } from "./user/upgrade-account-modal.component";
 
 @Component({
   selector: 'navbar',
   templateUrl: './navbar.component.html'
 })
 export class NavbarComponent implements OnInit {
-  user: User = null;
+
+  user: User = null;  // todo: add premium flag (get full customer object from server in AuthService/UserService)
 
   constructor(
     public userService: UserService,
     private searchService: SearchService,
-    private router: Router
+    private router: Router,
+    private modalService: NgbModal
   ) {}
 
   ngOnInit(): void {
@@ -29,6 +33,10 @@ export class NavbarComponent implements OnInit {
 
   search() {
     this.router.navigate(['search'])
+  }
+
+  openUpgradeModal(): void {
+    this.modalService.open(UpgradeAccountModalComponent);
   }
 
   get query(): string {
