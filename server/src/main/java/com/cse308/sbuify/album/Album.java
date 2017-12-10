@@ -38,7 +38,7 @@ public class Album extends CatalogItem implements Queueable, Decorable {
 
     @Enumerated(value = EnumType.STRING)
     @NotNull
-    private AlbumType type;  // todo: make searchable?
+    private AlbumType albumType;  // todo: make searchable?
 
     @Transient
     private Map<String, Object> properties = new HashMap<>();
@@ -105,6 +105,10 @@ public class Album extends CatalogItem implements Queueable, Decorable {
             this.songs.clear();
             this.songs.addAll(songs);
         }
+    }
+
+    public AlbumType getAlbumType() {
+        return albumType;
     }
 
     @Override
