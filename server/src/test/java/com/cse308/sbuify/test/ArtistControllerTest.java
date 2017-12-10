@@ -74,15 +74,16 @@ public class ArtistControllerTest extends AuthenticatedTest {
         assertEquals(expected, actual);
     }
 
-    //todo: change to paginable
     @Test
     public void getRelatedArtist(){
-        Map<String, String> params = new HashMap<>();
-        params.put("artistId", "1");
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("artistId", 1);
+        params.put("offset", 0);
 
         ResponseEntity<Set<Artist>> response =
-                restTemplate.exchange("/api/artists/{artistId}/related", HttpMethod.GET,null,
-                        new ParameterizedTypeReference<Set<Artist>>() {}, params);
+                restTemplate.exchange("/api/artists/{artistId}/related?offset={offset}", HttpMethod.GET,
+                        null, new ParameterizedTypeReference<Set<Artist>>() {}, params);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());

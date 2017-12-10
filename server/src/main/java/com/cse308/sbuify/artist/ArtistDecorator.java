@@ -2,6 +2,7 @@ package com.cse308.sbuify.artist;
 
 import com.cse308.sbuify.common.api.DecoratorRegistry;
 import com.cse308.sbuify.common.api.ResponseDecorator;
+import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.customer.FollowedArtistRepository;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.song.Song;
@@ -56,6 +57,10 @@ public class ArtistDecorator implements ResponseDecorator<Artist> {
         }
 
         artist.set("popularSongs", popularSongs);
+
+        if (!(user instanceof Customer)) {  // done decorating
+            return;
+        }
 
         // add followed flag
         Boolean followed = followedArtistRepo.existsByCustomerAndArtist_Id(user, artist.getId());
