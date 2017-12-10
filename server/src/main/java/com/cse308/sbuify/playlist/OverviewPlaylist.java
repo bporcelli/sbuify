@@ -1,10 +1,9 @@
 package com.cse308.sbuify.playlist;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class OverviewPlaylist {
@@ -16,14 +15,12 @@ public class OverviewPlaylist {
     @NotNull
     private String title;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval=true)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "playlist_id"))
-    @JsonIgnore
-    private Set<Playlist> playlistSet = new HashSet<>();
+    private List<Playlist> list = new ArrayList<>();
 
     public OverviewPlaylist(){
     }
-
     public OverviewPlaylist(String title){
         this.title = title;
     }
@@ -44,14 +41,24 @@ public class OverviewPlaylist {
         this.title = title;
     }
 
-    public Set<Playlist> getPlaylistSet() {
-        return playlistSet;
+    public List<Playlist> getList() {
+        return list;
     }
 
-    public void setPlaylistSet(Set<Playlist> playlistSet) {
-        if(playlistSet != null){
-            this.playlistSet.clear();
-            this.playlistSet.addAll(playlistSet);
+    public void setList(List<Playlist> list) {
+        if(list != null){
+            this.list.clear();
+            this.list.addAll(list);
         }
+    }
+
+    public void addPlaylist(Playlist playlist){
+        if(playlist != null){
+            list.add(playlist);
+        }
+    }
+
+    public void clearPlaylist(){
+        list.clear();
     }
 }

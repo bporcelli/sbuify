@@ -57,43 +57,52 @@ public interface SongRepository  extends CrudRepository<Song, Integer> {
     List<Song> getPopularByArtist(@Param("artistId") Integer artistId);
 
     @Query(value = "SELECT s.* " +
-            "FROM song s" +
+            "FROM song s " +
             "ORDER BY s.play_count DESC " +
             "LIMIT 50", nativeQuery = true)
     List<Song> getTop50PopularSongs();
 
     @Query(value = "SELECT s.* " +
-            "FROM song s" +
-            "WHERE s.active = true" +
+            "FROM song s " +
+            "WHERE s.active = true " +
             "ORDER BY s.play_count ASC " +
             "LIMIT 50", nativeQuery = true)
-    Set<Song> getTop50UnpopularSongs();
+    List<Song> getTop50UnpopularSongs();
 
     @Query(value = "SELECT s.* " +
-            "FROM song s, song_genres sg, genre g" +
+            "FROM song s, song_genres sg, genre g " +
             "WHERE s.id = sg.song_id " +
             "   AND sg.genre_id = g.id" +
-            "   AND (g.name = :genre " +
-            "   OR g.name = :genre2) " +
-            "ORDER BY RAND()", nativeQuery = true)
-    Set<Song> mixGenre(@Param("genre") String genre, @Param("genre2") String genre2);
+            "   AND g.name = :genre " +
+            "ORDER BY s.play_count DESC " +
+            "LIMIT 50", nativeQuery = true)
+    List<Song> top50SongsByGenre(@Param("genre") String genre);
 
     @Query(value = "SELECT s.* " +
-            "FROM song s, song_genres sg, genre g" +
-            "WHERE s.id = sg.song_id " +
+            "FROM song s, song_genres sg, genre g " +
+            "WHERE s.id = sg.song_id" +
             "   AND sg.genre_id = g.id" +
-            "   AND (g.name = :genre " +
-            "   OR g.name = :genre2" +
-            "   OR g.name = :genre3)" +
+            "   AND ( g.id = :genre" +
+            "   OR g.id = :genre2)" +
             "ORDER BY RAND()", nativeQuery = true)
-    Set<Song> mixTripleGenre(@Param("genre") String genre,
-                             @Param("genre2") String genre2,
-                             @Param("genre3") String genre3);
+    List<Song> genreDuo(@Param("genre") Integer genre, @Param("genre2") Integer genre2);
 
     @Query(value = "SELECT s.* " +
-            "FROM song s, stream st" +
+            "FROM song s, song_genres sg, genre g " +
+            "WHERE s.id = sg.song_id" +
+            "   AND sg.genre_id = g.id" +
+            "   AND (g.id = :genre" +
+            "   OR g.id = :genre2" +
+            "   OR g.id = :genre3)" +
+            "ORDER BY RAND()", nativeQuery = true)
+    List<Song> genreTriplet(@Param("genre") Integer genre,
+                             @Param("genre2") Integer genre2,
+                             @Param("genre3") Integer genre3);
+
+    @Query(value = "SELECT s.* " +
+            "FROM song s, stream st " +
             "WHERE st.customer_id = :customerId " +
-            "   AND s.id = st.song_id" +
+            "   AND s.id = st.song_id " +
             "ORDER BY st.time DESC" , nativeQuery = true)
     Set<Song> getRecentlyPlayed(@Param("customerId") Integer customerId);
 
@@ -109,14 +118,14 @@ public interface SongRepository  extends CrudRepository<Song, Integer> {
             "   AND s.id = sfa.song_id) " +
             "   OR (ar.artist_id = :artistId " +
             "   AND s.album_id = ar.id) " +
-            "ORDER BY  RAND() ", nativeQuery = true)
-    List<Song> getArtistOfTheMonth(@Param("artistId") Integer artistId);
+            "ORDER BY  RAND()", nativeQuery = true)
+    List<Song> top50SongsByArtist(@Param("artistId") Integer artistId);
 
     @Query(value = "SELECT DISTINCT s.*" +
             "FROM song s, album ar " +
             "WHERE (ar.artist_id = :artistId " +
             "   OR ar.artist_id = :artistId2)" +
-            "   AND s.album_id = ar.id" +
+            "   AND s.album_id = ar.id " +
             "ORDER BY  RAND() ", nativeQuery = true)
     List<Song> artistDuo(@Param("artistId") Integer artistId,
                          @Param("artistId2") Integer artistId2);
