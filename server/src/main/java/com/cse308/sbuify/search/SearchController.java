@@ -4,6 +4,7 @@ import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.common.TypedCollection;
 import com.cse308.sbuify.common.api.DecorateResponse;
+import com.cse308.sbuify.customer.Customer;
 import com.cse308.sbuify.label.Label;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.song.Song;
@@ -35,6 +36,7 @@ public class SearchController {
         types.put("album", Album.class);
         types.put("playlist", Playlist.class);
         types.put("label", Label.class);
+        types.put("customer", Customer.class);
     }
 
     /**

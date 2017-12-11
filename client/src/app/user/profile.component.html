@@ -16,4 +16,38 @@
   </div>
 </section>
 
-{{ isCurrentUser() | json }}
+<section id="profile">
+  <ngb-tabset>
+    <ngb-tab id="activity" title="Activity">
+      <ng-template ngbTabContent>
+        <p class="lead">No activity to display</p> <!-- todo -->
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="friends" title="Friends">
+      <ng-template ngbTabContent>
+        <table *ngIf="friends.length > 0; else noFriendsTemplate" class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let friend of friends; index as i">
+              <td>{{ i + 1 }}</td>
+              <td>
+                <button type="button" class="btn btn-link remove-song" title="Unfollow" (click)="removeFriend(friend)" [hidden]="!isCurrentUser()">
+                  <i class="fa fa-lg fa-fw fa-check"></i>
+                </button>
+                {{ friend.name }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <ng-template #noFriendsTemplate>
+          <p class="lead">This user doesn't have any friends.</p>
+        </ng-template>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</section>

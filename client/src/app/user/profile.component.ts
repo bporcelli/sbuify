@@ -3,8 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Customer } from "./customer";
 import { UserService } from "./user.service";
-import {ProfilePictureModalComponent} from "./profile-picture-modal.component";
-import {Image} from "../shared/image";
+import { ProfilePictureModalComponent } from "./profile-picture-modal.component";
+import {User} from "./user";
 
 @Component({
   templateUrl: './profile.component.html'
@@ -12,10 +12,16 @@ import {Image} from "../shared/image";
 export class ProfileComponent implements OnInit {
 
   /** Current user */
-  current: Customer = null;
+  private current: Customer = null;
 
   /** User being viewed */
-  user: Customer = null;
+  private user: Customer = null;
+
+  /** Friends */
+  private friends: Customer[] = [];
+
+  /** Are the friends still loading? */
+  private loading: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,10 +31,21 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.data
-      .subscribe((data: { user: Customer }) => this.user = data.user);
+      .subscribe((data: { user: Customer }) => this.init(data.user));
 
     this.userService.currentUser.take(1)
       .subscribe((current) => this.current = current);
+  }
+
+  /** Initialize user and friends */
+  private init(user: Customer) {
+    this.user = user;
+
+    this.userService.getFriends(this.user['id'])
+      .subscribe((friends) => {
+        this.friends = friends;
+        this.loading = false;
+      });
   }
 
   /** Open Profile Picture modal */
@@ -56,9 +73,15 @@ export class ProfileComponent implements OnInit {
       .subscribe((following) => this.user['followed'] = following);
   }
 
-  isCurrentUser(): boolean {
-    console.log('checking: is', this.user, '=', this.current);
+  /** Unfollow a friend */
+  removeFriend(friend: any): void {
+    this.userService.toggleFollowing(friend)
+      .subscribe(() => {
+        this.friends = this.friends.filter(value => value['id'] != friend['id']);
+      });
+  }
 
+  isCurrentUser(): boolean {
     return this.current && this.user && this.current['id'] == this.user['id'];
   }
 }

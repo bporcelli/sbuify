@@ -1,26 +1,26 @@
 package com.cse308.sbuify.customer;
 
 import com.cse308.sbuify.common.Followable;
+import com.cse308.sbuify.common.api.Decorable;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.playlist.Playlist;
 import com.cse308.sbuify.user.User;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 @Entity
-public class Customer extends User implements Followable {
+@Indexed
+public class Customer extends User implements Followable, Decorable {
 
 	/** Authorities granted to customers */
 	private final static Collection<GrantedAuthority> AUTHORITIES = Arrays.asList(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
@@ -52,6 +52,9 @@ public class Customer extends User implements Followable {
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	private Image profileImage;
+
+	@Transient
+	private Map<String, Object> properties = new HashMap<>();
 
 	public Customer() {
 	}
@@ -177,6 +180,29 @@ public class Customer extends User implements Followable {
         return subscription != null;
     }
 
+    /**
+     * Get the transient properties of this customer.
+     */
+    @JsonAnyGetter
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    /**
+     * Get a specific transient property of this customer.
+     */
+    public Object get(String key) {
+        return properties.get(key);
+    }
+
+    /**
+     * Set a transient property of this customer.
+     */
+    @JsonAnySetter
+    public void set(String key, Object value) {
+        properties.put(key, value);
+    }
+
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
 		return AUTHORITIES;
@@ -184,6 +210,7 @@ public class Customer extends User implements Followable {
 
 	@Override
     @JsonIgnore(false)
+    @Field(name = "name")
 	public String getName() {
 		return this.firstName + " " + this.lastName;
 	}

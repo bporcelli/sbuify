@@ -35,18 +35,23 @@
         <div playlist-grid [playlists]="results | async" [pending]="pending"></div>
       </ng-template>
     </ngb-tab>
-    <ngb-tab id="profile" title="Profiles">
+    <ngb-tab id="customer" title="Profiles">
       <ng-template ngbTabContent>
-        <div *ngIf="results | async">
+        <ng-container *ngIf="results | async">
           <div *ngIf="results.value.length > 0 || pending; else noResultsTemplate" class="row">
-            <div *ngFor="let artist of results.value" class="col-md-2 artist-list-item">
-              <a class="d-block" href="#">
-                <img class="img-fluid" [src]="artist.image | toImageSrc:'catalog'" alt="{{ artist.name }}" width="500" height="500">
+            <div *ngFor="let customer of results.value" class="col-sm-6 col-lg-4 col-xl-2 playlist text-center">
+              <a class="playlist-image" [routerLink]="['/customer', customer.id]">
+                <img class="img-fluid"
+                     [src]="customer.image | toImageSrc:'catalog'"
+                     alt="{{ customer.name }}"
+                     title="{{ customer.name }}"
+                     width="500"
+                     height="500">
               </a>
-              <a class="artist-name" [routerLink]="['artist', artist.id]" title="{{ artist.name }}">{{ artist.name }}</a>
+              <a class="artist-name" [routerLink]="['/customer', customer.id]" title="{{ customer.name }}">{{ customer.name }}</a>
             </div>
           </div>
-        </div>
+        </ng-container>
       </ng-template>
     </ngb-tab>
   </ngb-tabset>

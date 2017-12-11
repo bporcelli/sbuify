@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from "@angular/forms";
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UserService } from "./user.service";
 import { PreferencesService } from "./preferences.service";
 import { UpgradeAccountModalComponent } from "./upgrade-account-modal.component";
@@ -28,7 +29,8 @@ const routes: Routes = [
     FormsModule,
     CommonModule,
     RouterModule.forChild(routes),
-    SharedModule
+    SharedModule,
+    NgbModule
   ],
   providers: [
     UserService,

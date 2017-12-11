@@ -111,6 +111,15 @@ export class UserService {
     return this.apiClient.get<Customer>('/api/customer/' + id);
   }
 
+  /** Get a customer's friends */
+  getFriends(id: number = null): Observable<Customer[]> {
+    let endpoint = '/api/customer/friends';
+    if (id != null) {
+      endpoint = '/api/customer/' + id + '/friends';
+    }
+    return this.apiClient.get<Customer[]>(endpoint);
+  }
+
   /** Follow or unfollow a user */
   toggleFollowing(user: any): Observable<boolean> {
     if (user.followed) {

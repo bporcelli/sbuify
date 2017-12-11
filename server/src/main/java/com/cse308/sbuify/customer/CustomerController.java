@@ -1,5 +1,6 @@
 package com.cse308.sbuify.customer;
 
+import com.cse308.sbuify.common.api.DecorateResponse;
 import com.cse308.sbuify.image.Base64Image;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.image.StorageException;
@@ -45,6 +46,7 @@ public class CustomerController {
      * @return a 200 response with information about the customer in the body.
      */
     @GetMapping(path = {"", "{id}"})
+    @DecorateResponse(type = Customer.class)
     public ResponseEntity<?> getCustomer(@PathVariable Optional<Integer> id) {
         if (!id.isPresent()) {
             return new ResponseEntity<>(authFacade.getCurrentUser(), HttpStatus.OK);
@@ -53,7 +55,7 @@ public class CustomerController {
         if (!customer.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(customer, HttpStatus.OK);
+        return new ResponseEntity<>(customer.get(), HttpStatus.OK);
     }
 
     /**

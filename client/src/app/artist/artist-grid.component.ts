@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Artist } from "./artist";
 import { SongList } from "../songs/song-list";
 import { PlayerService } from "../playback/player.service";
+import { ArtistService } from "./artist.service";
 
 @Component({
   selector: '[artist-grid]',
@@ -15,7 +16,8 @@ export class ArtistGridComponent {
 
   constructor(
     private playService: PlayerService,
-    private router: Router
+    private router: Router,
+    private artistService: ArtistService
   ) {}
 
   /** Check whether an artist is playing. */
@@ -39,16 +41,9 @@ export class ArtistGridComponent {
     return this.playService.isPlaying(playlist);
   }
 
-  /** Check whether the current user is following an artist. */
-  isFollowing(artist: Artist): boolean {
-    // todo
-    return false;
-  }
-
   /** Follow or unfollow an artist. */
   toggleFollowing(artist: Artist): void {
-    // todo
-    console.log('would follow or unfollow', artist);
+    this.artistService.toggleFollowing(artist).subscribe();
   }
 
   /** Open an artist page. */

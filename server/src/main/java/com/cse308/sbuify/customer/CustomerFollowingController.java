@@ -3,6 +3,7 @@ package com.cse308.sbuify.customer;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.common.TypedCollection;
+import com.cse308.sbuify.common.api.DecorateResponse;
 import com.cse308.sbuify.common.api.DecoratorRegistry;
 import com.cse308.sbuify.common.api.ResponseDecorator;
 import com.cse308.sbuify.playlist.*;
@@ -101,13 +102,24 @@ public class CustomerFollowingController {
     }
 
     /**
-     * Get the customer's friends.
-     *
-     * @return Set<Customer>
+     * Get a customer's friends.
+     * @param id Optional customer ID. If omitted, the current customer's friends are returned.
+     * @return a 200 response containing a list of Customer objects.
      */
-    @GetMapping(path = "friends")
-    public ResponseEntity<?> getFriends() {
-        Customer customer = (Customer) authFacade.getCurrentUser();
+    @GetMapping(path = {"friends", "{id}/friends"})
+    @DecorateResponse(type = TypedCollection.class)
+    public ResponseEntity<?> getFriends(@PathVariable Optional<Integer> id) {
+        Customer customer;
+
+        if (!id.isPresent()) {
+            customer = (Customer) authFacade.getCurrentUser();
+        } else {
+            Optional<User> optionalUser = userRepository.findById(id.get());
+            if (!optionalUser.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            customer = (Customer) optionalUser.get();
+        }
 
         List<FollowedCustomer> followedCustomers = followedCustomerRepo.findAllByCustomer(customer);
         List<User> friends = new ArrayList<>();

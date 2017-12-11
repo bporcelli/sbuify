@@ -21,6 +21,6 @@
     Go to Artist Page
   </ng-template>
   <ng-template contextMenuItem let-artist (execute)="toggleFollowing($event.item)">
-    {{ isFollowing(artist) ? 'Unfollow' : 'Follow' }}
+    {{ artist?.followed ? 'Unfollow' : 'Follow' }}
   </ng-template>
 </context-menu>
