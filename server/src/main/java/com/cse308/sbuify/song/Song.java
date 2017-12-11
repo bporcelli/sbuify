@@ -176,4 +176,8 @@ public class Song extends CatalogItem implements Queueable, Decorable {
     public void set(String key, Object value) {
         properties.put(key, value);
     }
+
+    public void setPlayCount(Integer playCount) {
+        this.playCount = playCount;
+    }
 }
