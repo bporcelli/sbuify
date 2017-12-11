@@ -5,14 +5,14 @@ import com.cse308.sbuify.album.AlbumRepository;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.artist.MonthlyListenersDTO;
-import com.cse308.sbuify.artist.QuarterlyRoyaltyDTO;
+import com.cse308.sbuify.label.Label;
+import com.cse308.sbuify.label.payment.*;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.playlist.*;
 import com.cse308.sbuify.song.Genre;
 import com.cse308.sbuify.song.GenreRepository;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.song.SongRepository;
-import com.cse308.sbuify.stream.Stream;
 import com.cse308.sbuify.stream.StreamCountDTO;
 import com.cse308.sbuify.stream.StreamRepository;
 import org.slf4j.Logger;
@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.IsoFields;
 import java.util.*;
 
 @Component
@@ -31,9 +32,11 @@ public class ScheduledTasks {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTasks.class);
 
-    private final Integer numPlaylistsMixAndMatch;
-    private final Integer playCountUpdateInterval;
-    private final Integer monthlyListenersUpdateInterval;
+    private final Integer NUM_MIX_AND_MATCH_PLAYLISTS;
+    private final Integer PLAY_COUNT_UPDATE_INTERVAL;
+    private final Integer MONTHLY_LISTENERS_UPDATE_INTERVAL;
+    private final BigDecimal COST_PER_FREE_STREAM;
+    private final BigDecimal COST_PER_PREMIUM_STREAM;
     
     @Autowired
     private GenreRepository genreRepository;
@@ -56,13 +59,19 @@ public class ScheduledTasks {
     @Autowired
     private StreamRepository streamRepo;
 
-    private Map<Artist, BigDecimal> royalty = new Hashtable<>();
+    @Autowired
+    private PaymentPeriodRepository periodRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Autowired
     public ScheduledTasks(ScheduledTaskProperties scheduledTaskProperties) {
-        numPlaylistsMixAndMatch = scheduledTaskProperties.getNumMixAndMatch();
-        playCountUpdateInterval = scheduledTaskProperties.getPlayCountUpdateInterval();
-        monthlyListenersUpdateInterval = scheduledTaskProperties.getMonthlyListenersUpdateInterval();
+        NUM_MIX_AND_MATCH_PLAYLISTS = scheduledTaskProperties.getNumMixAndMatch();
+        PLAY_COUNT_UPDATE_INTERVAL = scheduledTaskProperties.getPlayCountUpdateInterval();
+        MONTHLY_LISTENERS_UPDATE_INTERVAL = scheduledTaskProperties.getMonthlyListenersUpdateInterval();
+        COST_PER_FREE_STREAM = scheduledTaskProperties.getCostPerFreeStream();
+        COST_PER_PREMIUM_STREAM = scheduledTaskProperties.getCostPerPremiumStream();
     }
 
     // Run every 25th of the month
@@ -93,7 +102,7 @@ public class ScheduledTasks {
     // Run every six hours
     @Scheduled(cron="0 0 */6 * * *", zone="America/New_York")
     public void updatePlayCounts() {
-        LocalDateTime timeAfter = LocalDateTime.now().minusHours(playCountUpdateInterval);
+        LocalDateTime timeAfter = LocalDateTime.now().minusHours(PLAY_COUNT_UPDATE_INTERVAL);
         List<StreamCountDTO> newStreams = streamRepo.getNewStreamsAfterTime(timeAfter);
 
         for (StreamCountDTO dto: newStreams) {
@@ -106,10 +115,10 @@ public class ScheduledTasks {
     // Run every 30 days
     @Scheduled(cron="0 0/30 * * * ?", zone="America/New_York")
     public void updateMonthlyListeners() {
-        LocalDateTime timeAfterNthHr = LocalDateTime.now().minusDays(monthlyListenersUpdateInterval);
+        LocalDateTime timeAfterNthHr = LocalDateTime.now().minusDays(MONTHLY_LISTENERS_UPDATE_INTERVAL);
         List<MonthlyListenersDTO> listeners = streamRepo.getNewMonthlyCountAfterTime(timeAfterNthHr);
 
-        for(MonthlyListenersDTO dto: listeners){
+        for (MonthlyListenersDTO dto: listeners) {
             Artist artist = dto.getArtist();
             Long monthlyListener = dto.getNumListeners();
             artist.setMonthlyListeners(monthlyListener.intValue());
@@ -119,14 +128,33 @@ public class ScheduledTasks {
 
     // Run every Quarter
     @Scheduled(cron="0 0 1 */3 * ?", zone="America/New_York")
-    public void updateQuarterPayment() {
-        LocalDateTime timeAfterNthHr = LocalDateTime.now().minusMonths(3);
-        List<QuarterlyRoyaltyDTO> compensation = streamRepo.getQuarterlyRoyalty(timeAfterNthHr);
+    public void computeRoyaltyPayments() {
+        // create a new payment period
+        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = end.minusMonths(3);
+        Integer quarter = end.get(IsoFields.QUARTER_OF_YEAR);
+        Integer year = end.getYear();
 
-        for(QuarterlyRoyaltyDTO dto: compensation){
-            Artist artist = dto.getArtist();
-            BigDecimal payment = dto.getPayment();
-            royalty.put(artist, payment);
+        PaymentPeriod period = new PaymentPeriod();
+
+        period.setName(String.format("Q%d %d", quarter, year));
+        period.setStart(start);
+        period.setEnd(end);
+
+        period = periodRepository.save(period);
+
+        // create a new unpaid royalty payment for each label whose music was streamed over the period
+        List<QuarterlyRoyaltyDTO> labelStreams = streamRepo.getQuarterlyRoyalty(start, end);
+
+        for (QuarterlyRoyaltyDTO dto: labelStreams) {
+            Label label = dto.getLabel();
+
+            BigDecimal freeComp = COST_PER_FREE_STREAM.multiply(BigDecimal.valueOf(dto.getFreeStreams()));
+            BigDecimal premiumComp = COST_PER_PREMIUM_STREAM.multiply(BigDecimal.valueOf(dto.getPremiumStreams()));
+            BigDecimal totalCompensation = freeComp.add(premiumComp);
+
+            Payment payment = new Payment(totalCompensation, period, label);
+            paymentRepository.save(payment);
         }
     }
 
@@ -212,7 +240,7 @@ public class ScheduledTasks {
 
         Random random = new Random();
 
-        while (tuples.size() < numPlaylistsMixAndMatch) {
+        while (tuples.size() < NUM_MIX_AND_MATCH_PLAYLISTS) {
             Long[] artistIndices = new Long[artistsPerPlaylist];
 
             int length = 0;
@@ -301,7 +329,7 @@ public class ScheduledTasks {
 
         Random random = new Random();
 
-        while (tuples.size() < numPlaylistsMixAndMatch) {
+        while (tuples.size() < NUM_MIX_AND_MATCH_PLAYLISTS) {
             Long[] genreOffsets = new Long[genresPerPlaylist];
 
             int length = 0;
