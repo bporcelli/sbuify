@@ -1,6 +1,7 @@
 package com.cse308.sbuify.reports;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public abstract class Report implements Serializable {
     // ID of report, e.g. "royalty-report"
@@ -29,6 +30,12 @@ public abstract class Report implements Serializable {
      * @return String
      */
     public abstract String getTemplatePath();
+    
+    /**
+     * Returns a key value pair to replace in template
+     * 
+     */
+    public abstract Map<String, String> getReplaceMap();
 
     /**
      * Getters and setters.

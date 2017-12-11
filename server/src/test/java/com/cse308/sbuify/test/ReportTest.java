@@ -27,6 +27,33 @@ public class ReportTest extends AuthenticatedTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         System.out.println(response.getBody());
     }
+    
+    @Test
+    public void artistRoyaltyReportTest() {
+        List<String> queryParam = new ArrayList<>();
+        queryParam.add("2");
+
+        HttpHeaders header = new HttpHeaders();
+        header.add("id", "artist-royalty-report");
+
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/reports/generate/{id}",
+                new TypedCollection(queryParam, String.class), String.class, header);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        System.out.println(response.getBody());
+    }
+    
+    @Test
+    public void siteStatReportTest() {
+        List<String> queryParam = new ArrayList<>();
+        
+        HttpHeaders header = new HttpHeaders();
+        header.add("id", "site-stat-report");
+
+        ResponseEntity<String> response = restTemplate.postForEntity("/api/reports/generate/{id}",
+                new TypedCollection(queryParam, String.class), String.class, header);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        System.out.println(response.getBody());
+    }
 
     @Override
     public String getEmail() {

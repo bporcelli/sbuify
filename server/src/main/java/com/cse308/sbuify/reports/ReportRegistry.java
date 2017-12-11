@@ -16,7 +16,7 @@ public class ReportRegistry {
      */
     public ReportRegistry() {
         this.register(new AdminRoyaltyReport());
-        this.register(new ArtistRoyalyReport());
+        this.register(new ArtistRoyaltyReport());
         this.register(new FollowersReport());
         this.register(new ListenersReport());
         this.register(new MusicReport());
@@ -47,6 +47,10 @@ public class ReportRegistry {
         System.out.println("getReport(id)" + id); 
         if(id.equals("[listeners-report]"))
             return new ListenersReport();
+        else if(id.equals("[artist-royalty-report]"))
+            return new ArtistRoyaltyReport();
+        else if(id.equals("[site-stat-report]"))
+            return new SiteStatReport();
 
         return null;
     }
