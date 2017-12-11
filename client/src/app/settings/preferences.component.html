@@ -1,21 +1,17 @@
 <form class="settings-form" #form="ngForm" (ngSubmit)="onSubmit()">
-  <!--<fieldset class="form-group">-->
-    <!--<legend>Language</legend>-->
-    <!--<div class="form-row">-->
-      <!--<div class="col-12 col-lg-7">-->
-        <!--<label for="lang" class="text-muted">Choose your preferred language</label>-->
-      <!--</div>-->
-      <!--<div class="col-12 col-lg-5">-->
-        <!--<select class="form-control custom-select" name="lang" id="lang">-->
-          <!--<option value="zh">Chinese</option>-->
-          <!--<option value="es">Spanish</option>-->
-          <!--<option value="en" selected>English</option>-->
-          <!--<option value="hi">Hindi</option>-->
-          <!--<option value="ar">Arabic</option>-->
-        <!--</select>-->
-      <!--</div>-->
-    <!--</div>-->
-  <!--</fieldset>-->
+  <fieldset class="form-group">
+    <legend>Language</legend>
+    <div class="form-row">
+      <div class="col-12 col-lg-7">
+        <label for="lang" class="text-muted">Choose your preferred language</label>
+      </div>
+      <div class="col-12 col-lg-5">
+        <select class="form-control custom-select" name="lang" id="lang" [(ngModel)]="language">
+          <option *ngFor="let language of languageOptions" [value]="language.value">{{ language.name }}</option>
+        </select>
+      </div>
+    </div>
+  </fieldset>
   <fieldset class="form-group">
     <legend>Playback</legend>
     <div class="form-row">

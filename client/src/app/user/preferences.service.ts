@@ -31,7 +31,11 @@ export class PreferencesService {
     return this.client.put('/api/customer/preferences', preferences)
       .catch(this.handleError)
       .map(() => {
-        this.preferencesSubject.next(preferences);
+        let updated = this.preferencesSubject.value;
+        for (let key in preferences) {
+          updated[key] = preferences[key];
+        }
+        this.preferencesSubject.next(updated);
         return true;
       });
   }

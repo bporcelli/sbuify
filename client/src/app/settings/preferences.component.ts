@@ -4,6 +4,7 @@ import { FormComponent } from "../shared/form.component";
 import { PreferencesService } from "../user/preferences.service";
 import { Customer } from "../user/customer";
 import { UserService } from "../user/user.service";
+import { Config } from "../config";
 
 @Component({
   templateUrl: './preferences.component.html'
@@ -15,8 +16,11 @@ export class PreferencesComponent extends FormComponent implements OnInit {
   /** Current user */
   public user: Customer  = null;
 
+  /** Language */
+  private language: string = Config.DEFAULT_LANGUAGE;
+
   /** Playback quality */
-  private hqStreaming: boolean = false;
+  private hqStreaming: string = 'false';
 
   constructor(
     private prefsService: PreferencesService,
@@ -28,7 +32,9 @@ export class PreferencesComponent extends FormComponent implements OnInit {
   ngOnInit(): void {
     this.prefsService.preferences
       .subscribe((preferences: object) => {
+        console.log('hq streaming is:', preferences['hq_streaming']);
         this.hqStreaming = preferences['hq_streaming'];
+        this.language = preferences['language'];
       });
 
     this.userService.currentUser
@@ -38,7 +44,12 @@ export class PreferencesComponent extends FormComponent implements OnInit {
   onSubmit(): void {
     super.onSubmit();
 
-    this.prefsService.setPreference('hq_streaming', this.hqStreaming)
+    let updated = {
+      'hq_streaming': this.hqStreaming,
+      'language': this.language
+    };
+
+    this.prefsService.setPreferences(updated)
       .subscribe(
         () => this.onSuccess(),
         (err: any) => this.onError(err)
@@ -46,11 +57,15 @@ export class PreferencesComponent extends FormComponent implements OnInit {
   }
 
   get hq(): boolean {
-    return this.user != null && this.user.premium ? this.hqStreaming : false;
+    return this.user != null && this.user.premium ? this.hqStreaming == 'true' : false;
   }
 
   set hq(hq: boolean) {
-    this.hqStreaming = hq;
+    this.hqStreaming = hq ? 'true' : 'false';
+  }
+
+  get languageOptions(): object[] {
+    return Config.LANGUAGES;
   }
 
   private onSuccess() {
