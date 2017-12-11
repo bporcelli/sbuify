@@ -104,6 +104,10 @@ public class Artist extends CatalogItem implements Followable, Decorable, Clonea
         return this.getMerchandise().remove(product);
     }
 
+    public void setMonthlyListeners(Integer monthlyListeners) {
+        this.monthlyListeners = monthlyListeners;
+    }
+
     public void setAliases(Set<String> aliases) {
         if(aliases != null){
             this.aliases.clear();

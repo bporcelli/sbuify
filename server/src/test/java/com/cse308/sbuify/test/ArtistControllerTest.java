@@ -2,6 +2,8 @@ package com.cse308.sbuify.test;
 
 import com.cse308.sbuify.artist.*;
 import com.cse308.sbuify.image.Image;
+import com.cse308.sbuify.stream.Stream;
+import com.cse308.sbuify.stream.StreamRepository;
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static junit.framework.TestCase.assertTrue;
@@ -23,6 +26,9 @@ public class ArtistControllerTest extends AuthenticatedTest {
 
     @Autowired
     private ArtistRepository artistRepository;
+
+    @Autowired
+    private StreamRepository streamRepo;
 
     private static final String NAME = "test";
 
@@ -155,6 +161,44 @@ public class ArtistControllerTest extends AuthenticatedTest {
     @Test
     public void removeArtist(){
         //todo
+    }
+
+    @Test
+    public void updateMonthlyListeners(){
+        LocalDateTime timeAfterNthHr = LocalDateTime.now().minusDays(30);
+        List<Stream> streamsAfter = streamRepo.getAllByTimeAfter(timeAfterNthHr);
+        Map<Integer,Integer> map = new Hashtable<>();
+        for(Stream stream: streamsAfter){
+            Integer artistId = stream.getSong().getAlbum().getArtist().getId();
+            Integer streamCount = map.get(artistId);
+            if (streamCount == null){
+                streamCount = 1;
+            } else {
+                streamCount++;
+            }
+            map.put(artistId, streamCount);
+        }
+
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            Integer key = entry.getKey();
+            Integer value = entry.getValue();
+            Artist artist = getArtistById(key);
+            if (artist == null){
+                continue;
+            }
+            artist.setMonthlyListeners(value);
+            artistRepository.save(artist);
+        }
+
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            Integer key = entry.getKey();
+            Integer value = entry.getValue();
+            Artist artist = getArtistById(key);
+            if (artist == null){
+                continue;
+            }
+            assertEquals(value, artist.getMonthlyListeners());
+        }
     }
 
     private Artist getArtistById(Integer id) {

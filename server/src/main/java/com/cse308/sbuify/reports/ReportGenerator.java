@@ -1,6 +1,7 @@
 package com.cse308.sbuify.reports;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -17,7 +18,8 @@ public class ReportGenerator {
         String[] params = {};
         List<Object[]> results = getData(em, report, qparams.toArray(params));
         String templatePath = report.getTemplatePath();
-        return SBUifyTemplateEngine.process(ReportController.DIRECTORY + templatePath, results);
+        Map<String, String> replaceMap = report.getReplaceMap();
+        return SBUifyTemplateEngine.process(ReportController.DIRECTORY + templatePath, results, replaceMap);
     }
 
     public List<Object[]> getData(EntityManager em, Report report, String[] params) {

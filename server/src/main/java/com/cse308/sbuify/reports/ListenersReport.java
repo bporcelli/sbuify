@@ -1,5 +1,7 @@
 package com.cse308.sbuify.reports;
 
+import java.util.Map;
+
 public class ListenersReport extends TableReport {
 
     /**
@@ -15,7 +17,7 @@ public class ListenersReport extends TableReport {
     public String getQuery() {
         return "select * from Stream where customer_id = ?1";
     }
-  
+
     @Override
     public String getTemplatePath() {
         return "ListenerReport.tmpl";

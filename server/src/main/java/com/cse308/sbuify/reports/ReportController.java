@@ -2,7 +2,7 @@ package com.cse308.sbuify.reports;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cse308.sbuify.admin.Admin;
+import com.cse308.sbuify.artist.Artist;
+import com.cse308.sbuify.artist.ArtistRepository;
 import com.cse308.sbuify.common.TypedCollection;
 import com.cse308.sbuify.label.LabelOwner;
 import com.cse308.sbuify.security.AuthFacade;
@@ -37,6 +39,9 @@ public class ReportController {
 
     @Autowired
     private AuthFacade authFacade;
+    
+    @Autowired
+    private ArtistRepository artistRepo;
 
     private ReportRegistry registry = new ReportRegistry();
     
@@ -69,10 +74,19 @@ public class ReportController {
     }
 
     @PostMapping(path = "/generate/{id}")
-    public ResponseEntity<?> tmp(@PathVariable String id, @RequestBody List<String> qparams) {
+    public ResponseEntity<?> generateReport(@PathVariable String id, @RequestBody List<String> qparams) {
         Report report = registry.getReport(id);
+        
         if (report == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        
+        if(report.getId().equals("artist-royalty-report")) {
+            Optional<Artist> artist = artistRepo.findById(Integer.valueOf(qparams.get(0)));
+            if(!artist.isPresent())
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            
+            ((ArtistRoyaltyReport) report).setArtist(artist.get());
         }
 
         User user = authFacade.getCurrentUser();
