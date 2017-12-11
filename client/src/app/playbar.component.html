@@ -5,7 +5,7 @@
     </a>
     <ul class="song-details">
       <li class="song-title">
-        <a href="#" title="{{ song.name }}">{{ song.name | truncate:20 }}</a>
+        <span title="{{ song.name }}">{{ song.name | truncate:20 }}</span>
       </li>
       <li>
         <a [routerLink]="['/artist', song.album.artist.id]" title="{{ song.album.artist.name }}">{{ song.album.artist.name | truncate:20 }}</a>
