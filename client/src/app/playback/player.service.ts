@@ -17,31 +17,34 @@ import { Playlist } from "../playlist/playlist";
 export class PlayerService {
 
   /** Audio player */
-  player: any = new Audio();
+  private player: any = new Audio();
 
   /** Current song */
-  song: BehaviorSubject<Song> = new BehaviorSubject(null);
+  public song: BehaviorSubject<Song> = new BehaviorSubject(null);
 
   /** The song, album, or playlist being played */
-  playlist: Playable = null; // todo: get initial playlist from server?
+  public playlist: Playable = null;  // todo: get initial playlist from server?
+
+  /** Songs queued to play */
+  public songs: Song[] = [];
 
   /** Index to current song in playlist */
-  index: number = 0;
+  public index: number = 0;
 
   /** Current playback time (secs) */
-  _time: BehaviorSubject<number> = new BehaviorSubject(0);
+  private _time: BehaviorSubject<number> = new BehaviorSubject(0);
 
   /** Duration of the current song (secs) */
-  _duration: BehaviorSubject<number> = new BehaviorSubject(0);
+  private _duration: BehaviorSubject<number> = new BehaviorSubject(0);
 
   /** Is the player playing? */
-  _playing: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private _playing: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   /** Is playback shuffled? */
-  shuffled: boolean = false;
+  public shuffled: boolean = false;
 
   /** Current repeat mode */
-  repeat: RepeatMode = RepeatMode.NONE;
+  public repeat: RepeatMode = RepeatMode.NONE;
 
   constructor(
     private prefService: PreferencesService,
@@ -100,16 +103,23 @@ export class PlayerService {
       });
   }
 
-  play(playable?: Playable, index: number = 0): void {
+  play(playable?: Playable, index: number = null): void {
     if (playable != null) {
       this.playlist = playable;
-      this.index = index;
+      this.songs = playable.songs.slice();
+      this.index = index != null ? index : 0;
 
-      // shuffle playlist if necessary
-      if (this.shuffled && index == 0) {
+      // if a playlist or album was played & shuffle is enabled, shuffle all songs
+      if (this.shuffled && index == null) {
         this.shuffle();
       }
-      this.setSong(this.playlist.songs[index]);
+
+      this.setSong(this.songs[this.index]);
+
+      // if a specific song was played & shuffle is enabled, shuffle all songs after the selected one
+      if (this.shuffled && index != null) {
+        this.shuffle();
+      }
     }
     this.player.play();
   }
@@ -157,21 +167,21 @@ export class PlayerService {
     if (this.playlist == null) {
       return false;
     }
-    return this.index < this.playlist.songs.length - 1;
+    return this.index < this.songs.length - 1;
   }
 
   getNext(): Song {
     if (this.pqs.hasNext()) {
       return this.pqs.next();
     } else if (this.playlistHasNext()) {
-      return this.playlist.songs[++this.index];
+      return this.songs[++this.index];
     }
     return null;
   }
 
   getPrev(): Song {
     if (this.hasPrev()) {
-      return this.playlist.songs[--this.index];
+      return this.songs[--this.index];
     }
     return null;
   }
@@ -216,7 +226,7 @@ export class PlayerService {
 
   /** Shuffle the songs in the current playlist, leaving the current song in place. */
   private shuffle(): void {
-    let songs = this.playlist ? this.playlist.songs : [];
+    let songs = this.playlist ? this.songs : [];
 
     if (songs.length == 0) {  // nothing to shuffle
       return;
@@ -241,12 +251,12 @@ export class PlayerService {
       songs =  previous.concat(current.concat(upcoming));
     }
 
-    this.playlist.songs = songs;
+    this.songs = songs;
   }
 
   /** Unshuffle the songs in the current playlist, leaving the current song in place. */
   private unshuffle(): void {
-    let songs = this.playlist ? this.playlist.songs : [];
+    let songs = this.playlist ? this.songs : [];
 
     if (songs.length == 0) {  // nothing to unshuffle
       return;
@@ -296,7 +306,7 @@ export class PlayerService {
     }
 
     if (this.repeat == RepeatMode.REPEAT && !this.hasNext()) {
-      this.setSong(this.playlist.songs[this.index = 0]);
+      this.setSong(this.songs[this.index = 0]);
     } else if (this.repeat != RepeatMode.REPEAT_ONE) {
       this.setSong(this.getNext());
     }
@@ -336,6 +346,6 @@ export class PlayerService {
   }
 
   get upcoming(): Array<Song> {
-    return this.playlist.songs.slice(this.index + 1);
+    return this.songs.slice(this.index + 1);
   }
 }

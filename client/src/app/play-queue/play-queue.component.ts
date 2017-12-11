@@ -35,7 +35,7 @@ export class PlayQueueComponent {
   }
 
   get playlist(): Playable {
-    return this.ps.playlist;
+    return new SongList(this.ps.songs, 'now-playing');
   }
 
   get upcoming(): Array<Song> {
