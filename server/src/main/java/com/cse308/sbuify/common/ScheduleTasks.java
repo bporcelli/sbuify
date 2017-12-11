@@ -13,16 +13,16 @@ import com.cse308.sbuify.song.Genre;
 import com.cse308.sbuify.song.GenreRepository;
 import com.cse308.sbuify.song.Song;
 import com.cse308.sbuify.song.SongRepository;
+import com.cse308.sbuify.stream.Stream;
+import com.cse308.sbuify.stream.StreamRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Component
 public class ScheduleTasks {
@@ -37,20 +37,9 @@ public class ScheduleTasks {
     private final Integer monthly_genre_triplet;
     private final Integer sbu_community;
     private final Integer playlist_mix_n_match;
-
-    @Autowired
-    public ScheduleTasks(ScheduleTasksProperties scheduleTasksProperties){
-
-        top_50_by_genre = scheduleTasksProperties.getTop_50_by_genre();
-        top_50_by_artist = scheduleTasksProperties.getTop_50_by_artist();
-        monthly_artist_duo = scheduleTasksProperties.getMonthly_artist_duo();
-        monthly_artist_triplet = scheduleTasksProperties.getMonthly_artist_triplet();
-        monthly_genre_duo = scheduleTasksProperties.getMonthly_genre_duo();
-        monthly_genre_triplet = scheduleTasksProperties.getMonthly_genre_triplet();
-        sbu_community = scheduleTasksProperties.getSbu_community();
-        playlist_mix_n_match = scheduleTasksProperties.getPlaylist_mix_n_match();
-    }
-
+    private final Integer every_nth_hr;
+    private final Integer every_nth_day;
+    
     @Autowired
     private GenreRepository genreRepository;
 
@@ -65,6 +54,27 @@ public class ScheduleTasks {
 
     @Autowired
     private AlbumRepository albumRepository;
+
+    @Autowired
+    private SongRepository songRepo;
+
+    @Autowired
+    private StreamRepository streamRepo;
+
+    @Autowired
+    public ScheduleTasks(ScheduleTasksProperties scheduleTasksProperties){
+
+        top_50_by_genre = scheduleTasksProperties.getTop_50_by_genre();
+        top_50_by_artist = scheduleTasksProperties.getTop_50_by_artist();
+        monthly_artist_duo = scheduleTasksProperties.getMonthly_artist_duo();
+        monthly_artist_triplet = scheduleTasksProperties.getMonthly_artist_triplet();
+        monthly_genre_duo = scheduleTasksProperties.getMonthly_genre_duo();
+        monthly_genre_triplet = scheduleTasksProperties.getMonthly_genre_triplet();
+        sbu_community = scheduleTasksProperties.getSbu_community();
+        playlist_mix_n_match = scheduleTasksProperties.getPlaylist_mix_n_match();
+        every_nth_hr = scheduleTasksProperties.getEvery_nth_hour();
+        every_nth_day = scheduleTasksProperties.getEvery_nth_day();
+    }
 
     // Run every 25th of the month
     @Scheduled(cron="0 0 9 25 * ?",zone="America/New_York")
@@ -91,6 +101,73 @@ public class ScheduleTasks {
         } catch (Exception e){
             logger.error("ERROR On Daily Task");
         }
+    }
+
+    //Run every six hours
+    @Scheduled(cron="0 0 */6 * * *", zone="America/New_York")
+    public void updatePlayCount(){
+        LocalDateTime timeAfterNthHr = LocalDateTime.now().minusHours(every_nth_hr);
+        List<Stream> streamsAfter = streamRepo.getAllByTimeAfter(timeAfterNthHr);
+        Map<Integer,Integer> map = new Hashtable<>();
+
+        for(Stream stream: streamsAfter){
+            Integer songId = stream.getSong().getId();
+            Integer streamCount = map.get(songId);
+            if (streamCount == null){
+                streamCount = 1;
+            } else {
+                streamCount++;
+            }
+            map.put(songId, streamCount);
+        }
+
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            Integer key = entry.getKey();
+            Integer value = entry.getValue();
+            Song song = getSongById(key);
+            if (song == null){
+                continue;
+            }
+            song.setPlayCount(song.getPlayCount() + value);
+            songRepo.save(song);
+        }
+    }
+
+    //Run every 30 days
+    @Scheduled(cron="0 0/30 * * * ?", zone="America/New_York")
+    public void updateMonthlyListeners(){
+        LocalDateTime timeAfterNthHr = LocalDateTime.now().minusDays(every_nth_day);
+        List<Stream> streamsAfter = streamRepo.getAllByTimeAfter(timeAfterNthHr);
+        Map<Integer,Integer> map = new Hashtable<>();
+        for(Stream stream: streamsAfter){
+            Integer artistId = stream.getSong().getAlbum().getArtist().getId();
+            Integer streamCount = map.get(artistId);
+            if (streamCount == null){
+                streamCount = 1;
+            } else {
+                streamCount++;
+            }
+            map.put(artistId, streamCount);
+        }
+
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            Integer key = entry.getKey();
+            Integer value = entry.getValue();
+            Artist artist = getArtistById(key);
+            if (artist == null){
+                continue;
+            }
+            artist.setMonthlyListeners(value);
+            artistRepository.save(artist);
+        }
+    }
+
+    private Song getSongById(Integer songId){
+        Optional<Song> songOptional = songRepo.findById(songId);
+        if(!songOptional.isPresent()){
+            return null;
+        }
+        return songOptional.get();
     }
 
     private void createTopSongsByGenre() throws Exception {
