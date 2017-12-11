@@ -1,0 +1,19 @@
+<section id="profile-header">
+  <div class="profile-image playlist-image" (click)="openPictureModal()">
+    <img [src]="user?.profileImage | toImageSrc:'thumbnail'" [alt]="user?.name" [title]="isCurrentUser() ? 'Change Profile Picture' : user?.name">
+  </div>
+  <div class="profile-info">
+    <h1 class="display-4">{{ user?.name }}</h1>
+    <ul class="nav button-list" *ngIf="!isCurrentUser()">
+      <li class="nav-item">
+        <button type="button" class="btn btn-light follow-artist"
+                title="{{ user?.followed ? 'Unfollow' : 'Follow' }}"
+                (click)="toggleFollowing()">
+          {{ user?.followed ? 'Unfollow' : 'Follow' }}
+        </button>
+      </li>
+    </ul>
+  </div>
+</section>
+
+{{ isCurrentUser() | json }}

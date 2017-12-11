@@ -23,6 +23,7 @@
 
         <div ngbDropdownMenu class="dropdown-menu-right">
           <a class="dropdown-item" *ngIf="!user.premium" (click)="openUpgradeModal()">Upgrade Account</a>
+          <a class="dropdown-item" [routerLink]="['/customer', user?.id]">Profile</a>
           <a class="dropdown-item" routerLink="settings" routerLinkActive="active">Settings</a>
           <div class="dropdown-divider"></div>
           <button class="dropdown-item btn-link" (click)="logout()">Log Out</button>

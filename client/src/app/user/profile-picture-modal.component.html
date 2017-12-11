@@ -1,0 +1,36 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="modalLabel">
+    Change Profile Picture
+  </h5>
+  <button type="button" class="close" aria-label="Close" (click)="close()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form (ngSubmit)="onSubmit()" #form="ngForm">
+    <div class="form-row">
+      <label for="image" class="sr-only">Please select an image</label>
+      <div class="text-center">
+        <img class="img-fluid" [src]="imageURL" alt="Profile Image" title="Profile Image">
+        <label class="custom-file mt-2">
+          <input type="file" class="custom-file-input" name="image" id="image" (change)="onFileChange($event)">
+          <button class="my-custom-file-control btn btn-outline-secondary">Choose Image</button>
+        </label>
+        <button type="button"
+                class="btn btn-outline-primary remove-image-button"
+                (click)="resetImage()">Reset</button>
+      </div>
+    </div>
+    <div class="form-row" *ngIf="feedback">
+      <p class="mx-auto" [ngClass]="feedback.class">{{ feedback.text }}</p>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+  <button type="button" class="btn btn-primary"
+          [disabled]="!form.form.valid || disabled"
+          (click)="doSubmit(form)">
+    Change Profile Picture
+  </button>
+</div>

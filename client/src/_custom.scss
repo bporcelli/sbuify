@@ -694,6 +694,29 @@ a#browse-concerts {
   cursor: pointer;
 }
 
+// Profile page
+.profile-image, .profile-info {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.profile-image {
+  cursor: pointer;
+  text-align: center;
+}
+
+.profile-info {
+  padding-left: map-get($spacers, 3);
+}
+
+.remove-image-button {
+  line-height: 1.25;
+  vertical-align: middle;
+  padding: 0.5rem 0.75rem;
+  margin-left: 0.5rem;
+  margin-top: 0.6rem;
+}
+
 // Responsive
 @media (min-width: 1700px) {
     .d-sxl-table-cell {

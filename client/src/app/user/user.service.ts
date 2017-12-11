@@ -3,6 +3,9 @@ import { BehaviorSubject, Observable } from "rxjs/Rx";
 import { JwtService } from "../auth/jwt.service";
 import { APIClient } from "../shared/api-client.service";
 import { Customer } from "./customer";
+import { FollowingService } from "./following.service";
+import {Base64Image} from "../shared/base64-image";
+import {Image} from "../shared/image";
 
 /**
  * Service to get information about the authenticated user.
@@ -14,7 +17,8 @@ export class UserService {
 
   constructor(
     private jwtService: JwtService,
-    private apiClient: APIClient
+    private apiClient: APIClient,
+    private followService: FollowingService
   ) {
     // must subscribe to trigger GET request
     this.populate().subscribe();
@@ -89,6 +93,31 @@ export class UserService {
       newPassword: newPassword
     };
     return this.apiClient.post<void>('/api/users/' + user['id'] + '/change-password/', request);
+  }
+
+  /** Change the user's profile picture */
+  changeProfilePicture(dataURL: string): Observable<Image> {
+    return this.apiClient.put<Image>('/api/customer/profile-picture', new Base64Image(dataURL))
+      .map((image) => {
+        let user = this.currentUserSubject.value;
+        user['profileImage'] = image;
+        this.currentUserSubject.next(user);
+        return image;
+      });
+  }
+
+  /** Get information about a customer given their user ID */
+  getCustomer(id: any): Observable<Customer> {
+    return this.apiClient.get<Customer>('/api/customer/' + id);
+  }
+
+  /** Follow or unfollow a user */
+  toggleFollowing(user: any): Observable<boolean> {
+    if (user.followed) {
+      return this.followService.unfollow('customer', user.id);
+    } else {
+      return this.followService.follow('customer', user.id);
+    }
   }
 
   get isAuthenticated(): Observable<boolean> {

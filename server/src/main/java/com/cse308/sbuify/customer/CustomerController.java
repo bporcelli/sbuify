@@ -40,12 +40,20 @@ public class CustomerController {
     private StorageService storageService;
 
     /**
-     * Get information about the authenticated customer.
-     * @return a 200 response with information about the authenticated customer in the body.
+     * Get information about a customer.
+     * @param id Optional customer ID. If not provided, the authenticated customer is returned.
+     * @return a 200 response with information about the customer in the body.
      */
-    @GetMapping
-    public @ResponseBody Customer getCustomer() {
-        return (Customer) authFacade.getCurrentUser();
+    @GetMapping(path = {"", "{id}"})
+    public ResponseEntity<?> getCustomer(@PathVariable Optional<Integer> id) {
+        if (!id.isPresent()) {
+            return new ResponseEntity<>(authFacade.getCurrentUser(), HttpStatus.OK);
+        }
+        Optional<User> customer = userRepository.findById(id.get());
+        if (!customer.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
     /**
@@ -106,23 +114,26 @@ public class CustomerController {
     /**
      * Change the user's profile picture.
      * @param newImage Base64-encoded image.
-     * @return Http.OK when successful, otherwise, Http.BAD_REQUEST
+     * @return a 200 response containing the updated image on success, otherwise a 400 response.
      */
     @PutMapping(path = "profile-picture")
     public ResponseEntity<?> updateProfilePicture(@RequestBody Base64Image newImage){
         Customer customer = getCurrentCustomer();
-        Image image;
-        try{
-            image = storageService.save(newImage.getDataURL());
-        } catch (StorageException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        String dataURL = newImage.getDataURL();
+        Image image = null;
+        if (!dataURL.isEmpty()) {  // new image selected
+            try {
+                image = storageService.save(newImage.getDataURL());
+            } catch (StorageException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
         }
         if (customer.getProfileImage() != null) {
             this.storageService.delete(customer.getProfileImage());
         }
         customer.setProfileImage(image);
-        userRepository.save(customer);
-        return new ResponseEntity<>(HttpStatus.OK);
+        customer = userRepository.save(customer);
+        return new ResponseEntity<>(customer.getProfileImage(), HttpStatus.OK);
     }
 
     /**
