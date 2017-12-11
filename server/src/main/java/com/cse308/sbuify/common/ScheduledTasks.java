@@ -4,6 +4,8 @@ import com.cse308.sbuify.album.Album;
 import com.cse308.sbuify.album.AlbumRepository;
 import com.cse308.sbuify.artist.Artist;
 import com.cse308.sbuify.artist.ArtistRepository;
+import com.cse308.sbuify.artist.MonthlyListenersDTO;
+import com.cse308.sbuify.artist.QuarterlyRoyaltyDTO;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.playlist.*;
 import com.cse308.sbuify.song.Genre;
@@ -20,6 +22,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -52,6 +55,8 @@ public class ScheduledTasks {
 
     @Autowired
     private StreamRepository streamRepo;
+
+    private Map<Artist, BigDecimal> royalty = new Hashtable<>();
 
     @Autowired
     public ScheduledTasks(ScheduledTaskProperties scheduledTaskProperties) {
@@ -88,7 +93,7 @@ public class ScheduledTasks {
     // Run every six hours
     @Scheduled(cron="0 0 */6 * * *", zone="America/New_York")
     public void updatePlayCounts() {
-        LocalDateTime timeAfter = LocalDateTime.now().minusHours(6);
+        LocalDateTime timeAfter = LocalDateTime.now().minusHours(playCountUpdateInterval);
         List<StreamCountDTO> newStreams = streamRepo.getNewStreamsAfterTime(timeAfter);
 
         for (StreamCountDTO dto: newStreams) {
@@ -101,31 +106,27 @@ public class ScheduledTasks {
     // Run every 30 days
     @Scheduled(cron="0 0/30 * * * ?", zone="America/New_York")
     public void updateMonthlyListeners() {
-        // fixme: ideally this should use MonthlyListenersDTO, but I can't figure out the HQL query right now
         LocalDateTime timeAfterNthHr = LocalDateTime.now().minusDays(monthlyListenersUpdateInterval);
-        List<Stream> streamsAfter = streamRepo.getAllByTimeAfter(timeAfterNthHr);
-        Map<Integer,Integer> map = new Hashtable<>();
+        List<MonthlyListenersDTO> listeners = streamRepo.getNewMonthlyCountAfterTime(timeAfterNthHr);
 
-        for (Stream stream: streamsAfter) {
-            Integer artistId = stream.getSong().getAlbum().getArtist().getId();
-            Integer streamCount = map.get(artistId);
-            if (streamCount == null) {
-                streamCount = 1;
-            } else {
-                streamCount++;
-            }
-            map.put(artistId, streamCount);
-        }
-
-        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-            Integer key = entry.getKey();
-            Integer value = entry.getValue();
-            Artist artist = getArtistById(key);
-            if (artist == null) {
-                continue;
-            }
-            artist.setMonthlyListeners(value);
+        for(MonthlyListenersDTO dto: listeners){
+            Artist artist = dto.getArtist();
+            Long monthlyListener = dto.getNumListeners();
+            artist.setMonthlyListeners(monthlyListener.intValue());
             artistRepository.save(artist);
+        }
+    }
+
+    // Run every Quarter
+    @Scheduled(cron="0 0/30 * * * ?", zone="America/New_York")
+    public void updateQuarterPayment() {
+        LocalDateTime timeAfterNthHr = LocalDateTime.now().minusMonths(3);
+        List<QuarterlyRoyaltyDTO> compensation = streamRepo.getQuarterlyRoyalty(timeAfterNthHr);
+
+        for(QuarterlyRoyaltyDTO dto: compensation){
+            Artist artist = dto.getArtist();
+            BigDecimal payment = dto.getPayment();
+            royalty.put(artist, payment);
         }
     }
 
