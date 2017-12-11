@@ -118,7 +118,7 @@ public class ScheduledTasks {
     }
 
     // Run every Quarter
-    @Scheduled(cron="0 0/30 * * * ?", zone="America/New_York")
+    @Scheduled(cron="0 0 1 */3 * ?", zone="America/New_York")
     public void updateQuarterPayment() {
         LocalDateTime timeAfterNthHr = LocalDateTime.now().minusMonths(3);
         List<QuarterlyRoyaltyDTO> compensation = streamRepo.getQuarterlyRoyalty(timeAfterNthHr);
