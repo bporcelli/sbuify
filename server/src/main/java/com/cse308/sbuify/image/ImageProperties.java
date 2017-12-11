@@ -23,6 +23,11 @@ public class ImageProperties {
      */
     private List<String> allowedFormats = Arrays.asList("png", "jpeg");
 
+    /**
+     * Default image ID.
+     */
+    private Integer defaultImageId = 1;
+
     public String getDirectory() {
         return directory;
     }
@@ -45,5 +50,13 @@ public class ImageProperties {
 
     public void setAllowedFormats(List<String> allowedFormats) {
         this.allowedFormats = allowedFormats;
+    }
+
+    public Integer getDefaultImageId() {
+        return defaultImageId;
+    }
+
+    public void setDefaultImageId(Integer defaultImageId) {
+        this.defaultImageId = defaultImageId;
     }
 }

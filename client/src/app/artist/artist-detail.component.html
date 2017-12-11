@@ -21,7 +21,12 @@
     </ul>
   </div>
 
-  <img class="img-fluid" src="{{ artist.image | toImageSrc:'cover' }}" alt="{{ artist.name }}" title="{{ artist.name }}">
+  <img class="img-fluid"
+       width="1600"
+       height="375"
+       src="{{ artist.image | toImageSrc:'cover' }}"
+       alt="{{ artist.name }}"
+       title="{{ artist.name }}">
 </section>
 
 <nav class="nav nav-tabs">
