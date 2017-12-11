@@ -76,24 +76,28 @@ public class ScheduledTasks {
 
     // Run every 25th of the month
     @Scheduled(cron="0 0 9 25 * ?", zone="America/New_York")
+    @Transactional
     public void monthlyOverviewPlaylistTask() {
-        try{
+        try {
             createTopSongsByGenre();
             createTopSongsByArtist();
             mixAndMatchArtist(2);
             mixAndMatchArtist(3);
-            mixAndMatchGenre(2);
-            mixAndMatchGenre(3);
+//            mixAndMatchGenre(2);  todo: can't get these to run right now
+//            mixAndMatchGenre(3);
+            logger.info("Generated monthly overview playlists.");
         } catch (Exception e) {
-            logger.error("ERROR On Monthly Task");
+            logger.error("ERROR On Monthly Task:", e.getMessage());
         }
     }
 
     // Run daily at 6am
     @Scheduled(cron="0 0 6 * * *", zone="America/New_York")
+    @Transactional
     public void dailyOverviewPlaylistTask() {
         try {
             trendingCommunitySongs();
+            logger.info("Generated daily overview playlists.");
         } catch (Exception e) {
             logger.error("ERROR On Daily Task");
         }
@@ -158,7 +162,6 @@ public class ScheduledTasks {
         }
     }
 
-    @Transactional
     protected void createTopSongsByGenre() {
         OverviewPlaylist newList = new OverviewPlaylist("Top 50 by Genre", OverviewPlaylistType.TOP_50_BY_GENRE);
 
@@ -167,10 +170,6 @@ public class ScheduledTasks {
         for (Genre genre: genres) {
             String genreTitle = String.format("%s Songs", genre.getName());
             Image image = genre.getImage();
-
-            if (image != null) {
-                image.setId(null);  // set image to null to prevent Hibernate merge issues
-            }
 
             Playlist playlist = new Playlist(genreTitle, null, image,false);
             List<Song> genreSongs = songRepository.top50SongsByGenre(genre.getName());
@@ -189,7 +188,6 @@ public class ScheduledTasks {
         overviewPlaylistRepository.save(newList);
     }
 
-    @Transactional
     protected void createTopSongsByArtist() {
         OverviewPlaylist overviewPlaylist = new OverviewPlaylist("Top 50 By Artist",
                 OverviewPlaylistType.TOP_50_BY_ARTIST);
@@ -199,10 +197,6 @@ public class ScheduledTasks {
         for (Artist artist: artists) {
             String playlistTitle = String.format("%s Top 50", artist.getName());
             Image image = (Image) artist.getImage();
-
-            if (image != null) {
-                image.setId(null);
-            }
 
             Playlist playlist = new Playlist(playlistTitle, null, image,false);
             List<Song> artistSong = songRepository.top50SongsByArtist(artist.getId());
@@ -221,7 +215,6 @@ public class ScheduledTasks {
         overviewPlaylistRepository.save(overviewPlaylist);
     }
 
-    @Transactional
     protected void mixAndMatchArtist(Integer artistsPerPlaylist) {
         OverviewPlaylist overviewPlaylist;
 
@@ -277,14 +270,10 @@ public class ScheduledTasks {
 
             Image image = (Image) artists[index].getImage();
 
-            if (image != null) {
-                image.setId(null);
-            }
-
             Playlist playlist = new Playlist(title, null, image, false);
             List<Song> artistSongs;
 
-            if (artistsPerPlaylist == 2) {
+            if (artistsPerPlaylist.equals(2)) {
                 artistSongs = songRepository.getDistinctByArtistDuo(artists[0].getId(), artists[1].getId());
             } else {
                 artistSongs = songRepository.getDistinctByArtistTriplet(artists[0].getId(),
@@ -300,7 +289,7 @@ public class ScheduledTasks {
         }
 
         // delete old playlist
-        if (artistsPerPlaylist == 2) {
+        if (artistsPerPlaylist.equals(2)) {
             overviewPlaylistRepository.deleteByType(OverviewPlaylistType.MONTHLY_ARTIST_DUO);
         } else {
             overviewPlaylistRepository.deleteByType(OverviewPlaylistType.MONTHLY_ARTIST_TRIPLET);
@@ -310,11 +299,10 @@ public class ScheduledTasks {
         overviewPlaylistRepository.save(overviewPlaylist);
     }
 
-    @Transactional
     public void mixAndMatchGenre(Integer genresPerPlaylist) {
         OverviewPlaylist overviewPlaylist;
 
-        if (genresPerPlaylist == 2) {
+        if (genresPerPlaylist.equals(2)) {
             overviewPlaylist = new OverviewPlaylist("Genre Duo Mix and Match",
                     OverviewPlaylistType.MONTHLY_GENRE_DUO);
         } else {
@@ -336,7 +324,6 @@ public class ScheduledTasks {
             while (length < genresPerPlaylist) {
                 long index = Math.round(random.nextFloat() * totalGenres);
                 genreOffsets[length++] = index;
-                length++;
             }
 
             tuples.add(genreOffsets);
@@ -352,7 +339,7 @@ public class ScheduledTasks {
 
             String title;
 
-            if (genresPerPlaylist == 2) {
+            if (genresPerPlaylist.equals(2)) {
                 title = String.format("%s & %s", genres[0].getName(), genres[1].getName());
             } else {
                 title = String.format("%s, %s & %s",
@@ -365,15 +352,10 @@ public class ScheduledTasks {
             int index = random.nextInt(genresPerPlaylist);
 
             Image image = genres[index].getImage();
-
-            if (image != null) {
-                image.setId(null);
-            }
-
             Playlist playlist = new Playlist(title, null, image,false);
             List<Song> artistSongs;
 
-            if (genresPerPlaylist == 2) {
+            if (genresPerPlaylist.equals(2)) {
                 artistSongs = songRepository.getDistinctByGenreDuo(genres[0].getId(), genres[1].getId());
             } else {
                 artistSongs = songRepository.getDistinctByGenreTripler(genres[0].getId(), genres[1].getId(),
@@ -389,17 +371,16 @@ public class ScheduledTasks {
         }
 
         // remove old playlist
-        if (genresPerPlaylist == 2) {
+        if (genresPerPlaylist.equals(2)) {
             overviewPlaylistRepository.deleteByType(OverviewPlaylistType.MONTHLY_GENRE_DUO);
         } else {
-            overviewPlaylistRepository.deleteByType(OverviewPlaylistType.MONTHLY_ARTIST_TRIPLET);
+            overviewPlaylistRepository.deleteByType(OverviewPlaylistType.MONTHLY_GENRE_TRIPLET);
         }
 
         // save new
         overviewPlaylistRepository.save(overviewPlaylist);
     }
 
-    @Transactional
     protected void trendingCommunitySongs() {
         OverviewPlaylist overviewPlaylist = new OverviewPlaylist("Trending Today",
                 OverviewPlaylistType.DAILY_TRENDS);
@@ -407,9 +388,6 @@ public class ScheduledTasks {
         // top 50 songs by play count
         List<Song> top50PopularSongs = songRepository.getTop50PopularSongs();
         Image image = getFirstImage(top50PopularSongs);
-        if (image != null) {
-            image.setId(null);
-        }
         Playlist popularPlaylist = new Playlist("Top 50 Songs", null, image,false);
         List<PlaylistSong> top50Songs = new ArrayList<>();
 
@@ -421,9 +399,6 @@ public class ScheduledTasks {
         // bottom 50 songs by play count
         List<Song> bottom50Songs = songRepository.getTop50UnpopularSongs();
         image = getFirstImage(bottom50Songs);
-        if (image != null) {
-            image.setId(null);
-        }
         Playlist unpopularPlaylist = new Playlist("Bottom 50 Songs", null, image,false);
         List<PlaylistSong> bottom50PlaylistSongs = new ArrayList<>();
 
