@@ -308,17 +308,19 @@ public class PlaylistController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Get the playlists to display on the Browse page.
+     * @return a 200 response containing a list of overview playlists.
+     */
     @GetMapping(path = "/overview")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
-    public ResponseEntity<?> getOverviewPlaylists(){
-        Iterable<OverviewPlaylist> optionalPlaylist = overviewPlaylistRepository.findAll();
-        List<OverviewPlaylist> overviewPlaylists = new ArrayList<>();
-
-        optionalPlaylist.forEach( overviewPlaylist -> {overviewPlaylists.add(overviewPlaylist);
-        });
-
-        TypedCollection collection = new TypedCollection(overviewPlaylists, OverviewPlaylist.class);
-        return new ResponseEntity<>(collection, HttpStatus.OK);
-
+    @DecorateResponse(type = TypedCollection.class)
+    public @ResponseBody TypedCollection getOverviewPlaylists(){
+        Iterable<OverviewPlaylist> playlistIterable = overviewPlaylistRepository.findAll();
+        List<OverviewPlaylist> playlistList = new ArrayList<>();
+        for (OverviewPlaylist playlist: playlistIterable) {
+            playlistList.add(playlist);
+        }
+        return new TypedCollection(playlistList, OverviewPlaylist.class);
     }
 }
