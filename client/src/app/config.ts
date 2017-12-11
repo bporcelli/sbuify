@@ -6,5 +6,6 @@ export const Config = {
   DEFAULT_PLAYLIST_IMG: 'assets/img/playlist-placeholder.jpg',
   DEFAULT_IMAGE_ID: 1,
   MAX_CC_AGE: 5,
-  DEFAULT_BIO_TEXT: "This artist doesn't have a biography."
+  DEFAULT_BIO_TEXT: "This artist doesn't have a biography.",
+  SONGKICK_API_KEY: "XdtUcU7Zm04jeEaV"
 };

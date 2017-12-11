@@ -4,9 +4,9 @@ import { ArtistDetailComponent } from './artist-detail.component';
 import { OverviewComponent } from './overview.component';
 import { RelatedArtistsComponent } from './related-artists.component';
 import { AboutComponent } from './about.component';
-import { ConcertsComponent } from '../concerts/concerts.component';
 import { AuthGuard } from '../auth/auth-guard.service';
 import { ArtistDetailResolver } from "./artist-resolver.service";
+import { ArtistConcertsComponent } from "./artist-concerts.component";
 
 const routes: Routes = [
   {
@@ -32,7 +32,7 @@ const routes: Routes = [
       },
       {
         path: 'concerts',
-        component: ConcertsComponent
+        component: ArtistConcertsComponent
       },
       {
         path: '',

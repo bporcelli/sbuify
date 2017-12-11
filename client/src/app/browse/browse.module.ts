@@ -14,6 +14,7 @@ import { GenreDetailResolver } from "./genres/genre-detail-resolver.service";
 import { GenreComponent } from "./genres/genre.component";
 import { AlbumModule } from "../album/album.module";
 import { SharedModule } from "../shared/shared.module";
+import { UserModule } from "../user/user.module";
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import { SharedModule } from "../shared/shared.module";
     CommonModule,
     AlbumModule,
     SharedModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    UserModule
   ],
   declarations: [
     BrowseComponent,
