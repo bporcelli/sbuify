@@ -1,6 +1,7 @@
 package com.cse308.sbuify.test;
 
 import com.cse308.sbuify.test.helper.AuthenticatedTest;
+import org.junit.Test;
 
 public class AdminControllerSuperAdminTest extends AuthenticatedTest {
 
@@ -15,4 +16,8 @@ public class AdminControllerSuperAdminTest extends AuthenticatedTest {
         return "a";
     }
 
+    @Test
+    public void testInitialized() {
+        // included to prevent initializationError
+    }
 }

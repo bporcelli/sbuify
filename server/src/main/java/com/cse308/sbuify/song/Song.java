@@ -29,7 +29,7 @@ public class Song extends CatalogItem implements Queueable, Decorable {
     private Integer trackNumber;
 
     @NotNull
-    private Integer playCount = 0;
+    private Long playCount = 0l;
 
     @NotNull
     private String mbid;
@@ -91,8 +91,15 @@ public class Song extends CatalogItem implements Queueable, Decorable {
     /**
      * The number of times this song has been played (updated periodically).
      */
-    public Integer getPlayCount() {
+    public @NotNull Long getPlayCount() {
         return playCount;
+    }
+
+    /**
+     * {@link #getPlayCount()}
+     */
+    public void setPlayCount(@NotNull Long playCount) {
+        this.playCount = playCount;
     }
 
     /**
@@ -175,9 +182,5 @@ public class Song extends CatalogItem implements Queueable, Decorable {
     @JsonAnySetter
     public void set(String key, Object value) {
         properties.put(key, value);
-    }
-
-    public void setPlayCount(Integer playCount) {
-        this.playCount = playCount;
     }
 }

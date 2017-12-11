@@ -85,7 +85,7 @@ public interface SongRepository  extends CrudRepository<Song, Integer> {
             "   AND ( g.id = :genre" +
             "   OR g.id = :genre2)" +
             "ORDER BY RAND()", nativeQuery = true)
-    List<Song> genreDuo(@Param("genre") Integer genre, @Param("genre2") Integer genre2);
+    List<Song> getDistinctByGenreDuo(@Param("genre") Integer genre, @Param("genre2") Integer genre2);
 
     @Query(value = "SELECT s.* " +
             "FROM song s, song_genres sg, genre g " +
@@ -95,9 +95,9 @@ public interface SongRepository  extends CrudRepository<Song, Integer> {
             "   OR g.id = :genre2" +
             "   OR g.id = :genre3)" +
             "ORDER BY RAND()", nativeQuery = true)
-    List<Song> genreTriplet(@Param("genre") Integer genre,
-                             @Param("genre2") Integer genre2,
-                             @Param("genre3") Integer genre3);
+    List<Song> getDistinctByGenreTripler(@Param("genre") Integer genre,
+                                         @Param("genre2") Integer genre2,
+                                         @Param("genre3") Integer genre3);
 
     @Query(value = "SELECT s.* " +
             "FROM song s, stream st " +
@@ -126,9 +126,9 @@ public interface SongRepository  extends CrudRepository<Song, Integer> {
             "WHERE (ar.artist_id = :artistId " +
             "   OR ar.artist_id = :artistId2)" +
             "   AND s.album_id = ar.id " +
-            "ORDER BY  RAND() ", nativeQuery = true)
-    List<Song> artistDuo(@Param("artistId") Integer artistId,
-                         @Param("artistId2") Integer artistId2);
+            "ORDER BY RAND() LIMIT 0, 50", nativeQuery = true)
+    List<Song> getDistinctByArtistDuo(@Param("artistId") Integer artistId,
+                                      @Param("artistId2") Integer artistId2);
 
     @Query(value = "SELECT DISTINCT s.*" +
             "FROM song s, album ar " +
@@ -136,10 +136,10 @@ public interface SongRepository  extends CrudRepository<Song, Integer> {
             "   OR ar.artist_id = :artistId2" +
             "   OR ar.artist_id = :artistId3)" +
             "   AND s.album_id = ar.id " +
-            "ORDER BY  RAND() ", nativeQuery = true)
-    List<Song> artistTriplet(@Param("artistId") Integer artistId,
-                             @Param("artistId2") Integer artistId2,
-                             @Param("artistId3") Integer artistId3);
+            "ORDER BY  RAND() LIMIT 0, 50", nativeQuery = true)
+    List<Song> getDistinctByArtistTriplet(@Param("artistId") Integer artistId,
+                                          @Param("artistId2") Integer artistId2,
+                                          @Param("artistId3") Integer artistId3);
 
     @Query(
             value = "SELECT s.* FROM song s, stream st " +

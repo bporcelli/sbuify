@@ -15,14 +15,20 @@ public class OverviewPlaylist {
     @NotNull
     private String title;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval=true)
+    @NotNull
+    @Enumerated(value = EnumType.STRING)
+    private OverviewPlaylistType type;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "playlist_id"))
-    private List<Playlist> list = new ArrayList<>();
+    private List<Playlist> playlists = new ArrayList<>();
 
     public OverviewPlaylist(){
     }
-    public OverviewPlaylist(String title){
+
+    public OverviewPlaylist(@NotNull String title, @NotNull OverviewPlaylistType type) {
         this.title = title;
+        this.type = type;
     }
 
     public Integer getId() {
@@ -42,23 +48,23 @@ public class OverviewPlaylist {
     }
 
     public List<Playlist> getList() {
-        return list;
+        return playlists;
     }
 
     public void setList(List<Playlist> list) {
-        if(list != null){
-            this.list.clear();
-            this.list.addAll(list);
+        if (list != null) {
+            this.playlists.clear();
+            this.playlists.addAll(list);
         }
     }
 
     public void addPlaylist(Playlist playlist){
-        if(playlist != null){
-            list.add(playlist);
+        if (playlist != null) {
+            playlists.add(playlist);
         }
     }
 
     public void clearPlaylist(){
-        list.clear();
+        playlists.clear();
     }
 }

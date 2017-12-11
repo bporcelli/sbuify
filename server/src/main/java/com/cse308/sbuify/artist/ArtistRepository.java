@@ -72,4 +72,7 @@ public interface ArtistRepository extends CrudRepository<Artist, Integer> {
             nativeQuery = true
     )
     Page<Artist> getRelatedByArtistId(@Param("artistId") Integer artistId, Pageable pageable);
+
+    @Query(value = "SELECT * FROM artist ORDER BY ID ASC LIMIT :index, 1", nativeQuery = true)
+    Artist getArtistByOffset(@Param("index") Long index);
 }

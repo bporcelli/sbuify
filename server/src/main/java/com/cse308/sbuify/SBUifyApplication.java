@@ -1,6 +1,6 @@
 package com.cse308.sbuify;
 
-import com.cse308.sbuify.common.ScheduleTasksProperties;
+import com.cse308.sbuify.common.ScheduledTaskProperties;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +19,7 @@ import com.cse308.sbuify.reports.ReportProperties;
 
 @SpringBootApplication
 @EnableScheduling
-@EnableConfigurationProperties({ImageProperties.class, PlaylistProperties.class, AlbumProperties.class, LibraryProperties.class, CustomerProperties.class, ScheduleTasksProperties.class, ReportProperties.class})
+@EnableConfigurationProperties({ImageProperties.class, PlaylistProperties.class, AlbumProperties.class, LibraryProperties.class, CustomerProperties.class, ScheduledTaskProperties.class, ReportProperties.class})
 public class SBUifyApplication {
 
 	public static void main(String[] args) {
