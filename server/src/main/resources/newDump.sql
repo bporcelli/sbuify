@@ -1144,7 +1144,8 @@ CREATE TABLE `subscription` (
   `end` datetime DEFAULT NULL,
   `start` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `stripe_id` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_lh45n72a8s6l55lm924ddamxr` (`stripe_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1154,7 +1155,7 @@ CREATE TABLE `subscription` (
 
 LOCK TABLES `subscription` WRITE;
 /*!40000 ALTER TABLE `subscription` DISABLE KEYS */;
-INSERT INTO `subscription` VALUES (1,'2018-03-01 00:00:00','2015-03-01 00:00:00','stripe_id1'),(2,'2018-03-01 00:00:00','2017-03-01 00:00:00','stripe_id2'),(3,'2018-03-01 00:00:00','2017-03-01 00:00:00','stripe_id3'),(4,'2017-11-30 00:00:00','2017-11-01 00:00:00','stripe_id_853'),(5,'2017-10-31 00:00:00','2017-10-01 00:00:00','stripe_id_856'),(6,'2017-11-30 00:00:00','2017-11-01 00:00:00','stripe_id_856'),(7,'2017-10-30 00:00:00','2017-10-01 00:00:00','stripe_id_860'),(8,'2017-12-31 00:00:00','2017-12-01 00:00:00','stripe_id_860'),(9,'2017-10-30 00:00:00','2017-10-01 00:00:00','stripe_id_869');
+INSERT INTO `subscription` VALUES (1,'2018-03-01 00:00:00','2015-03-01 00:00:00','stripe_id1'),(2,'2018-03-01 00:00:00','2017-03-01 00:00:00','stripe_id2'),(3,'2018-03-01 00:00:00','2017-03-01 00:00:00','stripe_id3'),(4,'2017-11-30 00:00:00','2017-11-01 00:00:00','stripe_id_853'),(5,'2017-10-31 00:00:00','2017-10-01 00:00:00','stripe_id_856_1'),(6,'2017-11-30 00:00:00','2017-11-01 00:00:00','stripe_id_856_2'),(7,'2017-10-30 00:00:00','2017-10-01 00:00:00','stripe_id_860_1'),(8,'2017-12-31 00:00:00','2017-12-01 00:00:00','stripe_id_860_2'),(9,'2017-10-30 00:00:00','2017-10-01 00:00:00','stripe_id_869');
 /*!40000 ALTER TABLE `subscription` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1231,4 +1232,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-11 15:07:41
+-- Dump completed on 2017-12-11 23:05:41
