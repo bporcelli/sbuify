@@ -5,6 +5,11 @@ import { AdminAuthGuard } from "../auth/admin-auth-guard.service";
 import { UserListComponent } from "./user-list.component";
 import { CreateUserComponent } from "./create-user.component";
 import { RoyaltiesComponent } from "./royalties.component";
+import { ReportsComponent } from "./reports.component";
+import { SubscribersReportComponent } from "./reports/subscribers-report.component";
+import { TrendsReportComponent } from "./reports/trends-report.component";
+import { SongReportComponent } from "./reports/song-report.component";
+import { ArtistReportComponent } from "./reports/artist-report.component";
 
 const routes: Routes = [
   {
@@ -27,6 +32,33 @@ const routes: Routes = [
       {
         path: 'royalties',
         component: RoyaltiesComponent
+      },
+      {
+        path: 'reports',
+        component: ReportsComponent,
+        children: [
+          {
+            path: 'subscribers',
+            component: SubscribersReportComponent
+          },
+          {
+            path: 'trends',
+            component: TrendsReportComponent
+          },
+          {
+            path: 'song',
+            component: SongReportComponent
+          },
+          {
+            path: 'artist',
+            component: ArtistReportComponent
+          },
+          {
+            path: '',
+            redirectTo: 'subscribers',
+            pathMatch: 'full'
+          }
+        ]
       },
       {
         path: '',

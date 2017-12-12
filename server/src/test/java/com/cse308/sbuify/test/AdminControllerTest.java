@@ -130,21 +130,6 @@ public class AdminControllerTest extends AuthenticatedTest {
         assertEquals(!originalActive, updated.isActive());
     }
 
-    /**
-     * Test site-stat
-     */
-    @Test
-    public void getSiteStatTest() {
-        ResponseEntity<List> response = restTemplate.exchange("/api/admins/site-stat", HttpMethod.GET, null,
-                List.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        List<String> stringArray = response.getBody();
-        for (String s : stringArray) {
-            System.out.println(s);
-        }
-    }
-
     @Override
     public String getEmail() {
         return "sbuify+admin@gmail.com"; // use the user sbuify+admin@gmail.com for all tests in this class request

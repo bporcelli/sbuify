@@ -1,107 +1,108 @@
 package com.cse308.sbuify.reports;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.EntityManager;
-
+import com.cse308.sbuify.album.AlbumStreamCountDTO;
+import com.cse308.sbuify.artist.ArtistStreamCountDTO;
+import com.cse308.sbuify.customer.SubscriptionRepository;
+import com.cse308.sbuify.playlist.PlaylistStreamCountDTO;
+import com.cse308.sbuify.stream.StreamCountDTO;
+import com.cse308.sbuify.stream.StreamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.cse308.sbuify.admin.Admin;
-import com.cse308.sbuify.artist.Artist;
-import com.cse308.sbuify.artist.ArtistRepository;
-import com.cse308.sbuify.common.TypedCollection;
-import com.cse308.sbuify.label.LabelOwner;
-import com.cse308.sbuify.security.AuthFacade;
-import com.cse308.sbuify.user.User;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Report Generator.
  *
- * Responsible for generating & saving reports.
+ * Responsible for generating reports.
  */
 @Controller
 @RequestMapping(path = "/api/reports")
 public class ReportController {
 
     @Autowired
-    private EntityManager em;
+    private SubscriptionRepository subscriptionRepository;
 
     @Autowired
-    private AuthFacade authFacade;
-    
-    @Autowired
-    private ArtistRepository artistRepo;
+    private StreamRepository streamRepository;
 
-    private ReportRegistry registry = new ReportRegistry();
-    
-    static String DIRECTORY;
-    
-    @Autowired
-    public ReportController(ReportProperties reportProperties) {
-        DIRECTORY = reportProperties.getDirectory();
+    /**
+     * Get the data for the subscribers report.
+     * @param window Reporting window (days).
+     * @return a 200 response containing the report data.
+     */
+    @GetMapping(path = "/subscribers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public @ResponseBody SubscribersReport getSubscribersReport(@RequestParam Integer window) {
+        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = end.minusDays(window);
+
+        Integer subsGained = subscriptionRepository.countAllByStartBetween(start, end);
+        Integer subsLost = subscriptionRepository.countAllByEndBetween(start, end);
+        Integer totalSubs = subscriptionRepository.countAllByEndIsNull();
+
+        return new SubscribersReport(subsGained, subsLost, totalSubs);
     }
 
     /**
-     * Endpoint for returning all of the reports available for the current user
-     * 
-     * @return
+     * Get the data for the trends report.
+     * @param window Reporting window (days).
+     * @return a 200 response containing the report data.
      */
-    @GetMapping
-    public @ResponseBody TypedCollection getReports() {
-        User user = authFacade.getCurrentUser();
+    @GetMapping(path = "/trends")
+    @PreAuthorize("hasRole('ADMIN')")
+    public @ResponseBody TrendsReport getTrendsReport(@RequestParam Integer window) {
+        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = end.minusDays(window);
 
-        List<Report> reports;
-        if (user instanceof LabelOwner) {
-            reports = registry.getReports(ReportType.LABEL);
-        } else if (user instanceof Admin) {
-            reports = registry.getReports(ReportType.ADMIN);
-        } else {
-            return new TypedCollection(new ArrayList<Report>(), Report.class);
-        }
+        PageRequest topFiveRequest = PageRequest.of(0, 5);
 
-        return new TypedCollection(reports, Report.class);
+        List<StreamCountDTO> topSongs = streamRepository.getTopSongsForPeriod(start, end, topFiveRequest);
+        List<ArtistStreamCountDTO> topArtists = streamRepository.getTopArtistsForPeriod(start, end, topFiveRequest);
+        List<PlaylistStreamCountDTO> topPlaylists = streamRepository.getTopPlaylistsForPeriod(start, end, topFiveRequest);
+
+        return new TrendsReport(topSongs, topArtists, topPlaylists);
     }
 
-    @PostMapping(path = "/generate/{id}")
-    public ResponseEntity<?> generateReport(@PathVariable String id, @RequestBody List<String> qparams) {
-        Report report = registry.getReport(id);
-        
-        if (report == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        
-        if(report.getId().equals("artist-royalty-report")) {
-            Optional<Artist> artist = artistRepo.findById(Integer.valueOf(qparams.get(0)));
-            if(!artist.isPresent())
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            
-            ((ArtistRoyaltyReport) report).setArtist(artist.get());
-        }
+    /**
+     * Get the data for the artist report.
+     * @param id Artist ID.
+     * @param window Reporting window (days).
+     * @return a 200 response containing the report data.
+     */
+    @GetMapping(path = "/artist/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public @ResponseBody ArtistReport getTrendsReport(@PathVariable Integer id, @RequestParam Integer window) {
+        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = end.minusDays(window);
 
-        User user = authFacade.getCurrentUser();
-        if (!hasAccess(report, user)) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
+        PageRequest topTenReq = PageRequest.of(0, 10);
 
-        ReportGenerator generator = new ReportGenerator();
-        String html = generator.generateHTML(em, report, qparams);
+        Long freeStreams = streamRepository.countAllBySong_Album_Artist_IdAndPremiumIsFalseAndTimeBetween(id, start, end);
+        Long premiumStreams = streamRepository.countAllBySong_Album_Artist_IdAndPremiumIsTrueAndTimeBetween(id, start, end);
+        List<StreamCountDTO> popularSongs = streamRepository.getTopSongsForPeriodAndArtist(start, end, id, topTenReq);
+        List<AlbumStreamCountDTO> popularAlbums = streamRepository.getTopAlbumsForPeriodAndArtist(start, end, id, topTenReq);
 
-        return new ResponseEntity<>(html, HttpStatus.OK);
+        return new ArtistReport(freeStreams, premiumStreams, popularSongs, popularAlbums);
     }
 
-    private boolean hasAccess(Report report, User user) {
-        // todo
-        return true;
+    /**
+     * Get the data for the song report.
+     * @param id ID of song for report.
+     * @param window Reporting window (days).
+     * @return a 200 response containing the report data.
+     */
+    @GetMapping(path = "/song/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public @ResponseBody SongReport getSongReport(@PathVariable Integer id, @RequestParam Integer window) {
+        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = end.minusDays(window);
+        Long freeStreams = streamRepository.countAllBySong_IdAndPremiumIsFalseAndTimeBetween(id, start, end);
+        Long premiumStreams = streamRepository.countAllBySong_IdAndPremiumIsTrueAndTimeBetween(id, start, end);
+        return new SongReport(freeStreams, premiumStreams);
     }
 }

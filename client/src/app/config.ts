@@ -31,5 +31,6 @@ export const Config = {
       name: "Arabic",
       value: "ARABIC"
     }
-  ]
+  ],
+  DEFAULT_REPORTING_WINDOW_DAYS: 30
 };

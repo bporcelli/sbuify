@@ -730,6 +730,14 @@ body.loading {
   cursor: pointer;
 }
 
+.report-card {
+  @extend .text-center;
+
+  .card-block {
+    @extend .px-3, .py-3;
+  }
+}
+
 // Responsive
 @media (min-width: 1700px) {
     .d-sxl-table-cell {

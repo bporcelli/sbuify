@@ -1,0 +1,101 @@
+<section id="report-settings" class="mt-4">
+  <h2 class="h5">Settings</h2>
+  <form #form="ngForm" (ngSubmit)="onSettingsChanged()" class="form-inline">
+    <label class="mr-sm-2" for="window">Reporting Window</label>
+    <select name="window" id="window" class="form-control" [(ngModel)]="days">
+      <option value="7">Last Week</option>
+      <option value="30">Last 30 Days</option>
+      <option value="365">Last Year</option>
+    </select>
+    <label class="mx-sm-2" for="artist">Artist</label>
+    <input class="form-control"
+           name="artist"
+           id="artist"
+           auto-complete
+           auto-complete-placeholder="Type an artist name..."
+           list-formatter="name"
+           display-property-name="name"
+           [(ngModel)]="artist"
+           [source]="getArtistResults.bind(this)"
+           (input)="getArtists($event.target.value)">
+    <button type="submit" class="btn btn-primary ml-2" [disabled]="!form.form.dirty || !artistId || loading">
+      Generate
+    </button>
+  </form>
+</section>
+
+<section id="report-body" class="mt-5" *ngIf="data != null && !loading">
+  <div class="row">
+    <div class="col-4">
+      <div class="card report-card">
+        <div class="card-block">
+          <h3 class="card-title">Free Streams</h3>
+          <span class="h2 card-text">{{ data?.freeStreams }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card report-card">
+        <div class="card-block">
+          <h3 class="card-title">Premium Streams</h3>
+          <span class="h2 card-text">{{ data?.premiumStreams }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card report-card">
+        <div class="card-block">
+          <h3 class="card-title">Total Streams</h3>
+          <span class="h2 card-text">{{ data?.totalStreams }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="h4 mt-5">Top 10 Songs</h3>
+
+  <table class="table mt-3">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Album</th>
+      <th>Play Count</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let popularSong of data?.popularSongs">
+        <td>{{ popularSong.song.id }}</td>
+        <td>{{ popularSong.song.name }}</td>
+        <td>{{ popularSong.song.album.name }}</td>
+        <td>{{ popularSong.newStreams }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="h4 mt-5">Top 10 Albums</h3>
+
+  <table class="table mt-3">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Release Date</th>
+      <th>Play Count</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let popularAlbum of data?.popularAlbums">
+        <td>{{ popularAlbum.album.id }}</td>
+        <td>{{ popularAlbum.album.name }}</td>
+        <td>{{ popularAlbum.album.releaseDate | date }}</td>
+        <td>{{ popularAlbum.streamCount }}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="results-spinner mt-3" [hidden]="!loading">
+  <i class="fa fa-spinner fa-spin"></i>
+  <span>Loading...</span>
+</div>

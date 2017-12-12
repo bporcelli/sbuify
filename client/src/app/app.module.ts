@@ -5,6 +5,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { FormsModule } from '@angular/forms';
 import { TruncateModule } from "ng2-truncate";
+import { NgDatepickerModule } from 'ng2-datepicker';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
@@ -79,7 +80,8 @@ import { CustomerService } from "./user/customer.service";
     AppRoutingModule,
     ContextMenuModule.forRoot({
       useBootstrap4: true
-    })
+    }),
+    NgDatepickerModule
   ],
   providers: [
     PlaylistService,

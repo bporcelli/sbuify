@@ -1,0 +1,84 @@
+<section id="report-settings" class="mt-4">
+  <h2 class="h5">Settings</h2>
+  <form #form="ngForm" (ngSubmit)="onSettingsChanged()" class="form-inline">
+    <label class="mr-sm-2" for="window">Reporting Window</label>
+    <select name="window" id="window" class="form-control" [(ngModel)]="days">
+      <option value="7">Last Week</option>
+      <option value="30">Last 30 Days</option>
+      <option value="365">Last Year</option>
+    </select>
+    <button type="submit" class="btn btn-primary ml-2" [disabled]="!form.form.dirty || loading">
+      Generate
+    </button>
+  </form>
+</section>
+
+<section id="report-body" class="mt-4" *ngIf="!loading">
+  <h3 class="h4">Top 5 Songs</h3>
+
+  <table class="table mt-3">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Artist</th>
+        <th>Album</th>
+        <th>Stream Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let popularSong of data?.popularSongs">
+        <td>{{ popularSong.song.id }}</td>
+        <td>{{ popularSong.song.name }}</td>
+        <td>{{ popularSong.song.album.artist.name }}</td>
+        <td>{{ popularSong.song.album.name }}</td>
+        <td>{{ popularSong.newStreams }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="h4 mt-4">Top 5 Artists</h3>
+
+  <table class="table mt-3">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Stream Count</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let popularArtist of data?.popularArtists">
+      <td>{{ popularArtist.artist.id }}</td>
+      <td>{{ popularArtist.artist.name }}</td>
+      <td>{{ popularArtist.streamCount }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <h3 class="h4 mt-4">Top 5 Playlists</h3>
+
+  <table class="table mt-3">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Creator</th>
+      <th>Stream Count</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let popularPlaylist of data?.popularPlaylists">
+      <td>{{ popularPlaylist.playlist.id }}</td>
+      <td>{{ popularPlaylist.playlist.name }}</td>
+      <td>{{ popularPlaylist.playlist.owner.name }}</td>
+      <td>{{ popularPlaylist.streamCount }}</td>
+    </tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="results-spinner mt-3" [hidden]="!loading">
+  <i class="fa fa-spinner fa-spin"></i>
+  <span>Loading...</span>
+</div>
