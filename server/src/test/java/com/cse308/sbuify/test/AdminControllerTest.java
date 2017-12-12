@@ -58,16 +58,20 @@ public class AdminControllerTest extends AuthenticatedTest {
      */
     @Test
     public void getAdminByIdTest() {
-        Map<String, String> params = new HashMap<>();
-        params.put("id", Integer.toString(4));
+        Admin expected = adminRepository.findByEmail("sbuify+admin@gmail.com");
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", 4);
+
         ResponseEntity<Admin> response = restTemplate.getForEntity("/api/admins/{id}", Admin.class, params);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Admin admin = response.getBody();
         assertNotEquals(null, admin);
-        assertEquals("sbuify+admin@gmail.com", admin.getEmail());
-        assertEquals("John", admin.getFirstName());
-        assertEquals("Doe", admin.getLastName());
-        assertEquals(true, admin.isSuperAdmin());
+
+        assertEquals(expected.getEmail(), admin.getEmail());
+        assertEquals(expected.getFirstName(), admin.getFirstName());
+        assertEquals(expected.getLastName(), admin.getLastName());
+        assertEquals(expected.isSuperAdmin(), admin.isSuperAdmin());
     }
 
     /**
