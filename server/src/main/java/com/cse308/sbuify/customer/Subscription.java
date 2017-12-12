@@ -18,7 +18,8 @@ public class Subscription implements Serializable {
 
     @NotNull
     @NotEmpty
-    @Column(unique = true)
+    // stripe_id is not unique because there can be multiple 
+    // instances of subscription entity by a same user.
     private String stripeId;
 
     @NotNull
