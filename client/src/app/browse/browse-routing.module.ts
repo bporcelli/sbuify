@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { BrowseComponent } from './browse.component';
 import { OverviewComponent } from './overview.component';
-import { ChartsComponent } from './charts.component';
 import { GenresComponent } from './genres/genres.component';
 import { NewReleasesComponent } from './new-releases.component';
 import { ConcertsComponent } from '../concerts/concerts.component';
-
 import { AuthGuard } from '../auth/auth-guard.service';
 import { GenreResolver } from "./genres/genre-resolver.service";
 import { GenreComponent } from "./genres/genre.component";
@@ -24,10 +21,6 @@ const browseRoutes: Routes = [
       {
         path: 'overview',
         component: OverviewComponent
-      },
-      {
-        path: 'charts',
-        component: ChartsComponent
       },
       {
         path: 'genres',

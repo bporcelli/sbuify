@@ -1,12 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-
 import { BrowseComponent } from './browse.component';
 import { BrowseRoutingModule } from './browse-routing.module';
-
 import { OverviewComponent } from './overview.component';
-import { ChartsComponent } from './charts.component';
 import { GenresComponent } from './genres/genres.component';
 import { NewReleasesComponent } from './new-releases.component';
 import { GenreResolver } from "./genres/genre-resolver.service";
@@ -28,7 +25,6 @@ import { UserModule } from "../user/user.module";
   declarations: [
     BrowseComponent,
     OverviewComponent,
-    ChartsComponent,
     GenresComponent,
     GenreComponent,
     NewReleasesComponent,

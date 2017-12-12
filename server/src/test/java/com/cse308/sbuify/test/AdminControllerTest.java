@@ -1,15 +1,10 @@
 package com.cse308.sbuify.test;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import com.cse308.sbuify.admin.Admin;
+import com.cse308.sbuify.admin.AdminRepository;
+import com.cse308.sbuify.song.Song;
+import com.cse308.sbuify.song.SongRepository;
+import com.cse308.sbuify.test.helper.AuthenticatedTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,12 +13,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.cse308.sbuify.admin.Admin;
-import com.cse308.sbuify.admin.AdminRepository;
-import com.cse308.sbuify.common.TypedCollection;
-import com.cse308.sbuify.song.Song;
-import com.cse308.sbuify.song.SongRepository;
-import com.cse308.sbuify.test.helper.AuthenticatedTest;
+import java.util.*;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class AdminControllerTest extends AuthenticatedTest {
 
