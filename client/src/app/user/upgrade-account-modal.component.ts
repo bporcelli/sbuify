@@ -3,7 +3,7 @@ import { NgForm } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormComponent } from "../shared/form.component";
 import { Config } from "../config";
-import { UserService } from "./user.service";
+import { CustomerService } from "./customer.service";
 
 @Component({
   templateUrl: './upgrade-account-modal.component.html'
@@ -26,7 +26,7 @@ export class UpgradeAccountModalComponent extends FormComponent {
 
   constructor(
     private activeModal: NgbActiveModal,
-    private userService: UserService
+    private customerService: CustomerService
   ) {
     super();
   }
@@ -49,7 +49,7 @@ export class UpgradeAccountModalComponent extends FormComponent {
       cvc: this.cvc
     };
 
-    this.userService.createSubscription(card)
+    this.customerService.createSubscription(card)
       .subscribe(
         () => this.close(),
         (err: any) => this.handleError(err)

@@ -40,6 +40,8 @@ import { APIClient } from "./shared/api-client.service";
 import { FollowingService } from "./user/following.service";
 import { RecentlyPlayedService } from "./library/recently-played.service";
 import { ArtistService } from "./artist/artist.service";
+import { AdminModule } from "./admin/admin.module";
+import { CustomerService } from "./user/customer.service";
 
 @NgModule({
   declarations: [
@@ -73,6 +75,7 @@ import { ArtistService } from "./artist/artist.service";
     ConcertsModule,
     SettingsModule,
     UserModule,
+    AdminModule,
     AppRoutingModule,
     ContextMenuModule.forRoot({
       useBootstrap4: true
@@ -89,6 +92,7 @@ import { ArtistService } from "./artist/artist.service";
     FollowingService,
     RecentlyPlayedService,
     ArtistService,
+    CustomerService,
     APIClient,
     {
       provide: HTTP_INTERCEPTORS,

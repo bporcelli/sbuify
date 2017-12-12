@@ -1,0 +1,48 @@
+<h1 class="display-4 page-heading">Users</h1>
+
+<filter-box (onFilterChanged)="onFilterChange($event)"></filter-box>
+
+<section class="mt-4"
+   infiniteScroll
+   [infiniteScrollDistance]="1"
+   [infiniteScrollThrottle]="50"
+   [infiniteScrollContainer]="'main'"
+   [fromRoot]="true"
+   (scrolled)="nextPage()">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="users.length > 0 || pending; else noUsersTemplate">
+        <tr *ngFor="let user of users" [contextMenu]="userMenu" [contextMenuSubject]="user">
+          <td>{{ user.id }}</td>
+          <td>{{ user.type | titlecase }}</td>
+          <td>{{ user.email }}</td>
+        </tr>
+      </ng-container>
+      <ng-template #noUsersTemplate>
+        <tr>
+          <td colspan="3">No users to display.</td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </table>
+  <div class="results-spinner mt-3" [hidden]="!pending">
+    <i class="fa fa-spinner fa-spin"></i>
+    <span>Loading...</span>
+  </div>
+</section>
+
+<context-menu>
+  <ng-template contextMenuItem (execute)="editUser($event.item)">
+    Edit
+  </ng-template>
+  <ng-template contextMenuItem [enabled]="isNotUserBound" (execute)="deleteUser($event.item)">
+    Delete
+  </ng-template>
+</context-menu>

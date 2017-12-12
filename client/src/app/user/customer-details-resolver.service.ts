@@ -14,9 +14,9 @@ export class CustomerDetailsResolver implements Resolve<Customer> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Customer> {
     let id = route.paramMap.get('id');
 
-    return this.service.getCustomer(id).take(1).map(customer => {
-      if (customer) {
-        return customer;
+    return this.service.getUser(id).take(1).map(customer => {
+      if (customer && customer.type == 'customer') {
+        return <Customer>customer;
       } else { // id not found
         // todo: show error
         this.router.navigate(['/browse/overview']);

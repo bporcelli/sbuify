@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Customer } from "./customer";
 import { UserService } from "./user.service";
 import { ProfilePictureModalComponent } from "./profile-picture-modal.component";
-import {User} from "./user";
+import { CustomerService } from "./customer.service";
 
 @Component({
   templateUrl: './profile.component.html'
@@ -26,6 +26,7 @@ export class ProfileComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
+    private customerService: CustomerService,
     private modalService: NgbModal
   ) {}
 
@@ -34,14 +35,14 @@ export class ProfileComponent implements OnInit {
       .subscribe((data: { user: Customer }) => this.init(data.user));
 
     this.userService.currentUser.take(1)
-      .subscribe((current) => this.current = current);
+      .subscribe((current) => this.current = <Customer>current);
   }
 
   /** Initialize user and friends */
   private init(user: Customer) {
     this.user = user;
 
-    this.userService.getFriends(this.user['id'])
+    this.customerService.getFriends(this.user['id'])
       .subscribe((friends) => {
         this.friends = friends;
         this.loading = false;
@@ -69,13 +70,13 @@ export class ProfileComponent implements OnInit {
 
   /** Follow or unfollow the visible customer */
   toggleFollowing(): void {
-    this.userService.toggleFollowing(this.user)
+    this.customerService.toggleFollowing(this.user)
       .subscribe((following) => this.user['followed'] = following);
   }
 
   /** Unfollow a friend */
   removeFriend(friend: any): void {
-    this.userService.toggleFollowing(friend)
+    this.customerService.toggleFollowing(friend)
       .subscribe(() => {
         this.friends = this.friends.filter(value => value['id'] != friend['id']);
       });

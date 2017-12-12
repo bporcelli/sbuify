@@ -1,6 +1,6 @@
 package com.cse308.sbuify.customer;
 
-import com.cse308.sbuify.common.api.DecorateResponse;
+import com.cse308.sbuify.admin.Admin;
 import com.cse308.sbuify.image.Base64Image;
 import com.cse308.sbuify.image.Image;
 import com.cse308.sbuify.image.StorageException;
@@ -41,24 +41,6 @@ public class CustomerController {
     private StorageService storageService;
 
     /**
-     * Get information about a customer.
-     * @param id Optional customer ID. If not provided, the authenticated customer is returned.
-     * @return a 200 response with information about the customer in the body.
-     */
-    @GetMapping(path = {"", "{id}"})
-    @DecorateResponse(type = Customer.class)
-    public ResponseEntity<?> getCustomer(@PathVariable Optional<Integer> id) {
-        if (!id.isPresent()) {
-            return new ResponseEntity<>(authFacade.getCurrentUser(), HttpStatus.OK);
-        }
-        Optional<User> customer = userRepository.findById(id.get());
-        if (!customer.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(customer.get(), HttpStatus.OK);
-    }
-
-    /**
      * Update a customer.
      * @param id ID of customer.
      * @param updated Updated customer, with fields that should be left unchanged set to null.
@@ -67,13 +49,15 @@ public class CustomerController {
     @PatchMapping(path = {"", "{id}"})
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     public ResponseEntity<?> updateCustomer(@RequestBody Customer updated, @PathVariable Optional<Integer> id) {
+        User currentUser = authFacade.getCurrentUser();
+
         // get the user to edit -- either the current user or the one with the given id
         User user;
 
         if (id.isPresent()) {
             user = getUserById(id.get());
         } else {
-            user = authFacade.getCurrentUser();
+            user = currentUser;
         }
 
         if (user == null) {
@@ -82,11 +66,12 @@ public class CustomerController {
         if (!SecurityUtils.userCanEdit(user)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+        if (!(currentUser instanceof Admin)) {
+            String password = updated.getPassword();
 
-        String password = updated.getPassword();
-
-        if (password == null || !bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            return new ResponseEntity<>("Invalid password", HttpStatus.FORBIDDEN);
+            if (password == null || !bCryptPasswordEncoder.matches(password, user.getPassword())) {
+                return new ResponseEntity<>("Invalid password", HttpStatus.FORBIDDEN);
+            }
         }
 
         Customer customer = (Customer) user;
@@ -108,9 +93,9 @@ public class CustomerController {
             customer.setBirthday(updated.getBirthday());
         }
 
-        userRepository.save(customer);
+        customer = userRepository.save(customer);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
     /**

@@ -24,7 +24,11 @@ export class AppComponent implements OnInit {
 
   getMainClasses() {
     if ( this.user ) {
-      return 'col-md-9 col-xl-10 content-wrapper main-content';
+      let cls = 'col-md-9 col-xl-10 content-wrapper main-content';
+      if (this.user.type != 'customer') {
+        cls += ' full-height';
+      }
+      return cls;
     } else {
       return 'col-xs-12 col-md-6 col-lg-5 col-xl-4 mx-auto';
     }

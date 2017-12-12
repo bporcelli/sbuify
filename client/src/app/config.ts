@@ -3,9 +3,10 @@ export const Config = {
   MAX_AGE: 120,
   MAX_CC_AGE: 5,
   ITEMS_PER_PAGE: 25,
+  CUSTOMER_LANDING_PAGE: "/browse/overview",
+  ADMIN_LANDING_PAGE: "/admin/home",
   SONGKICK_API_KEY: "XdtUcU7Zm04jeEaV",
   DEFAULT_IMAGE_ID: 1,
-  DEFAULT_REDIRECT: "/browse/overview", // todo: vary based on user role
   DEFAULT_PLAYLIST_IMG: 'assets/img/playlist-placeholder.jpg',
   DEFAULT_BIO_TEXT: "This artist doesn't have a biography.",
   DEFAULT_LANGUAGE: "ENGLISH",

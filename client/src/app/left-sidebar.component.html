@@ -1,33 +1,68 @@
-<div class="left-sidebar-item">
+<ng-container *ngIf="user?.type == 'customer'">
+  <div class="left-sidebar-item">
     <h6 class="nav-title">Main</h6>
 
     <ul class="nav sidebar-nav flex-column">
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/browse" routerLinkActive="active">Browse</a>
-        </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/browse" routerLinkActive="active">Browse</a>
+      </li>
     </ul>
-</div>
+  </div>
 
-<div class="left-sidebar-item">
+  <div class="left-sidebar-item">
     <h6 class="nav-title">Your Library</h6>
 
     <ul class="nav sidebar-nav flex-column">
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/recently-played" routerLinkActive="active">Recently Played</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/songs" routerLinkActive="active">Songs</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/albums" routerLinkActive="active">Albums</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/artists" routerLinkActive="active">Artists</a>
-        </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/recently-played" routerLinkActive="active">Recently Played</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/songs" routerLinkActive="active">Songs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/albums" routerLinkActive="active">Albums</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/artists" routerLinkActive="active">Artists</a>
+      </li>
     </ul>
-</div>
+  </div>
 
-<div class="left-sidebar-item">
-  <!-- display the root playlist folder -->
-  <playlist-folder></playlist-folder>
-</div>
+  <div class="left-sidebar-item">
+    <!-- display the root playlist folder -->
+    <playlist-folder></playlist-folder>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="user?.type == 'admin'">
+  <div class="left-sidebar-item">
+    <ul class="nav sidebar-nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin/home" routerLinkActive="active">Home</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="left-sidebar-item">
+    <h6 class="nav-title">Users</h6>
+
+    <ul class="nav sidebar-nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin/users" routerLinkActive="active">View Users</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin/create-user" routerLinkActive="active">Create</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="left-sidebar-item">
+    <h6 class="nav-title">Royalties</h6>
+
+    <ul class="nav sidebar-nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin/royalties" routerLinkActive="active">View and Pay</a>
+      </li>
+    </ul>
+  </div>
+</ng-container>

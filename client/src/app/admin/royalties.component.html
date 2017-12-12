@@ -1,0 +1,80 @@
+<h1 class="display-4 page-heading">Royalty Payments</h1>
+
+<section id="royalty-filters" class="mt-4">
+  <h2 class="h5">Filters</h2>
+  <form #form="ngForm" (ngSubmit)="onFiltersChanged()" class="form-inline">
+    <label class="mr-sm-2" for="status">Status</label>
+    <select class="form-control mr-sm-2" name="status" id="status" [(ngModel)]="status">
+      <option value="ALL">All</option>
+      <option value="PENDING_PAYMENT">Pending Payment</option>
+      <option value="PAID">Paid</option>
+    </select>
+    <label class="mr-sm-2" for="period">Period</label>
+    <select class="form-control" name="period" id="period" [(ngModel)]="period">
+      <ng-container *ngIf="periods != null; else periodsLoading">
+        <option value="">Select...</option>
+        <option *ngFor="let period of periods" [value]="period.id">{{ period.name }}</option>
+      </ng-container>
+      <ng-template #periodsLoading>
+        <option value="">Loading...</option>
+      </ng-template>
+    </select>
+    <button type="submit" class="btn btn-primary ml-2" [disabled]="!form.form.dirty || pending">
+      Update
+    </button>
+  </form>
+</section>
+
+<section class="mt-5"
+         infiniteScroll
+         [infiniteScrollDistance]="1"
+         [infiniteScrollThrottle]="50"
+         [infiniteScrollContainer]="'main'"
+         [fromRoot]="true"
+         (scrolled)="nextPage()">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Payee</th>
+        <th>Period</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="payments.length > 0 || pending; else noPaymentsTemplate">
+        <tr class="payment-row"
+            title="View Payment Details"
+            *ngFor="let payment of payments"
+            [contextMenu]="royaltyMenu"
+            [contextMenuSubject]="payment"
+            (click)="viewPayment(payment)">
+          <td>{{ payment.id }}</td>
+          <td>{{ payment.amount }}</td>
+          <td>{{ payment.status | toStatusString }}</td>
+          <td>{{ payment.payee.name }}</td>
+          <td>{{ payment.period.name }}</td>
+        </tr>
+      </ng-container>
+      <ng-template #noPaymentsTemplate>
+        <tr>
+          <td colspan="3">No payments to display.</td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </table>
+  <div class="results-spinner mt-3" [hidden]="!pending">
+    <i class="fa fa-spinner fa-spin"></i>
+    <span>Loading...</span>
+  </div>
+</section>
+
+<context-menu #royaltyMenu>
+  <ng-template contextMenuItem (execute)="viewPayment($event.item)">
+    View Details
+  </ng-template>
+  <ng-template contextMenuItem [enabled]="isNotPaid" (execute)="markPaid($event.item)">
+    Mark Paid
+  </ng-template>
+</context-menu>

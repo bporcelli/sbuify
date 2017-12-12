@@ -1,0 +1,42 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="upgradeModalLabel">Edit {{ user?.type | titlecase }}</h5>
+  <button type="button" class="close" aria-label="Close" (click)="close()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form #form="ngForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" name="email" id="email" placeholder="my@email.com" required [(ngModel)]="user.email">
+    </div>
+    <div class="form-row form-group" *ngIf="user?.type == 'admin' || user?.type == 'customer'">
+      <div class="col-6">
+        <label for="firstName">First name</label>
+        <input type="text" class="form-control" name="firstName" id="firstName" placeholder="John" required [(ngModel)]="user.firstName">
+      </div>
+      <div class="col-6">
+        <label for="lastName">Last name</label>
+        <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Doe" required [(ngModel)]="user.lastName">
+      </div>
+    </div>
+    <div class="form-group" *ngIf="user?.type == 'admin'">
+      <label class="custom-control custom-checkbox">
+        Super admin?
+        <input type="checkbox" class="custom-control-input" name="superAdmin" id="superAdmin" [(ngModel)]="user.superAdmin">
+        <span class="custom-control-indicator"></span>
+      </label>
+    </div>
+    <div class="form-row" *ngIf="feedback">
+      <p class="mx-auto" [ngClass]="feedback.class">{{ feedback.text }}</p>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+  <button type="button" class="btn btn-primary"
+          [disabled]="!form.form.valid || !form.form.dirty || disabled"
+          (click)="doSubmit()">
+    Save Changes
+  </button>
+</div>

@@ -12,7 +12,7 @@ import { UpgradeAccountModalComponent } from "./user/upgrade-account-modal.compo
 })
 export class NavbarComponent implements OnInit {
 
-  user: User = null;  // todo: add premium flag (get full customer object from server in AuthService/UserService)
+  user: User = null;
 
   constructor(
     public userService: UserService,

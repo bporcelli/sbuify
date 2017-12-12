@@ -3,7 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgForm } from '@angular/forms';
 import { FormComponent } from "../shared/form.component";
 import { Config } from "../config";
-import { UserService } from "./user.service";
+import { CustomerService } from "./customer.service";
 
 @Component({
   templateUrl: './profile-picture-modal.component.html'
@@ -15,7 +15,7 @@ export class ProfilePictureModalComponent extends FormComponent implements OnIni
 
   constructor(
     private activeModal: NgbActiveModal,
-    private userService: UserService
+    private customerService: CustomerService
   ) {
     super();
   }
@@ -32,7 +32,7 @@ export class ProfilePictureModalComponent extends FormComponent implements OnIni
       imageURL = '';
     }
 
-    this.userService.changeProfilePicture(imageURL)
+    this.customerService.changeProfilePicture(imageURL)
       .take(1)
       .subscribe((image) => {
         this.close(image);

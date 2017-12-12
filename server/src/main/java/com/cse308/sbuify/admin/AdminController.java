@@ -106,12 +106,14 @@ public class AdminController {
      */
 	@PatchMapping(path = "{id}")
 	public ResponseEntity<?> updateAdmin(@PathVariable Integer id, @RequestBody Admin partialAdmin) {
+	    User currentUser = authFacade.getCurrentUser();
+
 	    Admin admin = getAdminById(id);
 
 	    if (admin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (!isSuperAdmin()) {
+        if (!currentUser.equals(admin) && !isSuperAdmin()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -125,8 +127,9 @@ public class AdminController {
             admin.setLastName(partialAdmin.getLastName());
         }
 
-        userRepository.save(admin);
-        return new ResponseEntity<>(HttpStatus.OK);
+        admin = userRepository.save(admin);
+
+	    return new ResponseEntity<>(admin, HttpStatus.OK);
 	}
 
     public Admin getAdminById(Integer id){

@@ -1,6 +1,7 @@
 package com.cse308.sbuify.user;
 
 import com.cse308.sbuify.admin.Admin;
+import com.cse308.sbuify.common.api.Decorable;
 import com.cse308.sbuify.customer.Customer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,7 +29,7 @@ import java.util.Collection;
     @JsonSubTypes.Type(value = Admin.class, name = "admin")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class User implements Serializable, UserDetails {
+public abstract class User implements Serializable, UserDetails, Decorable {
 
 	@Id
 	@GeneratedValue

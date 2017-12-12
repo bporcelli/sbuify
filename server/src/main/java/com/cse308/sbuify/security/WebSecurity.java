@@ -53,7 +53,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                     // admin endpoints are only accessible to admins
                     .antMatchers(ADMIN_PATTERN).hasRole("ADMIN")
                     // customer endpoints are only accessible to customers
-                    .antMatchers(CUSTOMER_PATTERN).hasRole("CUSTOMER")
+                    .antMatchers(CUSTOMER_PATTERN).hasAnyRole("CUSTOMER", "ADMIN")
                     // cron endpoints are only accessible by localhost
                     .antMatchers(CRON_PATTERN).hasIpAddress("localhost")
                     // by default, endpoints are only accessible to authenticated users

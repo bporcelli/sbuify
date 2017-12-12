@@ -32,13 +32,12 @@ export class PreferencesComponent extends FormComponent implements OnInit {
   ngOnInit(): void {
     this.prefsService.preferences
       .subscribe((preferences: object) => {
-        console.log('hq streaming is:', preferences['hq_streaming']);
         this.hqStreaming = preferences['hq_streaming'];
         this.language = preferences['language'];
       });
 
     this.userService.currentUser
-      .subscribe((user) => this.user = user);
+      .subscribe((user) => this.user = <Customer>user);
   }
 
   onSubmit(): void {

@@ -1,7 +1,9 @@
 export class User {
+  public id: number;
+
   constructor(
-    public email: String,
-    public password: String,
-    public type: String  // required for proper deserialization
+    public email: string,
+    public password: string,
+    public type: string  // required for proper deserialization
   ) {}
 }

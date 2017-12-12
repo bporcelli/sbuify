@@ -5,6 +5,7 @@ import com.cse308.sbuify.security.AuthFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class PreferenceController {
      * @return an OK response with the user's preferences in the body on success.
      */
     @GetMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
     public @ResponseBody Map<String, String> getPreferences() {
         Customer customer = (Customer) authFacade.getCurrentUser();
         return prefService.getAll(customer);
@@ -36,6 +38,7 @@ public class PreferenceController {
      * @return an empty 200 response on success.
      */
     @PutMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> updatePreferences(@RequestBody Map<String, String> newPreferences) {
         Customer customer = (Customer) authFacade.getCurrentUser();
         for (String key: newPreferences.keySet()) {
@@ -55,6 +58,7 @@ public class PreferenceController {
      * @return an empty 200 response on success.
      */
     @PutMapping(path = "/{key}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> updatePreference(@PathVariable String key, @RequestBody String value) {
         Customer customer = (Customer) authFacade.getCurrentUser();
         try {
@@ -64,5 +68,4 @@ public class PreferenceController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-
 import { User } from "../user/user";
 import { FormComponent } from "../shared/form.component";
 import { APIClient } from "../shared/api-client.service";
@@ -49,9 +48,13 @@ export class LoginComponent extends FormComponent implements OnInit {
   private handleSuccess(resp: any) {
     this.userService
       .authenticate(resp.headers.get('Authorization'), this.remember)
-      .subscribe(() => {
+      .subscribe((user: User) => {
         if ( !this.redirectURL ) {
-          this.redirectURL = Config.DEFAULT_REDIRECT;
+          if (user.type == 'admin') {
+            this.redirectURL = Config.ADMIN_LANDING_PAGE;
+          } else {
+            this.redirectURL = Config.CUSTOMER_LANDING_PAGE;
+          }
         } else {
           this.redirectURL = decodeURIComponent(this.redirectURL);
         }

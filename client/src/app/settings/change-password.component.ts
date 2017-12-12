@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { FormComponent } from "../shared/form.component";
-import { UserService } from "../user/user.service";
+import { CustomerService } from "../user/customer.service";
 
 @Component({
   templateUrl: './change-password.component.html'
@@ -19,14 +19,14 @@ export class ChangePasswordComponent extends FormComponent {
   /** Confirmation */
   confirmPassword: string = '';
 
-  constructor(private userService: UserService) {
+  constructor(private customerService: CustomerService) {
     super();
   }
 
   onSubmit(): void {
     super.onSubmit();
 
-    this.userService.changePassword(this.oldPassword, this.newPassword)
+    this.customerService.changePassword(this.oldPassword, this.newPassword)
       .subscribe(
         () => this.onSuccess(),
         (err: any) => this.onError(err)

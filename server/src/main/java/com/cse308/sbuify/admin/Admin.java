@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -76,6 +77,7 @@ public class Admin extends User {
     }
 
     @Override
+    @JsonIgnore(false)
     public String getName() {
         return this.firstName + " " + this.lastName;
     }

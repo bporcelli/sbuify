@@ -4,6 +4,7 @@ import { FormComponent } from "../shared/form.component";
 import { Config } from "../config";
 import { UserService } from "../user/user.service";
 import { Customer } from "../user/customer";
+import { CustomerService } from "../user/customer.service";
 
 @Component({
   templateUrl: './edit-account.component.html'
@@ -18,7 +19,10 @@ export class EditAccountComponent extends FormComponent implements OnInit {
   /** Password confirmation */
   private _pass: string = '';
 
-  constructor(private userService: UserService) {
+  constructor(
+    private userService: UserService,
+    private customerService: CustomerService
+  ) {
     super();
   }
 
@@ -36,7 +40,7 @@ export class EditAccountComponent extends FormComponent implements OnInit {
   onSubmit(): void {
     super.onSubmit();
 
-    this.userService.updateUser(this.user)
+    this.customerService.updateUser(this.user)
       .subscribe(
         () => this.onSuccess(),
         (err: any) => this.onError(err)
@@ -45,7 +49,7 @@ export class EditAccountComponent extends FormComponent implements OnInit {
 
   doDowngrade(): void {
     if (confirm('Are you sure you want to cancel your subscription?')) {
-      this.userService.cancelSubscription()
+      this.customerService.cancelSubscription()
         .subscribe(
           () => this.onSuccess(),
           (err: any) => this.onError(err)

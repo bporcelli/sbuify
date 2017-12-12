@@ -20,7 +20,7 @@ import java.util.*;
 
 @Entity
 @Indexed
-public class Customer extends User implements Followable, Decorable {
+public class Customer extends User implements Followable {
 
 	/** Authorities granted to customers */
 	private final static Collection<GrantedAuthority> AUTHORITIES = Arrays.asList(new SimpleGrantedAuthority("ROLE_CUSTOMER"));

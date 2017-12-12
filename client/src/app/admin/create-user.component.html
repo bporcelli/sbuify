@@ -1,0 +1,91 @@
+<h1 class="display-4 page-heading">Create User</h1>
+
+<form #form="ngForm" (ngSubmit)="onSubmit()" class="mt-4">
+  <div class="form-group">
+    <label for="userType">Type</label>
+    <select class="form-control" name="userType" id="userType" (change)="onTypeChanged($event.target.value)">
+      <option value="customer" selected>Customer</option>
+      <option value="admin">Admin</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" class="form-control" name="email" id="email" placeholder="my@email.com" required [(ngModel)]="user.email">
+  </div>
+  <div class="form-row form-group">
+    <div class="col-6">
+      <label for="password">Password</label>
+      <input type="password"
+             name="password"
+             class="form-control"
+             id="password"
+             placeholder="Password"
+             required
+             minlength="8"
+             [(ngModel)]="user.password">
+    </div>
+    <div class="col-6">
+      <label for="passConfirmation">Confirm password</label>
+      <input type="password"
+             name="passConfirmation"
+             class="form-control"
+             id="passConfirmation"
+             placeholder="Re-type password"
+             required
+             minlength="8"
+             [pattern]="user.password"
+             [(ngModel)]="passConfirmation">
+    </div>
+  </div>
+  <div class="form-row form-group" *ngIf="user?.type == 'admin' || user?.type == 'customer'">
+    <div class="col-6">
+      <label for="firstName">First name</label>
+      <input type="text" class="form-control" name="firstName" id="firstName" placeholder="John" required [(ngModel)]="user.firstName">
+    </div>
+    <div class="col-6">
+      <label for="lastName">Last name</label>
+      <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Doe" required [(ngModel)]="user.lastName">
+    </div>
+  </div>
+  <div class="form-row form-group" *ngIf="user?.type == 'customer'">
+    <div class="col-4">
+      <label for="birthMonth">Birth month</label>
+      <select class="form-control" name="birthMonth" id="birthMonth" required [(ngModel)]="birthMonth">
+        <option value="0" selected>January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+      </select>
+    </div>
+    <div class="col-4">
+      <label for="birthDate">Birth date</label>
+      <input type="number" class="form-control" name="birthDate" id="birthDate" placeholder="DD" min="1" max="31" required [(ngModel)]="birthDate">
+    </div>
+    <div class="col-4">
+      <label for="birthMonth">Birth year</label>
+      <input type="number" class="form-control" name="birthYear" id="birthYear" placeholder="YYYY" [min]="minYear" [max]="maxYear" required [(ngModel)]="birthYear">
+    </div>
+  </div>
+  <div class="form-group" *ngIf="user?.type == 'admin'">
+    <label class="custom-control custom-checkbox">
+      Super admin?
+      <input type="checkbox" class="custom-control-input" name="superAdmin" id="superAdmin" [(ngModel)]="user.superAdmin">
+      <span class="custom-control-indicator"></span>
+    </label>
+  </div>
+  <div class="form-row" *ngIf="feedback">
+    <p class="mx-auto" [ngClass]="feedback.class">{{ feedback.text }}</p>
+  </div>
+  <div class="form-group">
+    <button class="btn btn-primary" [disabled]="!form.form.valid || !form.form.dirty || disabled">Create User</button>
+    <button class="btn btn-secondary" (click)="form.resetForm()">Reset</button>
+  </div>
+</form>

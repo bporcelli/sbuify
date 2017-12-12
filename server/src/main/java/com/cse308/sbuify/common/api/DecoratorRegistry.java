@@ -3,12 +3,16 @@ package com.cse308.sbuify.common.api;
 import com.cse308.sbuify.album.AlbumDecorator;
 import com.cse308.sbuify.album.AlbumRepository;
 import com.cse308.sbuify.artist.ArtistDecorator;
-import com.cse308.sbuify.customer.*;
+import com.cse308.sbuify.customer.FollowedArtistRepository;
+import com.cse308.sbuify.customer.FollowedCustomerRepository;
+import com.cse308.sbuify.customer.FollowedPlaylistRepository;
+import com.cse308.sbuify.customer.PlayQueueDecorator;
 import com.cse308.sbuify.playlist.PlaylistDecorator;
 import com.cse308.sbuify.playlist.PlaylistSongDecorator;
 import com.cse308.sbuify.security.AuthFacade;
 import com.cse308.sbuify.song.SongDecorator;
 import com.cse308.sbuify.song.SongRepository;
+import com.cse308.sbuify.user.UserDecorator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +43,7 @@ public class DecoratorRegistry {
         decorators.add(new PlaylistSongDecorator());
         decorators.add(new PlayQueueDecorator());
         decorators.add(new PlaylistDecorator(authFacade, followedPlRepo));
-        decorators.add(new CustomerDecorator(authFacade, followedCustomerRepo));
+        decorators.add(new UserDecorator(authFacade, followedCustomerRepo));
     }
 
     public static ResponseDecorator getDecorator(Class<?> type) {

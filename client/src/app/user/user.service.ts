@@ -1,47 +1,44 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core'
+import { HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from "rxjs/Rx";
 import { JwtService } from "../auth/jwt.service";
 import { APIClient } from "../shared/api-client.service";
-import { Customer } from "./customer";
-import { FollowingService } from "./following.service";
-import {Base64Image} from "../shared/base64-image";
-import {Image} from "../shared/image";
+import { User } from "./user";
 
 /**
  * Service to get information about the authenticated user.
  */
 @Injectable()
 export class UserService {
-  private currentUserSubject: BehaviorSubject<Customer> = new BehaviorSubject(null);
+  private currentUserSubject: BehaviorSubject<User> = new BehaviorSubject(null);
   private isAuthenticatedSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
     private jwtService: JwtService,
-    private apiClient: APIClient,
-    private followService: FollowingService
+    private apiClient: APIClient
   ) {
     // must subscribe to trigger GET request
     this.populate().subscribe();
   }
 
   /** Populate the current user based on the local JWT. */
-  private populate(): Observable<Customer> {
+  private populate(): Observable<User> {
     if (!this.jwtService.hasToken()) {  // no valid token available
       return Observable.of(null);
     }
 
     this.isAuthenticatedSubject.next(true);
 
-    return this.apiClient.get<Customer>('/api/customer/')
+    return this.apiClient.get<User>('/api/users/current/')
       .catch(this.handleError)
-      .map((customer: Customer) => {
-        this.currentUserSubject.next(customer);
-        return customer;
+      .map((user: User) => {
+        this.currentUserSubject.next(user);
+        return user;
       });
   }
 
   /** Set the user's authentication token. */
-  authenticate(token: string, remember: boolean): Observable<Customer> {
+  authenticate(token: string, remember: boolean): Observable<User> {
     this.jwtService.setToken(token, remember);
     return this.populate();
   }
@@ -54,86 +51,54 @@ export class UserService {
     this.isAuthenticatedSubject.next(false);
   }
 
-  /** Update the current user's name, email, and/or birthday */
-  updateUser(user: Customer): Observable<void> {
-    return this.apiClient.patch('/api/customer/', user)
-      .catch(this.handleError)
-      .map(() => {
-        this.currentUserSubject.next(user);
-      });
+  /** Get information about a user given their user ID */
+  getUser(id: any): Observable<User> {
+    return this.apiClient.get<User>('/api/users/' + id);
   }
 
-  /** Create a premium subscription for the user */
-  createSubscription(card: object): Observable<void> {
-    return this.apiClient.post('/api/customer/subscription', card)
-      .catch(this.handleError)
-      .map(() => {
-        let user = this.currentUserSubject.value;
-        user.premium = true;
-        this.currentUserSubject.next(user);
-      });
+  /** Get all users, one page at a time. */
+  getAll(page: number): Observable<User[]> {
+    let params = new HttpParams();
+    params = params.set("page", page.toString());
+    return this.apiClient.get<User[]>('/api/users', { params: params });
   }
 
-  /** Cancel a user's subcription */
-  cancelSubscription(): Observable<void> {
-    return this.apiClient.delete('/api/customer/subscription')
-      .catch(this.handleError)
-      .map(() => {
-        let user = this.currentUserSubject.value;
-        user.premium = false;
-        this.currentUserSubject.next(user);
-      });
+  /** Get the current user */
+  getCurrentUser(): User {
+    return this.currentUserSubject.value;
   }
 
-  /** Change the user's password */
-  changePassword(oldPassword: string, newPassword: string): Observable<void> {
-    let user = this.currentUserSubject.value;
-    let request = {
-      oldPassword: oldPassword,
-      newPassword: newPassword
-    };
-    return this.apiClient.post<void>('/api/users/' + user['id'] + '/change-password/', request);
+  /** Update the current user */
+  setCurrentUser(user: User): void {
+    this.currentUserSubject.next(user);
   }
 
-  /** Change the user's profile picture */
-  changeProfilePicture(dataURL: string): Observable<Image> {
-    return this.apiClient.put<Image>('/api/customer/profile-picture', new Base64Image(dataURL))
-      .map((image) => {
-        let user = this.currentUserSubject.value;
-        user['profileImage'] = image;
-        this.currentUserSubject.next(user);
-        return image;
-      });
+  /** Create a user */
+  create(user: User): Observable<User> {
+    return this.apiClient.post<User>('/api/users', user);
   }
 
-  /** Get information about a customer given their user ID */
-  getCustomer(id: any): Observable<Customer> {
-    return this.apiClient.get<Customer>('/api/customer/' + id);
-  }
-
-  /** Get a customer's friends */
-  getFriends(id: number = null): Observable<Customer[]> {
-    let endpoint = '/api/customer/friends';
-    if (id != null) {
-      endpoint = '/api/customer/' + id + '/friends';
+  /** Update a user */
+  update(user: User): Observable<User> {
+    let endpoint: string;
+    if (user.type == 'admin') {
+      endpoint = '/api/admins/' + user.id;
+    } else if (user.type == 'customer') {
+      endpoint = '/api/customer/' + user.id;
     }
-    return this.apiClient.get<Customer[]>(endpoint);
+    return this.apiClient.patch<User>(endpoint, user);
   }
 
-  /** Follow or unfollow a user */
-  toggleFollowing(user: any): Observable<boolean> {
-    if (user.followed) {
-      return this.followService.unfollow('customer', user.id);
-    } else {
-      return this.followService.follow('customer', user.id);
-    }
+  /** Delete a user */
+  delete(user: User): Observable<boolean> {
+    return this.apiClient.delete('/api/users/' + user['id']).mapTo(true);
   }
 
   get isAuthenticated(): Observable<boolean> {
     return this.isAuthenticatedSubject.asObservable();
   }
 
-  get currentUser(): Observable<Customer> {
+  get currentUser(): Observable<User> {
     return this.currentUserSubject.asObservable().distinctUntilChanged();
   }
 

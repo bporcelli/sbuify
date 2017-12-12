@@ -1,0 +1,31 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="upgradeModalLabel">View Payment</h5>
+  <button type="button" class="close" aria-label="Close" (click)="close()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <dl>
+    <dt>Payment Status</dt>
+    <dd>{{ payment.status | toStatusString }}</dd>
+    <dt>Period</dt>
+    <dd>{{ payment.period.name }}</dd>
+    <dt>Amount</dt>
+    <dd>{{ payment.amount }}</dd>
+    <dt>Payee Name</dt>
+    <dd>{{ payment.payee.name }}</dd>
+    <dt>Payee Address</dt>
+    <dd>
+      {{ payment.payee.address.addressLine1 }}, {{ payment.payee.address.addressLine2 }} <br>
+      {{ payment.payee.address.city }}, {{ payment.payee.address.state }} {{ payment.payee.address.postcode }} <br>
+      {{ payment.payee.address.country }}
+    </dd>
+  </dl>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary"
+          [disabled]="payment?.status == 'PAID' || disabled"
+          (click)="markPaid()">
+    {{ payment?.status == 'PAID' ? 'Paid' : 'Pay' }}
+  </button>
+</div>

@@ -135,6 +135,10 @@ a.toggle-collapse.expanded::after {
     background: #fff;
 }
 
+.main-content.full-height {
+  height: calc(100vh - 64px);
+}
+
 .page-section {
     margin-bottom: map-get($spacers, 4);
 }
@@ -715,6 +719,15 @@ a#browse-concerts {
   padding: 0.5rem 0.75rem;
   margin-left: 0.5rem;
   margin-top: 0.6rem;
+}
+
+// Admin
+body.loading {
+  cursor: progress;
+}
+
+.payment-row {
+  cursor: pointer;
 }
 
 // Responsive

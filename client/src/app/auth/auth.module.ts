@@ -5,6 +5,7 @@ import { AuthGuard } from "./auth-guard.service";
 import { tokenGetter } from "./helpers";
 import { JwtService } from "./jwt.service";
 import { NoAuthGuard } from "./no-auth-guard";
+import { AdminAuthGuard } from "./admin-auth-guard.service";
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   let config = {
@@ -17,6 +18,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   providers: [
     AuthGuard,
     NoAuthGuard,
+    AdminAuthGuard,
     JwtService,
     {
       provide: AuthHttp,

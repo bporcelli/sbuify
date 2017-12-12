@@ -4,6 +4,7 @@ import com.cse308.sbuify.common.Queueable;
 import com.cse308.sbuify.common.api.DecorateResponse;
 import com.cse308.sbuify.security.AuthFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class PlayQueueController {
      * @return HTTP response.
      */
     @PutMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
     public @ResponseBody void updatePlayQueue(@RequestBody PlayQueue newPlayQueue) {
         Customer user = (Customer) authFacade.getCurrentUser();
 
@@ -38,6 +40,7 @@ public class PlayQueueController {
      * @return HTTP response.
      */
     @PostMapping(path = "/add")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public @ResponseBody void addToPlayQueue(@RequestBody Queueable toAdd,
                                              @RequestParam(required = false, defaultValue = "false") Boolean first) {
         Customer cust = (Customer) authFacade.getCurrentUser();
@@ -57,6 +60,7 @@ public class PlayQueueController {
      * @return HTTP response.
      */
     @PostMapping(path = "/remove")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public @ResponseBody void removeFromPlayQueue(@RequestBody Queueable toAdd) {
         Customer cust = (Customer) authFacade.getCurrentUser();
 
@@ -71,6 +75,7 @@ public class PlayQueueController {
      */
     @GetMapping
     @DecorateResponse(type = PlayQueue.class)
+    @PreAuthorize("hasRole('CUSTOMER')")
     public @ResponseBody PlayQueue getPlayQueue(){
         Customer customer = (Customer) authFacade.getCurrentUser();
         return customer.getPlayQueue();
